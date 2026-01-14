@@ -86,4 +86,4 @@ const habitacionSchema = new mongoose.Schema({
 });
 
 // Exporta el modelo para usarlo en controladores y otras partes de la app
-module.exports = mongoose.model('Habitacion', habitacionSchema);
+module.exports = mongoose.model('Habitacion', habitacionSchema, 'Habitacion');
