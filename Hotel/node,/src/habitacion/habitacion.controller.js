@@ -1,5 +1,14 @@
+// Controlador para CRUD de Habitaciones
+// - Importa el modelo de Mongoose para Habitacion
+// - Cada función exportada maneja una ruta y devuelve respuestas JSON con códigos HTTP
 const Habitacion = require('./habitacion.models');
 
+/**
+ * Crear una nueva habitación
+ * - Espera los campos en req.body: numero, tipo, precionoche, max_ocupantes (y opcionales)
+ * - Se establecen valores por defecto para campos opcionales (descripcion, imagen, rate, disponible, oferta, servicios)
+ * - Responde 201 con la habitación creada o 500 con el error
+ */
 exports.crearHabitacion = async (req, res) => {
   try {
     const {
@@ -36,6 +45,11 @@ exports.crearHabitacion = async (req, res) => {
   }
 };
 
+/**
+ * Obtener todas las habitaciones
+ * - No recibe parámetros
+ * - Responde 200 con la lista de habitaciones o 500 en caso de error
+ */
 exports.obtenerHabitaciones = async (req, res) => {
   try {
     const habitaciones = await Habitacion.find();
@@ -46,6 +60,11 @@ exports.obtenerHabitaciones = async (req, res) => {
   }
 };
 
+/**
+ * Obtener una habitación por id
+ * - Parámetros: req.params.id
+ * - Responde 200 con la habitación, 404 si no existe o 500 en caso de error
+ */
 exports.obtenerHabitacion = async (req, res) => {
   try {
     const { id } = req.params;
@@ -58,6 +77,11 @@ exports.obtenerHabitacion = async (req, res) => {
   }
 };
 
+/**
+ * Actualizar una habitación
+ * - Parámetros: req.params.id y datos en req.body
+ * - Devuelve la entidad actualizada (opción { new: true }) o 404 si no existe
+ */
 exports.actualizarHabitacion = async (req, res) => {
   try {
     const { id } = req.params;
@@ -71,6 +95,11 @@ exports.actualizarHabitacion = async (req, res) => {
   }
 };
 
+/**
+ * Eliminar una habitación
+ * - Parámetros: req.params.id
+ * - Devuelve 200 con un mensaje de confirmación o 404 si no existía
+ */
 exports.eliminarHabitacion = async (req, res) => {
   try {
     const { id } = req.params;
@@ -81,4 +110,4 @@ exports.eliminarHabitacion = async (req, res) => {
     console.error(error);
     return res.status(500).json({ message: 'Error eliminando la habitación', error: error.message });
   }
-};;
+};
