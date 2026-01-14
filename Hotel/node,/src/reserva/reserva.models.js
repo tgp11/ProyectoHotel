@@ -1,14 +1,17 @@
 const mongoose = require('../db');
 
 const reservaSchema = new mongoose.Schema({
-    
+  _id: {
+    type: mongoose.Schema.Types.ObjectId ,
+    ref: 'Habitacion'
+  },
   clienteId: { 
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId ,
     ref: 'Cliente', 
     required: true
   },
   habitacionId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId ,
     ref: 'Habitacion',
     required: true
   },
@@ -41,4 +44,4 @@ const reservaSchema = new mongoose.Schema({
 
 });
 
-module.exports = mongoose.model('Reserva', reservaSchema);
+module.exports = mongoose.model('Reserva', reservaSchema, 'Reserva');

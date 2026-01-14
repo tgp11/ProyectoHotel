@@ -1,5 +1,6 @@
 const Reserva = require('./reserva.models');
-
+const mongoose = require('../db');
+const ObjectId = mongoose.mongo.ObjectId;
 
 exports.crearReserva = async (req, res) => {
   try {
@@ -42,10 +43,10 @@ exports.crearReserva = async (req, res) => {
 exports.obtenerReservas = async (req, res) => {
   try {
     const reservas = await Reserva.find()
-      .populate('usuarioId', 'nombre email')
-      .populate('habitacionId');
 
     res.json(reservas);
+
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -86,3 +87,16 @@ exports.cancelarReserva = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+/*
+new Reserva ({
+   _id: new ObjectId('6961319c05a68615ed164964'),
+   clienteId: new ObjectId('69612c6205a68615ed16495c'),
+   habitacionId: new ObjectId('6961313f05a68615ed164962'),
+   fechaEntrada: Date.now(),
+   fechaSalida: Date.now(),
+   personas: 2,
+   precioTotal: 600,
+   cancelacion: false}).save()
+    const reservas = await Reserva.find()
+*/
