@@ -1,5 +1,5 @@
 const Cliente = require('./cliente.models');
-const bcrypt = require('bcrypt');
+
 
 exports.crearCliente = async (req, res) => {
   try {
@@ -7,6 +7,12 @@ exports.crearCliente = async (req, res) => {
     if (!nombre || !email || !password || !fechaNacimiento || !sexo || vip === undefined) {
         return res.status(400).json({ msg: 'Faltan datos obligatorios' });  
     }
+
+    const existe = await Cliente.findOne({ email });
+    if (existe) {
+       return res.status(409).json({ msg: 'El email ya está registrado' });
+    }
+    
 
     if (!esEmailValido(email)) {
       return res.status(400).json({ msg: 'Email inválido' });
@@ -16,7 +22,9 @@ exports.crearCliente = async (req, res) => {
       return res.status(400).json({ msg: 'La contraseña debe tener al menos 6 caracteres, una mayúscula, una minúscula, un número y un carácter especial' });
     }
 
-    if(!validarFechaNacimiento(fechaNacimiento)) {
+    const fecha = validarFechaNacimiento(fechaNacimiento);
+
+    if(!fecha) {
       return res.status(400).json({ msg: 'Fecha de nacimiento inválida. Formato correcto DD/MM/YYYY' });
     }
 
@@ -26,9 +34,13 @@ exports.crearCliente = async (req, res) => {
 
 
 
-    const nuevoCliente = new Cliente({ nombre, email, password, fechaNacimiento, sexo,  vip });
+    const nuevoCliente = new Cliente({ nombre, email, password, fechaNacimiento : fecha, sexo,  vip });
     const clienteGuardado = await nuevoCliente.save();
-    res.status(201).json(clienteGuardado);
+
+    const clienteJSON = clienteGuardado.toObject();
+    delete clienteJSON.password;
+
+    res.status(201).json(clienteJSON);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -37,7 +49,14 @@ exports.crearCliente = async (req, res) => {
 exports.obtenerClientes = async (req, res) => {
   try {
     const clientes = await Cliente.find();
-    res.status(200).json(clientes);
+
+    const clienteJSON = clientes.map(cliente => {
+      const clienteObj = cliente.toObject();
+      delete clienteObj.password;
+      return clienteObj;
+    });
+
+    res.status(200).json(clienteJSON);
   } catch (error) {
     res.status(500).json({ error: error.message });
   } 
@@ -49,7 +68,11 @@ exports.obtenerClientePorId = async (req, res) => {
     if (!cliente) {
       return res.status(404).json({ msg: 'Cliente no encontrado' });
     }
-    res.status(200).json(cliente);
+
+    const clienteJSON = cliente.toObject();
+    delete clienteJSON.password;
+
+    res.status(200).json(clienteJSON);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -61,6 +84,14 @@ exports.actualizarCliente = async (req, res) => {
     if (!nombre || !email || !password || !fechaNacimiento || !sexo || vip === undefined) {
         return res.status(400).json({ msg: 'Faltan datos obligatorios' });  
     }
+    const emailEnUso = await Cliente.findOne({
+      email,
+      _id: { $ne: req.params.id }
+    });
+
+    if (emailEnUso) {
+      return res.status(409).json({ msg: 'El email ya está registrado' });
+    }
 
     if (!esEmailValido(email)) {
       return res.status(400).json({ msg: 'Email inválido' });
@@ -70,7 +101,9 @@ exports.actualizarCliente = async (req, res) => {
       return res.status(400).json({ msg: 'La contraseña debe tener al menos 6 caracteres, una mayúscula, una minúscula, un número y un carácter especial' });
     }
 
-    if(!validarFechaNacimiento(fechaNacimiento)) {
+    const fecha = validarFechaNacimiento(fechaNacimiento);
+
+    if(!fecha) {
       return res.status(400).json({ msg: 'Fecha de nacimiento inválida. Formato correcto DD/MM/YYYY' });
     }
 
@@ -78,15 +111,29 @@ exports.actualizarCliente = async (req, res) => {
       return res.status(400).json({ msg: 'Sexo inválido. Debe ser M, F o X' });
     }
 
-    const clienteActualizado = await Cliente.findByIdAndUpdate(req.params.id, { nombre, email, password, fechaNacimiento, sexo, vip }, { new: true });
-    if (!clienteActualizado) {
+    const cliente = await Cliente.findById(req.params.id);
+    if (!cliente) {
       return res.status(404).json({ msg: 'Cliente no encontrado' });
     }
-    res.status(200).json(clienteActualizado);
+
+    cliente.nombre = nombre;
+    cliente.email = email;
+    cliente.password = password; 
+    cliente.fechaNacimiento = fecha;
+    cliente.sexo = sexo;
+    cliente.vip = vip;
+
+    await cliente.save(); 
+
+    const clienteJSON = cliente.toObject();
+    delete clienteJSON.password;
+
+    res.status(200).json(clienteJSON);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 exports.eliminarCliente = async (req, res) => {
   try {
     const clienteEliminado = await Cliente.findByIdAndDelete(req.params.id);
