@@ -32,20 +32,14 @@ const usuarioSchema = new mongoose.Schema({
     discriminatorKey: 'tipoUsuario',
     timestamps: true
 })
-usuarioSchema.pre('save', async function (next) { // Este metodo ocurre antes de guardar un usuario por el pre-save hook
-  if (!this.isModified('password')) return next();//Esto evita que la contraseña se vuelva a hashear si no ha sido modificada
-
-  try {
-    const salt = bcrypt.genSalt(10);//salt es un valor aleatorio que se añade a la contraseña antes de hashearla para mayor seguridad
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error) {
-    next(error);
-  }
-
+usuarioSchema.pre('save', async function () {
+  if (!this.isModified('password')) return;
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
-userSchema.methods.comparePassword = async function (plain) {
+
+usuarioSchema.methods.comparePassword = async function (plain) {
   const res = await bcrypt.compare(plain, this.password);
   return res;
 };
