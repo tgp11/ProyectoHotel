@@ -2,20 +2,18 @@ const express = require('express');
 const app = express();
 const PORT = 3000;
 
+// Middleware
 app.use(express.json());
 
+// Importar rutas correctamente desde la carpeta src
 const usuarioRoutes = require('./usuario/usuario.routes');
-const habitacionRoutes = require('./habitacion/habitacion.routes');
-const reservaRoutes = require('./reserva/reserva.routes');
-const clienteRoutes = require('./cliente/cliente.routes');
-const empleadoRoutes = require('./Empleado/empleado.routes');
+//const habitacionRoutes = require('./habitacion/habitacion.routes');
+//const reservaRoutes = require('./reserva/reserva.routes');
 
 app.use('/usuarios', usuarioRoutes);
-app.use('/habitaciones', habitacionRoutes);
-app.use('/reservas', reservaRoutes);
-app.use('/clientes', clienteRoutes);
-app.use('/empleados', empleadoRoutes);
+//app.use('/habitaciones', habitacionRoutes);
+//app.use('/reservas', reservaRoutes);
 
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
