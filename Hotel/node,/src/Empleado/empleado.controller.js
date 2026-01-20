@@ -3,10 +3,18 @@ const Empleado = require('./empleado.models');
 
 exports.crearEmpleado = async (req, res) => {
   try {
-    const { nombre, email, password, fechaNacimiento, sexo, administrador, ciudad, tipoEmpleado } = req.body;  
-    if (!nombre || !email || !password || !fechaNacimiento || !sexo || administrador === undefined || !ciudad || !tipoEmpleado) {
+    const { nombre, dni, email, password, fechaNacimiento, sexo, administrador, ciudad, tipoEmpleado } = req.body;  
+    if (!nombre || !dni || !email || !password || !fechaNacimiento || !sexo || administrador === undefined || !ciudad || !tipoEmpleado) {
         return res.status(400).json({ msg: 'Faltan datos obligatorios' });  
     }
+    if (!validarDNI(dni)) {
+      return res.status(400).json({ msg: 'DNI inválido' });
+    }
+    const dniExiste = await Empleado.findOne({ dni });
+      if (dniExiste) {
+        return res.status(409).json({ msg: 'El DNI ya está registrado' });
+      }
+    
     const existe = await Empleado.findOne({ email });
     if (existe) {
        return res.status(409).json({ msg: 'El email ya está registrado' });
@@ -29,7 +37,7 @@ exports.crearEmpleado = async (req, res) => {
       return res.status(400).json({ msg: 'Sexo inválido. Debe ser M, F o X' });
     }
 
-    const nuevoEmpleado  = new Empleado({ nombre, email, password, fechaNacimiento : fecha, sexo, administrador, ciudad, tipoEmpleado });
+    const nuevoEmpleado  = new Empleado({ nombre, dni, email, password, fechaNacimiento : fecha, sexo, administrador, ciudad, tipoEmpleado });
     const empleadoGuardado = await nuevoEmpleado.save();
 
     const empleadoJSON = empleadoGuardado.toObject();
@@ -72,10 +80,21 @@ exports.obtenerEmpleadoPorId = async (req, res) => {
 
 exports.actualizarEmpleado = async (req, res) => {
   try {
-    const { nombre, email, password, fechaNacimiento, sexo, administrador, ciudad, tipoEmpleado } = req.body;  
-    if (!nombre || !email || !password|| !fechaNacimiento || !sexo || administrador === undefined || !ciudad || !tipoEmpleado) {
+    const { nombre, dni, email, password, fechaNacimiento, sexo, administrador, ciudad, tipoEmpleado } = req.body;  
+    if (!nombre || !dni || !email || !password|| !fechaNacimiento || !sexo || administrador === undefined || !ciudad || !tipoEmpleado) {
         return res.status(400).json({ msg: 'Faltan datos obligatorios' });  
     }
+    if (!validarDNI(dni)) {
+      return res.status(400).json({ msg: 'DNI inválido' });
+    }
+    const dniExiste = await Empleado.findOne({
+  dni,
+  _id: { $ne: req.params.id }
+});
+        if (dniExiste) {
+          return res.status(409).json({ msg: 'El DNI ya está registrado' });
+        }
+
     const emailEnUso = await Empleado.findOne({
       email,
       _id: { $ne: req.params.id }
@@ -102,6 +121,7 @@ exports.actualizarEmpleado = async (req, res) => {
       return res.status(404).json({ msg: 'Empleado no encontrado' });
     }
     empleado.nombre = nombre;
+    empleado.dni = dni;
     empleado.email = email;
     empleado.password = password;
     empleado.fechaNacimiento = fecha;
@@ -132,6 +152,25 @@ exports.eliminarEmpleado = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+function validarDNI(dni) {
+    const letras = "TRWAGMYFPDXBNJZSQVHLCKE";
+    
+    
+    const regex = /^\d{8}[A-Z]$/; // Formato: 8 números + 1 letra
+
+    dni = dni.toUpperCase();
+
+    if (!regex.test(dni)) {
+        return false;
+    }
+
+    const numero = parseInt(dni.substring(0, 8), 10);
+    const letra = dni.charAt(8);
+    const letraCorrecta = letras[numero % 23];
+
+    return letra === letraCorrecta;
+}
 
 
 function esEmailValido(email) {

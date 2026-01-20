@@ -7,6 +7,13 @@ const usuarioSchema = new mongoose.Schema({
     type: String,
     required: true
     },
+    
+    dni: {
+    type: String,
+    unique: true,
+    required: true
+    }
+    ,
 
     email: {
     type: String,
