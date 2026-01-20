@@ -45,7 +45,7 @@ usuarioSchema.pre('save', async function (next) { // Este metodo ocurre antes de
 
 });
 
-userSchema.methods.comparePassword = async function (plain) {
+usuarioSchema.methods.comparePassword = async function (plain) {
   const res = await bcrypt.compare(plain, this.password);
   return res;
 };

@@ -1,4 +1,4 @@
-const Usuario = require('./usuario.model')
+const Usuario = require('./usuario.models.js');
 
 exports.verTodosUsuarios = async (req, res) => {
   try {
