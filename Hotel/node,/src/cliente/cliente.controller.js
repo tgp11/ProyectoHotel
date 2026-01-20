@@ -3,9 +3,17 @@ const Cliente = require('./cliente.models');
 
 exports.crearCliente = async (req, res) => {
   try {
-    const { nombre, email, password, fechaNacimiento, sexo, vip } = req.body;  
-    if (!nombre || !email || !password || !fechaNacimiento || !sexo || vip === undefined) {
+    const { nombre, dni, email, password, fechaNacimiento, sexo, vip } = req.body;  
+    if (!nombre || !dni || !email || !password || !fechaNacimiento || !sexo || vip === undefined) {
         return res.status(400).json({ msg: 'Faltan datos obligatorios' });  
+    }
+
+    if (!validarDNI(dni)) {
+      return res.status(400).json({ msg: 'DNI inválido' });
+    }
+    const dniExiste = await Cliente.findOne({ dni });
+    if (dniExiste) {
+      return res.status(409).json({ msg: 'El DNI ya está registrado' });
     }
 
     const existe = await Cliente.findOne({ email });
@@ -34,7 +42,7 @@ exports.crearCliente = async (req, res) => {
 
 
 
-    const nuevoCliente = new Cliente({ nombre, email, password, fechaNacimiento : fecha, sexo,  vip });
+    const nuevoCliente = new Cliente({ nombre, dni, email, password, fechaNacimiento : fecha, sexo,  vip });
     const clienteGuardado = await nuevoCliente.save();
 
     const clienteJSON = clienteGuardado.toObject();
@@ -80,9 +88,19 @@ exports.obtenerClientePorId = async (req, res) => {
 
 exports.actualizarCliente = async (req, res) => {
   try {
-    const { nombre, email, password, fechaNacimiento, sexo, vip } = req.body;  
-    if (!nombre || !email || !password || !fechaNacimiento || !sexo || vip === undefined) {
+    const { nombre, dni, email, password, fechaNacimiento, sexo, vip } = req.body;  
+    if (!nombre || !dni || !email || !password || !fechaNacimiento || !sexo || vip === undefined) {
         return res.status(400).json({ msg: 'Faltan datos obligatorios' });  
+    }
+    if (!validarDNI(dni)) {
+      return res.status(400).json({ msg: 'DNI inválido' });
+    }
+    const dniExiste = await Cliente.findOne({
+      dni,
+      _id: { $ne: req.params.id }
+    });
+    if (dniExiste) {
+      return res.status(409).json({ msg: 'El DNI ya está registrado' });
     }
     const emailEnUso = await Cliente.findOne({
       email,
@@ -117,6 +135,7 @@ exports.actualizarCliente = async (req, res) => {
     }
 
     cliente.nombre = nombre;
+    cliente.dni = dni;
     cliente.email = email;
     cliente.password = password; 
     cliente.fechaNacimiento = fecha;
@@ -145,6 +164,25 @@ exports.eliminarCliente = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+function validarDNI(dni) {
+    const letras = "TRWAGMYFPDXBNJZSQVHLCKE";
+    
+    
+    const regex = /^\d{8}[A-Z]$/; // Formato: 8 números + 1 letra
+
+    dni = dni.toUpperCase();
+
+    if (!regex.test(dni)) {
+        return false;
+    }
+
+    const numero = parseInt(dni.substring(0, 8), 10);
+    const letra = dni.charAt(8);
+    const letraCorrecta = letras[numero % 23];
+
+    return letra === letraCorrecta;
+}
 
 function esEmailValido(email) {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Formato basico de email, @, dominio, .com.
