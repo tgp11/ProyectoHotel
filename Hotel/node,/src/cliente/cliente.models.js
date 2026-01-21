@@ -1,4 +1,4 @@
-const Usuario = require('./usuario.model')
+const Usuario = require('../usuario/usuario.models')
 const mongoose = require('mongoose')
 
 const ClienteSchema = new mongoose.Schema({
