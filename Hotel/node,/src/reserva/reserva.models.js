@@ -1,17 +1,13 @@
 const mongoose = require('../db');
 
 const reservaSchema = new mongoose.Schema({
-  _id: {
-    type: mongoose.Schema.Types.ObjectId ,
-    ref: 'Habitacion'
-  },
-  clienteId: { 
-    type: mongoose.Schema.Types.ObjectId ,
-    ref: 'Cliente', 
+  clienteId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Cliente',
     required: true
   },
   habitacionId: {
-    type: mongoose.Schema.Types.ObjectId ,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Habitacion',
     required: true
   },
@@ -26,7 +22,8 @@ const reservaSchema = new mongoose.Schema({
   personas: {
     type: Number,
     required: true,
-    min: 1
+    min: 1,
+    max: 10
   },
   precioTotal: {
     type: Number,
@@ -37,11 +34,16 @@ const reservaSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   }
-
 }, {
-
   timestamps: true
+});
 
+//Validacion de fechas antes de guardar
+reservaSchema.pre('save', function (next) {
+  if (this.fechaSalida <= this.fechaEntrada) {
+    return next(new Error('La fecha de salida debe ser posterior a la de entrada'));
+  }
+  next();
 });
 
 module.exports = mongoose.model('Reserva', reservaSchema, 'Reserva');
