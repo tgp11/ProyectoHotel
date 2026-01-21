@@ -3,8 +3,8 @@ const Cliente = require('./cliente.models');
 
 exports.crearCliente = async (req, res) => {
   try {
-    const { nombre, dni, email, password, fechaNacimiento, sexo, vip } = req.body;  
-    if (!nombre || !dni || !email || !password || !fechaNacimiento || !sexo || vip === undefined) {
+    const { nombre, dni, email, password, fechaNacimiento, sexo, ciudad, vip } = req.body;  
+    if (!nombre || !dni || !email || !password || !fechaNacimiento || !sexo || !ciudad || vip === undefined) {
         return res.status(400).json({ msg: 'Faltan datos obligatorios' });  
     }
 
@@ -42,7 +42,7 @@ exports.crearCliente = async (req, res) => {
 
 
 
-    const nuevoCliente = new Cliente({ nombre, dni, email, password, fechaNacimiento : fecha, sexo,  vip });
+    const nuevoCliente = new Cliente({ nombre, dni, email, password, fechaNacimiento : fecha, sexo, ciudad, vip });
     const clienteGuardado = await nuevoCliente.save();
 
     const clienteJSON = clienteGuardado.toObject();
@@ -88,8 +88,8 @@ exports.obtenerClientePorId = async (req, res) => {
 
 exports.actualizarCliente = async (req, res) => {
   try {
-    const { nombre, dni, email, password, fechaNacimiento, sexo, vip } = req.body;  
-    if (!nombre || !dni || !email || !password || !fechaNacimiento || !sexo || vip === undefined) {
+    const { nombre, dni, email, password, fechaNacimiento, sexo, ciudad, vip } = req.body;  
+    if (!nombre || !dni || !email || !password || !fechaNacimiento || !sexo || !ciudad || vip === undefined) {
         return res.status(400).json({ msg: 'Faltan datos obligatorios' });  
     }
     if (!validarDNI(dni)) {
@@ -140,6 +140,7 @@ exports.actualizarCliente = async (req, res) => {
     cliente.password = password; 
     cliente.fechaNacimiento = fecha;
     cliente.sexo = sexo;
+    cliente.ciudad = ciudad;
     cliente.vip = vip;
 
     await cliente.save(); 
