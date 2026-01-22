@@ -3,7 +3,7 @@ const Empleado = require('./empleado.models');
 
 exports.crearEmpleado = async (req, res) => {
   try {
-    const { nombre, dni, email, password, fechaNacimiento, sexo, administrador } = req.body;  
+    const { nombre, dni, email, password, fechaNacimiento, sexo, foto, administrador } = req.body;  
     if (!nombre || !dni || !email || !password || !fechaNacimiento || !sexo || administrador === undefined) {
         return res.status(400).json({ msg: 'Faltan datos obligatorios' });  
     }
@@ -37,7 +37,7 @@ exports.crearEmpleado = async (req, res) => {
       return res.status(400).json({ msg: 'Sexo inválido. Debe ser M, F o X' });
     }
 
-    const nuevoEmpleado  = new Empleado({ nombre, dni, email, password, fechaNacimiento : fecha, sexo, administrador });
+    const nuevoEmpleado  = new Empleado({ nombre, dni, email, password, fechaNacimiento : fecha, sexo, foto, administrador });
     const empleadoGuardado = await nuevoEmpleado.save();
 
     const empleadoJSON = empleadoGuardado.toObject();
@@ -80,7 +80,7 @@ exports.obtenerEmpleadoPorId = async (req, res) => {
 
 exports.actualizarEmpleado = async (req, res) => {
   try {
-    const { nombre, dni, email, password, fechaNacimiento, sexo, administrador } = req.body;  
+    const { nombre, dni, email, password, fechaNacimiento, sexo, foto, administrador } = req.body;  
     if (!nombre || !dni || !email || !password|| !fechaNacimiento || !sexo || administrador === undefined) {
         return res.status(400).json({ msg: 'Faltan datos obligatorios' });  
     }
@@ -126,6 +126,7 @@ exports.actualizarEmpleado = async (req, res) => {
     empleado.password = password;
     empleado.fechaNacimiento = fecha;
     empleado.sexo = sexo;
+    empleado.foto = foto;
     empleado.administrador = administrador;
 
     const empleadoActualizado = await empleado.save();

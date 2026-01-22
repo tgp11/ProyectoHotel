@@ -33,6 +33,11 @@ const usuarioSchema = new mongoose.Schema({
     enum: ['M', 'F', 'X'],
     required: true
   },
+  foto: {
+    type: String,
+    default: null,
+    required: false
+  }
 
 }, 
 {
