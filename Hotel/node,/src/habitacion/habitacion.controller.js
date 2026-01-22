@@ -1,55 +1,74 @@
-// Controlador para CRUD de Habitaciones
-// - Importa el modelo de Mongoose para Habitacion
-// - Cada función exportada maneja una ruta y devuelve respuestas JSON con códigos HTTP
 const Habitacion = require('./habitacion.models');
 
-/**
- * Crear una nueva habitación
- * - Espera los campos en req.body: numero, tipo, precionoche, max_ocupantes (y opcionales)
- * - Se establecen valores por defecto para campos opcionales (descripcion, imagen, rate, disponible, oferta, servicios)
- * - Responde 201 con la habitación creada o 500 con el error
- */
+const pickAllowed = (obj, allowed) => {
+  const out = {};
+  for (const key of allowed) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) out[key] = obj[key];
+  }
+  return out;
+};
+
+const handleMongoErrors = (error, res, fallbackMessage) => {
+  // Validación de MongoDB a nivel de colección ($jsonSchema) -> code 121
+  // Tus apuntes indican código 121 para DocumentValidationFailure. :contentReference[oaicite:10]{index=10}
+  if (error && (error.code === 121 || error.codeName === 'DocumentValidationFailure')) {
+    return res.status(400).json({
+      message: 'Error de validación (MongoDB): el documento no cumple el esquema',
+      errores: Object.values(error.errors).map(e => e.message)
+    });
+  }
+
+  // Duplicado por índice unique (ej: numero) -> code 11000
+  if (error && error.code === 11000) {
+    return res.status(409).json({
+      message: 'Conflicto: ya existe una habitación con ese número',
+      details: error.keyValue
+    });
+  }
+
+  // ID inválido / cast
+  if (error && error.name === 'CastError') {
+    return res.status(400).json({ message: 'ID inválido' });
+  }
+
+  return res.status(500).json({ message: fallbackMessage, error: error?.message });
+};
+
 exports.crearHabitacion = async (req, res) => {
   try {
-    const {
-      numero,
-      tipo,
-      descripcion = '',
-      imagen = '',
-      precionoche,
-      rate = 0,
-      max_ocupantes,
-      disponible = true,
-      oferta = false,
-      servicios = []
-    } = req.body;
+    const allowedFields = [
+      'numero',
+      'tipo',
+      'descripcion',
+      'imagen',
+      'precionoche',
+      'rate',
+      'max_ocupantes',
+      'disponible',
+      'oferta',
+      'servicios'
+    ];
+
+    const datos = pickAllowed(req.body, allowedFields);
 
     const nuevaHabitacion = new Habitacion({
-      numero,
-      tipo,
-      descripcion,
-      imagen,
-      precionoche,
-      rate,
-      max_ocupantes,
-      disponible,
-      oferta,
-      servicios
+      ...datos,
+      descripcion: datos.descripcion ?? '',
+      imagen: datos.imagen ?? '',
+      rate: datos.rate ?? 0,
+      disponible: datos.disponible ?? true,
+      oferta: datos.oferta ?? false,
+      servicios: datos.servicios ?? []
     });
 
     const habitacionGuardada = await nuevaHabitacion.save();
     return res.status(201).json(habitacionGuardada);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Error creando la habitación', error: error.message });
+    return handleMongoErrors(error, res, 'Error creando la habitación');
   }
 };
 
-/**
- * Obtener todas las habitaciones
- * - No recibe parámetros
- * - Responde 200 con la lista de habitaciones o 500 en caso de error
- */
 exports.obtenerHabitaciones = async (req, res) => {
   try {
     const habitaciones = await Habitacion.find();
@@ -60,11 +79,6 @@ exports.obtenerHabitaciones = async (req, res) => {
   }
 };
 
-/**
- * Obtener una habitación por id
- * - Parámetros: req.params.id
- * - Responde 200 con la habitación, 404 si no existe o 500 en caso de error
- */
 exports.obtenerHabitacion = async (req, res) => {
   try {
     const { id } = req.params;
@@ -73,33 +87,44 @@ exports.obtenerHabitacion = async (req, res) => {
     return res.json(habitacion);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Error obteniendo la habitación', error: error.message });
+    return handleMongoErrors(error, res, 'Error obteniendo la habitación');
   }
 };
 
-/**
- * Actualizar una habitación
- * - Parámetros: req.params.id y datos en req.body
- * - Devuelve la entidad actualizada (opción { new: true }) o 404 si no existe
- */
 exports.actualizarHabitacion = async (req, res) => {
   try {
     const { id } = req.params;
-    const datos = req.body;
-    const habitacion = await Habitacion.findByIdAndUpdate(id, datos, { new: true });
+
+    const allowedFields = [
+      'numero',
+      'tipo',
+      'descripcion',
+      'imagen',
+      'precionoche',
+      'rate',
+      'max_ocupantes',
+      'disponible',
+      'oferta',
+      'servicios'
+    ];
+
+    const datos = pickAllowed(req.body, allowedFields);
+
+    // runValidators asegura que Mongoose también valide en updates (min/max/enum/etc.)
+    const habitacion = await Habitacion.findByIdAndUpdate(id, datos, {
+      new: true,
+      runValidators: true,
+      context: 'query'
+    });
+
     if (!habitacion) return res.status(404).json({ message: 'Habitación no encontrada' });
     return res.json(habitacion);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Error actualizando la habitación', error: error.message });
+    return handleMongoErrors(error, res, 'Error actualizando la habitación');
   }
 };
 
-/**
- * Eliminar una habitación
- * - Parámetros: req.params.id
- * - Devuelve 200 con un mensaje de confirmación o 404 si no existía
- */
 exports.eliminarHabitacion = async (req, res) => {
   try {
     const { id } = req.params;
@@ -108,6 +133,6 @@ exports.eliminarHabitacion = async (req, res) => {
     return res.json({ message: 'Habitación eliminada' });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Error eliminando la habitación', error: error.message });
+    return handleMongoErrors(error, res, 'Error eliminando la habitación');
   }
 };
