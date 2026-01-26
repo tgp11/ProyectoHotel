@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const reservaController = require('../controllers/reserva.controller');
+const reservaController = require('./reserva.controller');
 
 // Crear reserva
 router.post('/', reservaController.crearReserva);

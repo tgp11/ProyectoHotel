@@ -22,8 +22,7 @@ const reservaSchema = new mongoose.Schema({
   personas: {
     type: Number,
     required: true,
-    min: 1,
-    max: 10
+    min: 1
   },
   precioTotal: {
     type: Number,
@@ -36,14 +35,6 @@ const reservaSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true
-});
-
-//Validacion de fechas antes de guardar
-reservaSchema.pre('save', function (next) {
-  if (this.fechaSalida <= this.fechaEntrada) {
-    return next(new Error('La fecha de salida debe ser posterior a la de entrada'));
-  }
-  next();
 });
 
 module.exports = mongoose.model('Reserva', reservaSchema, 'Reserva');
