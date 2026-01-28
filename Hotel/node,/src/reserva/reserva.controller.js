@@ -74,7 +74,7 @@ exports.cancelarReserva = async (req, res) => {
   try {
     const reserva = await Reserva.findByIdAndUpdate(
       req.params.id,
-      { cancelacion: true },
+      { $set: { cancelacion: true } },
       { new: true }
     );
 
