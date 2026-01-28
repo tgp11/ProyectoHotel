@@ -17,6 +17,7 @@ app.use('/empleado', empleadoRoutes);
 app.use('/cliente', clienteRoutes);
 //app.use('/habitaciones', habitacionRoutes);
 //app.use('/reservas', reservaRoutes);
+app.use('/auth', require('./auth/auth.routes'));
 
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);

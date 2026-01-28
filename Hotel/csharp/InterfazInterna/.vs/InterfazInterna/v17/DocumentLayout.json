@@ -1,10 +1,22 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\antgarpoz\\Videos\\HOTEL\\ProyectoHotel\\Hotel\\csharp\\InterfazInterna\\",
+  "WorkspaceRootPath": "C:\\Users\\ivanr\\Desktop\\PF_Hotel\\ProyectoHotel\\Hotel\\csharp\\InterfazInterna\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{794C7A3D-A07C-4266-BF9D-70059378006A}|InterfazInterna.csproj|c:\\users\\antgarpoz\\videos\\hotel\\proyectohotel\\hotel\\csharp\\interfazinterna\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{794C7A3D-A07C-4266-BF9D-70059378006A}|InterfazInterna.csproj|c:\\users\\ivanr\\desktop\\pf_hotel\\proyectohotel\\hotel\\csharp\\interfazinterna\\views\\login.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{794C7A3D-A07C-4266-BF9D-70059378006A}|InterfazInterna.csproj|solutionrelative:views\\login.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ivanr\\Desktop\\PF_Hotel\\ProyectoHotel\\Hotel\\csharp\\InterfazInterna\\InterfazInterna.csproj.user||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:InterfazInterna.csproj.user||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{794C7A3D-A07C-4266-BF9D-70059378006A}|InterfazInterna.csproj|c:\\users\\ivanr\\desktop\\pf_hotel\\proyectohotel\\hotel\\csharp\\interfazinterna\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{794C7A3D-A07C-4266-BF9D-70059378006A}|InterfazInterna.csproj|solutionrelative:mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{794C7A3D-A07C-4266-BF9D-70059378006A}|InterfazInterna.csproj|c:\\users\\ivanr\\desktop\\pf_hotel\\proyectohotel\\hotel\\csharp\\interfazinterna\\interfazinterna.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{794C7A3D-A07C-4266-BF9D-70059378006A}|InterfazInterna.csproj|solutionrelative:interfazinterna.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     }
   ],
   "DocumentGroupContainers": [
@@ -19,15 +31,57 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "LogIn.xaml",
+              "DocumentMoniker": "C:\\Users\\ivanr\\Desktop\\PF_Hotel\\ProyectoHotel\\Hotel\\csharp\\InterfazInterna\\Views\\LogIn.xaml",
+              "RelativeDocumentMoniker": "Views\\LogIn.xaml",
+              "ToolTip": "C:\\Users\\ivanr\\Desktop\\PF_Hotel\\ProyectoHotel\\Hotel\\csharp\\InterfazInterna\\Views\\LogIn.xaml",
+              "RelativeToolTip": "Views\\LogIn.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-01-26T15:45:30.555Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "InterfazInterna.csproj.user",
+              "DocumentMoniker": "C:\\Users\\ivanr\\Desktop\\PF_Hotel\\ProyectoHotel\\Hotel\\csharp\\InterfazInterna\\InterfazInterna.csproj.user",
+              "RelativeDocumentMoniker": "InterfazInterna.csproj.user",
+              "ToolTip": "C:\\Users\\ivanr\\Desktop\\PF_Hotel\\ProyectoHotel\\Hotel\\csharp\\InterfazInterna\\InterfazInterna.csproj.user",
+              "RelativeToolTip": "InterfazInterna.csproj.user",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAAKAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003464|",
+              "WhenOpened": "2026-01-26T15:42:03.479Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "InterfazInterna",
+              "DocumentMoniker": "C:\\Users\\ivanr\\Desktop\\PF_Hotel\\ProyectoHotel\\Hotel\\csharp\\InterfazInterna\\InterfazInterna.csproj",
+              "RelativeDocumentMoniker": "InterfazInterna.csproj",
+              "ToolTip": "C:\\Users\\ivanr\\Desktop\\PF_Hotel\\ProyectoHotel\\Hotel\\csharp\\InterfazInterna\\InterfazInterna.csproj",
+              "RelativeToolTip": "InterfazInterna.csproj",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-01-26T15:41:42.677Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "MainWindow.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\antgarpoz\\Videos\\HOTEL\\ProyectoHotel\\Hotel\\csharp\\InterfazInterna\\MainWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\ivanr\\Desktop\\PF_Hotel\\ProyectoHotel\\Hotel\\csharp\\InterfazInterna\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "MainWindow.xaml.cs",
-              "ToolTip": "C:\\Users\\antgarpoz\\Videos\\HOTEL\\ProyectoHotel\\Hotel\\csharp\\InterfazInterna\\MainWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\ivanr\\Desktop\\PF_Hotel\\ProyectoHotel\\Hotel\\csharp\\InterfazInterna\\MainWindow.xaml.cs",
               "RelativeToolTip": "MainWindow.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAcAAAAjAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-19T15:02:42.21Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
             }
           ]
         }
