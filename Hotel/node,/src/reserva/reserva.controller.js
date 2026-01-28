@@ -37,8 +37,8 @@ exports.crearReserva = async (req, res) => {
     });
 
     const reservaGuardada = await nuevaReserva.save();
-
     res.status(201).json(reservaGuardada);
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -46,8 +46,8 @@ exports.crearReserva = async (req, res) => {
 
 exports.obtenerReservas = async (req, res) => {
   try {
-    const reservas = await Reserva.find().populate('clienteId', 'nombre email')
-                                        .populate('habitacionId');
+    // ❌ SIN populate
+    const reservas = await Reserva.find();
     res.json(reservas);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -56,9 +56,7 @@ exports.obtenerReservas = async (req, res) => {
 
 exports.obtenerReservaPorId = async (req, res) => {
   try {
-    const reserva = await Reserva.findById(req.params.id)
-      .populate('clienteId', 'nombre email')
-      .populate('habitacionId');
+    const reserva = await Reserva.findById(req.params.id);
 
     if (!reserva) {
       return res.status(404).json({ msg: 'Reserva no encontrada' });
