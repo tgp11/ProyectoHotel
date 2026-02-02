@@ -32,3 +32,6 @@ C:\Users\antgarpoz\Downloads\HOTELINTERFAZ\HOTELINTERFAZ\HOTELINTERFAZ\bin\Debug
 C:\Users\antgarpoz\Downloads\HOTELINTERFAZ\HOTELINTERFAZ\HOTELINTERFAZ\bin\Debug\net8.0-windows\ZstdSharp.dll
 C:\Users\antgarpoz\Downloads\HOTELINTERFAZ\HOTELINTERFAZ\HOTELINTERFAZ\obj\Debug\net8.0-windows\HOTELINTERFAZ.csproj.AssemblyReference.cache
 C:\Users\antgarpoz\Downloads\HOTELINTERFAZ\HOTELINTERFAZ\HOTELINTERFAZ\obj\Debug\net8.0-windows\HOTELINT.3AB66967.Up2Date
+C:\Repos\ProyectoHotel\Hotel\csharp\HOTELINTERFAZ\HOTELINTERFAZ\obj\Debug\net8.0-windows\HOTELINTERFAZ.dll
+C:\Repos\ProyectoHotel\Hotel\csharp\HOTELINTERFAZ\HOTELINTERFAZ\obj\Debug\net8.0-windows\refint\HOTELINTERFAZ.dll
+C:\Repos\ProyectoHotel\Hotel\csharp\HOTELINTERFAZ\HOTELINTERFAZ\obj\Debug\net8.0-windows\HOTELINTERFAZ.pdb
