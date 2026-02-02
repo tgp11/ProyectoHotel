@@ -4,15 +4,15 @@
 winexe
 C#
 .cs
-C:\Repos\ProyectoHotel\Hotel\csharp\HOTELINTERFAZ\HOTELINTERFAZ\obj\Debug\net8.0-windows\
+C:\Repos\ProyectoHotel\Hotel\csharp\HOTELINTERFAZ\HOTELINTERFAZ\obj\Release\net8.0-windows\
 HOTELINTERFAZ
 none
 false
-TRACE;DEBUG;NET;NET8_0;NETCOREAPP
+TRACE;RELEASE;NET;NET8_0;NETCOREAPP
 C:\Repos\ProyectoHotel\Hotel\csharp\HOTELINTERFAZ\HOTELINTERFAZ\App.xaml
 32039591507
 
-8-402656953
+8-722913477
 198-211836927
 MainWindow.xaml;Views\HabitacionesView.xaml;Views\ReservasView.xaml;
 
