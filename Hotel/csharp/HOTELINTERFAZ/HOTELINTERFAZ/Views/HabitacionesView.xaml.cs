@@ -13,7 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using InterfazInterna.Models;
+using HOTELINTERFAZ.Models;
 
 namespace HOTELINTERFAZ.Views
 {
@@ -21,8 +21,9 @@ namespace HOTELINTERFAZ.Views
     /// Lógica de interacción para HabitacionesView.xaml
     /// </summary>
     public partial class HabitacionesView : UserControl
-    private readonly ICollectionView _view;
     {
+        private readonly ObservableCollection<Habitacion> _habitaciones = new();
+        private readonly ICollectionView _view;
         public HabitacionesView()
         {
             InitializeComponent();
