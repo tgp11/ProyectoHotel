@@ -1,4 +1,4 @@
-const Resena = require('./resena.models');
+const Resena = require('./reseña.models');
 
 exports.crearResena = async (req, res) => {
   try {
