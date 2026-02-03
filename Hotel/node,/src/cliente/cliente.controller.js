@@ -42,7 +42,7 @@ exports.crearCliente = async (req, res) => {
 
 
 
-    const nuevoCliente = new Cliente({ nombre, dni, email, password, fechaNacimiento : fecha, sexo, foto, ciudad, vip });
+    const nuevoCliente = new Cliente({tipoUsuario: 'Cliente', nombre, dni, email, password, fechaNacimiento : fecha, sexo, foto, ciudad, vip });
     const clienteGuardado = await nuevoCliente.save();
 
     const clienteJSON = clienteGuardado.toObject();

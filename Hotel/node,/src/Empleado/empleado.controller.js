@@ -37,7 +37,7 @@ exports.crearEmpleado = async (req, res) => {
       return res.status(400).json({ msg: 'Sexo inválido. Debe ser M, F o X' });
     }
 
-    const nuevoEmpleado  = new Empleado({ nombre, dni, email, password, fechaNacimiento : fecha, sexo, foto, administrador });
+    const nuevoEmpleado  = new Empleado({tipoUsuario: 'Empleado', nombre, dni, email, password, fechaNacimiento : fecha, sexo, foto, administrador });
     const empleadoGuardado = await nuevoEmpleado.save();
 
     const empleadoJSON = empleadoGuardado.toObject();
