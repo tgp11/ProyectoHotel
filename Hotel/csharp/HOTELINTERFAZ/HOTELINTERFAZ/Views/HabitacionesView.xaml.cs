@@ -27,18 +27,6 @@ namespace HOTELINTERFAZ.Views
         public HabitacionesView()
         {
             InitializeComponent();
-
-            // Datos de ejemplo (modo local)
-            _habitaciones.Add(new Habitacion
-            {
-                Id = "696a5c6621c934c10e410874",
-                Numero = 102,
-                Tipo = "individual",
-                PrecioNoche = 70,
-                MaxOcupantes = 1,
-                Disponible = true
-            });
-
             DgHabitaciones.ItemsSource = _habitaciones;
 
             _view = CollectionViewSource.GetDefaultView(DgHabitaciones.ItemsSource);

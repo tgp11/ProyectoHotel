@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 
 using HOTELINTERFAZ.ViewModels;
-using HOTELINTERFAZ.Views;
 using System;
 using System.Diagnostics;
 using System.Windows;
