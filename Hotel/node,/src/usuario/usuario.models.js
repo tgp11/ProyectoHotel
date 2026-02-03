@@ -50,7 +50,6 @@ usuarioSchema.pre('save', async function () {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-
 usuarioSchema.methods.comparePassword = async function (plain) {
   const res = await bcrypt.compare(plain, this.password);
   return res;

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HOTELINTERFAZ")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9d0f6293a660f7919ac4c2b9787daacd46099ac2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d09e30df85e286ef93e4a291dd01314a5c40b802")]
 [assembly: System.Reflection.AssemblyProductAttribute("HOTELINTERFAZ")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HOTELINTERFAZ")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
