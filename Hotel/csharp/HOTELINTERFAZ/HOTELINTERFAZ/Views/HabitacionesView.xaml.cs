@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using HOTELINTERFAZ.Models;
+using HOTELINTERFAZ.ViewModels;
 
 namespace HOTELINTERFAZ.Views
 {
@@ -22,12 +23,12 @@ namespace HOTELINTERFAZ.Views
     /// </summary>
     public partial class HabitacionesView : UserControl
     {
-        private readonly ObservableCollection<Habitacion> _habitaciones = new();
+        private readonly HabitacionesViewModel _vm = new();
         private readonly ICollectionView _view;
         public HabitacionesView()
         {
             InitializeComponent();
-            DgHabitaciones.ItemsSource = _habitaciones;
+            DgHabitaciones.ItemsSource = _vm.Habitaciones;
 
             _view = CollectionViewSource.GetDefaultView(DgHabitaciones.ItemsSource);
             _view.Filter = FilterHabitaciones;
@@ -58,7 +59,7 @@ namespace HOTELINTERFAZ.Views
                 Disponible = true
             };
 
-            _habitaciones.Add(nueva);
+            _vm.Habitaciones.Add(nueva);
 
             // Seleccionarla y entrar en edición
             DgHabitaciones.SelectedItem = nueva;
@@ -104,7 +105,7 @@ namespace HOTELINTERFAZ.Views
 
             if (res == MessageBoxResult.Yes)
             {
-                _habitaciones.Remove(selected);
+                _vm.Habitaciones.Remove(selected);
                 _view.Refresh();
             }
         }
@@ -158,7 +159,7 @@ namespace HOTELINTERFAZ.Views
                 }
 
                 // No duplicar Numero
-                int repes = _habitaciones.Count(x => x.Numero == h.Numero);
+                int repes = _vm.Habitaciones.Count(x => x.Numero == h.Numero);
                 if (repes > 1)
                 {
                     MessageBox.Show("Ya existe una habitación con ese número.", "Validación",
@@ -186,8 +187,8 @@ namespace HOTELINTERFAZ.Views
 
         private int GetNextNumeroDisponible()
         {
-            if (_habitaciones.Count == 0) return 1;
-            int max = _habitaciones.Max(h => h.Numero);
+            if (_vm.Habitaciones.Count == 0) return 1;
+            int max = _vm.Habitaciones.Max(h => h.Numero);
             return max + 1;
         }
     }

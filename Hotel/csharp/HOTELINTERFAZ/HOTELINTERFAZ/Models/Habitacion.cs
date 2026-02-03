@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HOTELINTERFAZ.Models
 {
-    class Habitacion
+    public class Habitacion
     {
         [JsonPropertyName("_id")]
         public string Id { get; set; }

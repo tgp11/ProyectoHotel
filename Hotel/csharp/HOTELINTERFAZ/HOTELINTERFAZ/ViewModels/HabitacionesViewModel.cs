@@ -11,7 +11,7 @@ using System.Net.Http.Json;
 
 namespace HOTELINTERFAZ.ViewModels
 {
-    class HabitacionesViewModel
+    public class HabitacionesViewModel
     {
         public ObservableCollection<Habitacion> Habitaciones { get; } = new();
 
