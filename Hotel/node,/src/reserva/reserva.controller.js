@@ -1,11 +1,9 @@
 const Reserva = require('./reserva.models');
-const mongoose = require('../db');
-const ObjectId = mongoose.mongo.ObjectId;
 
 exports.crearReserva = async (req, res) => {
   try {
     const {
-      usuarioId,
+      clienteId,
       habitacionId,
       fechaEntrada,
       fechaSalida,
@@ -13,7 +11,7 @@ exports.crearReserva = async (req, res) => {
       precioTotal
     } = req.body;
 
-    if (!usuarioId || !habitacionId || !fechaEntrada || !fechaSalida) {
+    if (!clienteId || !habitacionId || !fechaEntrada || !fechaSalida || !personas || precioTotal === undefined) {
       return res.status(400).json({ msg: 'Faltan datos obligatorios' });
     }
 
@@ -21,8 +19,16 @@ exports.crearReserva = async (req, res) => {
       return res.status(400).json({ msg: 'Fechas inválidas' });
     }
 
+    if (personas < 1) {
+      return res.status(400).json({ msg: 'Debe haber al menos una persona' });
+    }
+
+    if (precioTotal < 0) {
+      return res.status(400).json({ msg: 'Precio inválido' });
+    }
+
     const nuevaReserva = new Reserva({
-      usuarioId,
+      clienteId,
       habitacionId,
       fechaEntrada,
       fechaSalida,
@@ -31,7 +37,6 @@ exports.crearReserva = async (req, res) => {
     });
 
     const reservaGuardada = await nuevaReserva.save();
-
     res.status(201).json(reservaGuardada);
 
   } catch (error) {
@@ -39,25 +44,19 @@ exports.crearReserva = async (req, res) => {
   }
 };
 
-
 exports.obtenerReservas = async (req, res) => {
   try {
-    const reservas = await Reserva.find()
-
+    // ❌ SIN populate
+    const reservas = await Reserva.find();
     res.json(reservas);
-
-
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-
 exports.obtenerReservaPorId = async (req, res) => {
   try {
-    const reserva = await Reserva.findById(req.params.id)
-      .populate('usuarioId', 'nombre email')
-      .populate('habitacionId');
+    const reserva = await Reserva.findById(req.params.id);
 
     if (!reserva) {
       return res.status(404).json({ msg: 'Reserva no encontrada' });
@@ -69,12 +68,11 @@ exports.obtenerReservaPorId = async (req, res) => {
   }
 };
 
-
 exports.cancelarReserva = async (req, res) => {
   try {
     const reserva = await Reserva.findByIdAndUpdate(
       req.params.id,
-      { cancelacion: true },
+      { $set: { cancelacion: true } },
       { new: true }
     );
 
@@ -87,16 +85,3 @@ exports.cancelarReserva = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-/*
-new Reserva ({
-   _id: new ObjectId('6961319c05a68615ed164964'),
-   clienteId: new ObjectId('69612c6205a68615ed16495c'),
-   habitacionId: new ObjectId('6961313f05a68615ed164962'),
-   fechaEntrada: Date.now(),
-   fechaSalida: Date.now(),
-   personas: 2,
-   precioTotal: 600,
-   cancelacion: false}).save()
-    const reservas = await Reserva.find()
-*/
