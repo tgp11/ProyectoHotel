@@ -7,14 +7,14 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="LogIn" Height="450" Width="800">
-    <Grid >
+    <Grid>
         <Grid.Background>
             <ImageBrush ImageSource="../Resources/Imagen_Hotel_Larga.png"
                         Stretch="UniformToFill"/>
         </Grid.Background>
 
         <Border Width="400"
-                Height="392"
+                Height="192"
                 Background="#D4AF37"
                 CornerRadius="12"
                 Padding="20"
@@ -22,60 +22,27 @@
                 VerticalAlignment="Center"
                 BorderBrush="#1C1C1C"
                 BorderThickness="1"
-                Opacity="0.8">
+                Opacity="0.9">
 
-            <TabControl Background="#E6C86E">
+            
 
-                <TabItem Header="Login" Background="#B8962E">
-                    <StackPanel VerticalAlignment="Center" Background="#E6C86E">
+                
+               <StackPanel VerticalAlignment="Center"  >
 
-                        <TextBlock Text="Email"/>
-                        <TextBox Margin="0,5,0,10" Background="#D4AF37" BorderBrush="#1C1C1C"/>
+                    <TextBlock Text="Email"/>
+                <TextBox x:Name="txtEmailLogIn" Margin="0,5,0,10" Background="#E6C86E" BorderBrush="#1C1C1C"/>
 
-                        <TextBlock Text="Contraseña"/>
-                        <PasswordBox Margin="0,5,0,15" Background="#D4AF37" BorderBrush="#1C1C1C"/>
+                    <TextBlock Text="Contraseña"/>
+                <PasswordBox x:Name="txtPassLogIn" Margin="0,5,0,15" Background="#E6C86E" BorderBrush="#1C1C1C" PasswordChar="●" Password="sijdbfj" />
 
 
-                        <Button Content="Entrar"
-                                Width="100"
-                                HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </TabItem>
-
-                <TabItem Header="Registro" Background="#B8962E">
-                    <StackPanel VerticalAlignment="Center" Background="#E6C86E" >
-                        <TextBlock Text="Nombre"/>
-                        <TextBox Margin="0,5,0,10" Background="#D4AF37" BorderBrush="#1C1C1C"/>
-
-                        <TextBlock Text="Email"/>
-                        <TextBox Margin="0,5,0,10" Background="#D4AF37" BorderBrush="#1C1C1C"/>
-
-                        <TextBlock Text="DNI"/>
-                        <TextBox Margin="0,5,0,10" Background="#D4AF37" BorderBrush="#1C1C1C"/>
-
-                        <TextBlock Text="Contraseña"/>
-                        <PasswordBox Margin="0,5,0,10" Background="#D4AF37" BorderBrush="#1C1C1C"/>
-
-                        <TextBlock Text="Sexo" Margin="0,0,0,5"/>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                            <RadioButton Content="Hombre" Margin="0,0,5,0"/>
-                            <RadioButton Content="Mujer" Margin="0,0,5,0"/>
-                            <RadioButton Content="Otro"/>
-                        </StackPanel>
-
-                        <TextBlock Text="Fecha de Nacimiento" Margin="0,0,0,5"/>
-                        <DatePicker 
-                            Width="200"
-                            SelectedDateFormat="Long"
-                            DisplayDateEnd="{x:Static sys:DateTime.Today}" HorizontalAlignment="Left" Margin="0,0,0,10"/>
-
-                        <Button Content="Registrarse"
-                                Width="120"
-                                HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </TabItem>
-
-            </TabControl>
+                    <Button Content="Entrar"
+                            Width="100"
+                            HorizontalAlignment="Center" Click="LogIn_Button"
+                            Background="#8B1E1E"
+                            />
+               </StackPanel>
+                
         </Border>
 
     </Grid>
