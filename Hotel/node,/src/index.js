@@ -15,11 +15,13 @@ const reservaRoutes = require('./reserva/reserva.routes');
 const clienteRoutes = require('./cliente/cliente.routes');
 const empleadoRoutes = require('./empleado/empleado.routes');
 const usuarioRoutes = require('./usuario/usuario.routes');
+const authRoutes = require('./auth/auth.routes');
 
 app.use('/reservas', reservaRoutes); // Esta es la que usará el ViewModel
 app.use('/cliente', clienteRoutes);
 app.use('/empleado', empleadoRoutes);
 app.use('/usuario', usuarioRoutes);
+app.use('/auth', authRoutes);
 
 app.listen(PORT, () => {
     console.log(`Servidor API corriendo en http://localhost:${PORT}`);
