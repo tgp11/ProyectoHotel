@@ -33,7 +33,10 @@ namespace HOTELINTERFAZ.ViewModels
 
                 Reservas.Clear();
                 foreach (var r in lista)
+                    {
                     Reservas.Add(r);
+                }
+                    
             }
             catch (Exception ex)
             {

@@ -61,9 +61,13 @@
                                     Binding="{Binding Id}"
                                     Width="160"/>
 
+                <DataGridTextColumn Header="DNI"
+                    Binding="{Binding Cliente.Dni}"
+                    Width="140"/>
+
                 <DataGridTextColumn Header="Cliente"
-                                    Binding="{Binding ClienteId}"
-                                    Width="160"/>
+                    Binding="{Binding Cliente.Nombre}"
+                    Width="180"/>
 
                 <DataGridTextColumn Header="Habitación"
                                     Binding="{Binding HabitacionId}"
