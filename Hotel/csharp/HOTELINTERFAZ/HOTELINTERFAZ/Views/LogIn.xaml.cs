@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using InterfazInterna;
 
 namespace HOTELINTERFAZ.Views
 {
@@ -26,7 +27,7 @@ namespace HOTELINTERFAZ.Views
             InitializeComponent();
         }
 
-        private async Task LogIn_ButtonAsync(object sender, RoutedEventArgs e)
+        private async void LogIn_Button(object sender, RoutedEventArgs e)
         {
             String email = txtEmailLogIn.Text;
             String password = txtPassLogIn.Password;
@@ -39,16 +40,16 @@ namespace HOTELINTERFAZ.Views
                     password
                 );
 
-                if (resultado.usuario.tipoUsuario != "Empleado")
+                if (resultado.Usuario.TipoUsuario != "Empleado")
                 {
                     MessageBox.Show("Solo empleados pueden acceder");
                     return;
                 }
 
                 SessionManager.Token = resultado.Token;
-                SessionManager.UsuarioActual = resultado.usuario;
+                SessionManager.UsuarioActual = resultado.Usuario;
 
-                MainWindow main = new MainWindow();
+                InterfazInterna.Principal main = new InterfazInterna.Principal(SessionManager.UsuarioActual);
                 main.Show();
                 this.Close();
             }

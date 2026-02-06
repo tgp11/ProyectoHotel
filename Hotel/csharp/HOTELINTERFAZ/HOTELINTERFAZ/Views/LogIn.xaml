@@ -33,13 +33,16 @@
                 <TextBox x:Name="txtEmailLogIn" Margin="0,5,0,10" Background="#E6C86E" BorderBrush="#1C1C1C"/>
 
                     <TextBlock Text="Contraseña"/>
-                <PasswordBox x:Name="txtPassLogIn" Margin="0,5,0,15" Background="#E6C86E" BorderBrush="#1C1C1C" PasswordChar="●" Password="sijdbfj" />
+                <PasswordBox x:Name="txtPassLogIn" Margin="0,5,0,15" Background="#E6C86E" BorderBrush="#1C1C1C" PasswordChar="●" />
 
 
                     <Button Content="Entrar"
                             Width="100"
-                            HorizontalAlignment="Center" Click="LogIn_Button"
+                            HorizontalAlignment="Center" 
+                            Click="LogIn_Button"
                             Background="#8B1E1E"
+                            FontWeight="Bold"
+                            Foreground="#F6F1EB"
                             />
                </StackPanel>
                 

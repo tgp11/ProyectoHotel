@@ -4,14 +4,28 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows;
 using HOTELINTERFAZ.Views;
+using HOTELINTERFAZ.Models;
 
 namespace InterfazInterna
 {
     public partial class Principal : Window
     {
-        public Principal()
+        private Usuario usuario;
+        public Principal(Usuario _usuario)
         {
             InitializeComponent();
+            usuario = _usuario;
+
+            lblNombreUsuario.Content = usuario.Nombre;
+
+            if (usuario.Administrador)
+            {
+                lblAdminEmp.Content = "Administrador";
+            }
+            else
+            {
+                lblAdminEmp.Content = "Empleado";
+            }
         }
 
         // ================== CLIENTES ==================
@@ -47,8 +61,10 @@ namespace InterfazInterna
         // ================== LOGOUT ==================
         private void CerrarSesion_Click(object sender, RoutedEventArgs e)
         {
-            var login = new ReservasView();
+            HOTELINTERFAZ.Views.LogIn login  =  new LogIn();
+            login.Show();
             this.Close();
+            
         }
     }
 }
