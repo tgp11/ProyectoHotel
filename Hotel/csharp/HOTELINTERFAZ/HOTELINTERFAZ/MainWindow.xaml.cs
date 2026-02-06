@@ -41,7 +41,7 @@ namespace InterfazInterna
         // ================== RESEÑAS ==================
         private void GestionResenas_Click(object sender, RoutedEventArgs e)
         {
-            contentControl.Content = new ResenasView();
+            contentControl.Content = new ReservasView();
         }
 
         // ================== LOGOUT ==================
