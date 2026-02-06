@@ -71,7 +71,7 @@
         </Grid>
 
         <!-- ================= MENÚ LATERAL ================= -->
-        <StackPanel Grid.Row="1" Grid.Column="0" Background="#8B1E1E">
+        <StackPanel Grid.Row="1" Grid.Column="0" Background="#8B1E1E" Cursor="">
             <TextBlock Text="MENÚ" Foreground="White" FontSize="18" FontWeight="Bold" Margin="20,20,0,10"/>
 
             <Button Content="Gestión de Clientes"
@@ -102,7 +102,7 @@
                     Height="80" Margin="10" Foreground="White" FontSize="15"
                     Background="Transparent" BorderBrush="Transparent"
                     HorizontalContentAlignment="Left" Cursor="Hand"
-                    Click="GestionReservas_Click"/>
+                    Click="GestionResenas_Click"/>
 
             
         </StackPanel>
