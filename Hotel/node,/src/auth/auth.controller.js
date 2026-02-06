@@ -18,11 +18,18 @@ exports.login = async (req, res) => {
         if (!esPasswordValido) {
             return res.status(401).json({ message: 'Contraseña incorrecta' });
         }
+
+        let esAdministrador = false;
+
+        if (usuario.tipoUsuario === "Empleado") {
+            esAdministrador = usuario.administrador;
+        }
         
         const token = jwt.sign(
         {
             id: usuario._id,
-            tipoUsuario: usuario.tipoUsuario
+            tipoUsuario: usuario.tipoUsuario,
+            administrador: esAdministrador
         },
         process.env.JWT_SECRET || 'secreto_super_seguro',
         { expiresIn: '2h' }
@@ -34,7 +41,8 @@ exports.login = async (req, res) => {
                 id: usuario._id,
                 nombre: usuario.nombre,
                 email: usuario.email,
-                tipoUsuario: usuario.tipoUsuario
+                tipoUsuario: usuario.tipoUsuario,
+                administrador: esAdministrador
         }
     });
 
