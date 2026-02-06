@@ -1,4 +1,10 @@
+
+const mongoose = require('mongoose');
 const Reserva = require('./reserva.models');
+const Usuario = require('../usuario/usuario.models');
+
+
+
 
 exports.crearReserva = async (req, res) => {
   try {
@@ -46,11 +52,26 @@ exports.crearReserva = async (req, res) => {
 
 exports.obtenerReservas = async (req, res) => {
   try {
-    // ❌ SIN populate
-    const reservas = await Reserva.find();
-    res.json(reservas);
+    // 1. Pillamos las reservas como objetos planos
+    const reservas = await Reserva.find().lean();
+
+    
+    const clientes = await Usuario.find().lean();
+
+    console.log(clientes)
+
+    const resultado = reservas.map(reserva => {
+      const cliente = clientes.find(c => c._id.toString() === reserva.clienteId.toString());
+      return {
+        ...reserva,
+        cliente: cliente ? cliente: null
+      };
+    })
+
+    res.json(resultado);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("ERROR EN EL SERVIDOR:", error);
+    res.status(500).json({ error: "Error interno", detalle: error.message });
   }
 };
 
