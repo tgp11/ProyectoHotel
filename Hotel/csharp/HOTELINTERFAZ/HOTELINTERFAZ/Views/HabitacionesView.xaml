@@ -69,11 +69,10 @@
                             Width="80"/>
 
 					<!-- Tipo -->
-					<DataGridTextColumn Header="Tipo"
+                    <DataGridTextColumn Header="Tipo"
                             Binding="{Binding Tipo, UpdateSourceTrigger=PropertyChanged}"
                             Width="160"/>
-
-					<!-- Capacidad (MaxOcupantes) -->
+                    <!-- Capacidad (MaxOcupantes) -->
 					<DataGridTextColumn Header="Capacidad"
                             Binding="{Binding MaxOcupantes, UpdateSourceTrigger=PropertyChanged}"
                             Width="140"/>
@@ -82,8 +81,11 @@
 					<DataGridTextColumn Header="Precio/Noche"
                             Binding="{Binding PrecioNoche, UpdateSourceTrigger=PropertyChanged}"
                             Width="160"/>
-
-					<!-- Estado (Disponible) -->
+                    <!-- Descripción -->
+                    <DataGridTextColumn Header="Descripción"
+                            Binding="{Binding Descripcion, UpdateSourceTrigger=PropertyChanged}"
+                            Width="160"/>
+                    <!-- Estado (Disponible) -->
 					<DataGridCheckBoxColumn Header="Estado"
                                 Binding="{Binding Disponible, UpdateSourceTrigger=PropertyChanged}"
                                 Width="120"/>

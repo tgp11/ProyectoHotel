@@ -23,172 +23,137 @@ namespace HOTELINTERFAZ.Views
     /// </summary>
     public partial class HabitacionesView : UserControl
     {
+        public ObservableCollection<string> TiposHabitacion { get; } =
+            new() { "individual", "doble", "suite" };
         private readonly HabitacionesViewModel _vm = new();
+        // Alias para no reescribir todo el código antiguo
+        private ObservableCollection<Habitacion> _habitaciones => _vm.Habitaciones;
         private readonly ICollectionView _view;
         public HabitacionesView()
         {
             InitializeComponent();
-            DgHabitaciones.ItemsSource = _vm.Habitaciones;
-
+            DgHabitaciones.ItemsSource = _habitaciones;
             _view = CollectionViewSource.GetDefaultView(DgHabitaciones.ItemsSource);
             _view.Filter = FilterHabitaciones;
         }
-
         private bool FilterHabitaciones(object obj)
         {
             if (obj is not Habitacion h) return false;
-
             var q = TxtBuscar?.Text?.Trim().ToLower() ?? "";
             if (string.IsNullOrWhiteSpace(q)) return true;
-
             return h.Numero.ToString().Contains(q)
                    || (h.Tipo?.ToLower().Contains(q) ?? false);
         }
-
-        // ===== BOTONES =====
-
-        private void Nueva_Click(object sender, RoutedEventArgs e)
-        {
-            // Crea una fila nueva con valores por defecto
-            var nueva = new Habitacion
-            {
-                Numero = GetNextNumeroDisponible(),
-                Tipo = "",
-                MaxOcupantes = 1,
-                PrecioNoche = 0,
-                Disponible = true
-            };
-
-            _vm.Habitaciones.Add(nueva);
-
-            // Seleccionarla y entrar en edición
-            DgHabitaciones.SelectedItem = nueva;
-            DgHabitaciones.ScrollIntoView(nueva);
-
-            DgHabitaciones.Dispatcher.InvokeAsync(() =>
-            {
-                DgHabitaciones.CurrentCell = new DataGridCellInfo(nueva, DgHabitaciones.Columns[0]);
-                DgHabitaciones.BeginEdit();
-                Keyboard.Focus(DgHabitaciones);
-            });
-        }
-
         private void Editar_Click(object sender, RoutedEventArgs e)
         {
             if (DgHabitaciones.SelectedItem is not Habitacion selected)
             {
-                MessageBox.Show("Selecciona una habitación para editar.", "Info",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Selecciona una habitación para editar.");
                 return;
             }
-
-            // Entrar en edición de la fila seleccionada
-            DgHabitaciones.ScrollIntoView(selected);
-            DgHabitaciones.CurrentCell = new DataGridCellInfo(selected, DgHabitaciones.Columns[0]);
+            DgHabitaciones.CurrentCell =
+                new DataGridCellInfo(selected, DgHabitaciones.Columns[0]);
             DgHabitaciones.BeginEdit();
         }
-
-        private void Eliminar_Click(object sender, RoutedEventArgs e)
+        private async void Eliminar_Click(object sender, RoutedEventArgs e)
         {
             if (DgHabitaciones.SelectedItem is not Habitacion selected)
             {
-                MessageBox.Show("Selecciona una habitación para eliminar.", "Info",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Selecciona una habitación para eliminar.");
                 return;
             }
-
             var res = MessageBox.Show(
                 $"¿Eliminar la habitación {selected.Numero}?",
                 "Confirmación",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
-
-            if (res == MessageBoxResult.Yes)
+            if (res != MessageBoxResult.Yes) return;
+            if (string.IsNullOrWhiteSpace(selected.Id))
             {
-                _vm.Habitaciones.Remove(selected);
+                _habitaciones.Remove(selected);
+                _view.Refresh();
+                return;
+            }
+            var ok = await _vm.EliminarHabitacionAsync(selected);
+            if (ok)
+            {
+                _habitaciones.Remove(selected);
                 _view.Refresh();
             }
         }
-
         private void Buscar_Click(object sender, RoutedEventArgs e)
         {
             _view.Refresh();
         }
-
-        // ===== VALIDACIÓN AL TERMINAR EDICIÓN DE FILA =====
-
-        private void DgHabitaciones_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        private async void DgHabitaciones_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
             if (e.EditAction != DataGridEditAction.Commit) return;
             if (e.Row.Item is not Habitacion h) return;
-
-            // Forzar commit para tener valores finales
-            Dispatcher.InvokeAsync(() =>
+            await Dispatcher.InvokeAsync(() => { });
+            // VALIDACIONES
+            if (h.Numero <= 0 ||
+                string.IsNullOrWhiteSpace(h.Tipo) ||
+                h.MaxOcupantes <= 0 ||
+                h.PrecioNoche < 0)
             {
-                // Validaciones básicas
-                if (h.Numero <= 0)
-                {
-                    MessageBox.Show("El número debe ser mayor que 0.", "Validación",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                    CancelEditKeepRow(e);
-                    return;
-                }
-
-                if (string.IsNullOrWhiteSpace(h.Tipo))
-                {
-                    MessageBox.Show("El tipo es obligatorio.", "Validación",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                    CancelEditKeepRow(e);
-                    return;
-                }
-
-                if (h.MaxOcupantes <= 0)
-                {
-                    MessageBox.Show("La capacidad debe ser mayor que 0.", "Validación",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                    CancelEditKeepRow(e);
-                    return;
-                }
-
-                if (h.PrecioNoche < 0)
-                {
-                    MessageBox.Show("El precio/noche no puede ser negativo.", "Validación",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                    CancelEditKeepRow(e);
-                    return;
-                }
-
-                // No duplicar Numero
-                int repes = _vm.Habitaciones.Count(x => x.Numero == h.Numero);
-                if (repes > 1)
-                {
-                    MessageBox.Show("Ya existe una habitación con ese número.", "Validación",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                    CancelEditKeepRow(e);
-                    return;
-                }
-
-                _view.Refresh();
-            });
+                MessageBox.Show("Datos no válidos.");
+                DgHabitaciones.CancelEdit(DataGridEditingUnit.Row);
+                return;
+            }
+            int repes = _habitaciones.Count(x => x.Numero == h.Numero);
+            if (repes > 1)
+            {
+                MessageBox.Show("Ya existe una habitación con ese número.");
+                DgHabitaciones.CancelEdit(DataGridEditingUnit.Row);
+                return;
+            }
+            // API
+            if (string.IsNullOrWhiteSpace(h.Id))
+            {
+                // POST
+                var created = await _vm.CrearHabitacionAsync(h);
+                if (created == null) return;
+                h.Id = created.Id;
+            }
+            else
+            {
+                // PUT
+                await _vm.ActualizarHabitacionAsync(h);
+            }
+            _view.Refresh();
         }
 
-        private void CancelEditKeepRow(DataGridRowEditEndingEventArgs e)
+        private void Nueva_Click(object sender, RoutedEventArgs e)
         {
-            // Cancela la edición y vuelve a editar esa misma fila para que lo corrijan
-            DgHabitaciones.CancelEdit(DataGridEditingUnit.Row);
+            var nueva = new Habitacion
+            {
+                // Id vacío → se hará POST al terminar la edición
+                Id = null,
+                Numero = GetNextNumeroDisponible(),
+                Tipo = "individual",
+                Descripcion = "",
+                MaxOcupantes = 1,
+                PrecioNoche = 0,
+                Disponible = true
+            };
+
+            _habitaciones.Add(nueva);
+
+            DgHabitaciones.SelectedItem = nueva;
+            DgHabitaciones.ScrollIntoView(nueva);
 
             DgHabitaciones.Dispatcher.InvokeAsync(() =>
             {
-                DgHabitaciones.SelectedItem = e.Row.Item;
-                DgHabitaciones.ScrollIntoView(e.Row.Item);
+                DgHabitaciones.CurrentCell =
+                    new DataGridCellInfo(nueva, DgHabitaciones.Columns[0]);
                 DgHabitaciones.BeginEdit();
             });
-        }
 
+        }
         private int GetNextNumeroDisponible()
         {
-            if (_vm.Habitaciones.Count == 0) return 1;
-            int max = _vm.Habitaciones.Max(h => h.Numero);
+            if (_habitaciones.Count == 0) return 1;
+            int max = _habitaciones.Max(h => h.Numero);
             return max + 1;
         }
     }

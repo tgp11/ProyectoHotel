@@ -11,7 +11,8 @@ namespace HOTELINTERFAZ.Models
     public class Habitacion
     {
         [JsonPropertyName("_id")]
-        public string Id { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Id { get; set; }
 
         [JsonPropertyName("numero")]
         public int Numero { get; set; }
