@@ -5,7 +5,6 @@
              Height="Auto"
              Width="Auto">
 
-    <!-- DataContext del UserControl -->
     <UserControl.DataContext>
         <vm:ReservasViewModel/>
     </UserControl.DataContext>
@@ -24,14 +23,15 @@
                    Foreground="White"
                    Margin="0,0,0,12"/>
 
-        <!-- BOTONES -->
+        <!-- BOTONES + FILTRO -->
         <StackPanel Grid.Row="1"
                     Orientation="Horizontal"
                     Margin="0,0,0,12">
 
             <Button Content="Nueva"
                     Width="110"
-                    Margin="0,0,8,0"/>
+                    Margin="0,0,8,0"
+                    Click="NuevaReserva_Click"/>
 
             <Button Content="Editar"
                     Width="110"
@@ -46,7 +46,15 @@
                      VerticalContentAlignment="Center"/>
 
             <Button Content="Buscar"
-                    Width="110"/>
+                    Width="110"
+                    Margin="0,0,8,0"/>
+
+            <!-- CHECKBOX FILTRO CANCELADAS -->
+            <CheckBox Content="Mostrar solo canceladas"
+                      Foreground="White"
+                      IsChecked="{Binding FiltrarCanceladas, Mode=TwoWay}"
+                      VerticalAlignment="Center"
+                      Margin="8,0,0,0"/>
         </StackPanel>
 
         <!-- DATAGRID -->
@@ -54,7 +62,8 @@
                   ItemsSource="{Binding Reservas}"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
-                  IsReadOnly="True" SelectionChanged="DataGrid_SelectionChanged">
+                  IsReadOnly="True"
+                  SelectionChanged="DataGrid_SelectionChanged">
 
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID"

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using HOTELINTERFAZ.Ventanas;
+using HOTELINTERFAZ.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +25,14 @@ namespace HOTELINTERFAZ.Views
 
         private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+
+        }
+
+        private void NuevaReserva_Click(object sender, RoutedEventArgs e)
+        {
+            var nuevaReservaWindow = new NuevaReservaWindow();
+
+            nuevaReservaWindow.ShowDialog();
 
         }
     }

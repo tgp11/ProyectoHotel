@@ -1,4 +1,4 @@
-﻿using HOTELINTERFAZ.Models;
+﻿ using HOTELINTERFAZ.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,13 +9,13 @@ using System.Windows;
 
 namespace HOTELINTERFAZ.ViewModels
 {
-    public class ReservasViewModel
+    public class ReservasViewModel 
     {
         public ObservableCollection<Reserva> Reservas { get; } = new();
 
         private readonly HttpClient _client;
 
-        public ReservasViewModel()
+        public ReservasViewModel() 
         {
             _client = new HttpClient
             {
@@ -25,7 +25,7 @@ namespace HOTELINTERFAZ.ViewModels
             _ = CargarReservas();
         }
 
-        private async Task CargarReservas()
+        public async Task CargarReservas()
         {
             try
             {
@@ -43,5 +43,33 @@ namespace HOTELINTERFAZ.ViewModels
                 MessageBox.Show("Error de API: " + ex.Message);
             }
         }
+
+        private bool _filtrarCanceladas;
+        public bool FiltrarCanceladas
+        {
+            get => _filtrarCanceladas;
+            set
+            {
+                if (_filtrarCanceladas != value)
+                {
+                    _filtrarCanceladas = value;
+                    OnPropertyChanged(nameof(FiltrarCanceladas));
+                    AplicarFiltro();
+                }
+            }
+        }
+
+        private void AplicarFiltro()
+        {
+            if (_filtrarCanceladas)
+            {
+                Reservas = new ObservableCollection<Reserva>(_todasReservas.Where(r => r.Cancelacion));
+            }
+            else
+            {
+                Reservas = new ObservableCollection<Reserva>(_todasReservas);
+            }
+        }
+
     }
 }
