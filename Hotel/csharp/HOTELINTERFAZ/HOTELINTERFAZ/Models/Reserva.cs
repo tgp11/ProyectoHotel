@@ -6,7 +6,10 @@ namespace HOTELINTERFAZ.Models
     // Archivo: Reserva.cs
     public class ClienteReducido
     {
-        [JsonPropertyName("dni")] // Importante: minúsculas como en Mongo
+        [JsonPropertyName("_id")]
+        public string Id { get; set; }   // 👈 NECESARIO PARA POST /reservas
+
+        [JsonPropertyName("dni")]
         public string Dni { get; set; }
 
         [JsonPropertyName("nombre")]
@@ -14,10 +17,16 @@ namespace HOTELINTERFAZ.Models
 
         public override string ToString()
         {
-            return "dni" + Dni;
+            return $"{Dni} - {Nombre}";
         }
-
     }
+
+    public class HabitacionReducida
+    {
+        public string Id { get; set; }
+        public string Numero { get; set; }
+    }
+
 
     public class Reserva
     {
