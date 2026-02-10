@@ -1,12 +1,10 @@
-﻿using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows;
 using HOTELINTERFAZ.Views;
 using HOTELINTERFAZ.Models;
 
-namespace InterfazInterna
+namespace HOTELINTERFAZ
 {
     public partial class Principal : Window
     {
@@ -37,7 +35,7 @@ namespace InterfazInterna
         // ================== EMPLEADOS ==================
         private void GestionEmpleados_Click(object sender, RoutedEventArgs e)
         {
-            contentControl.Content = new ReservasView();
+            contentControl.Content = new EmpleadosView();
         }
 
         // ================== HABITACIONES ==================

@@ -13,7 +13,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using InterfazInterna;
 
 namespace HOTELINTERFAZ.Views
 {
@@ -49,7 +48,7 @@ namespace HOTELINTERFAZ.Views
                 SessionManager.Token = resultado.Token;
                 SessionManager.UsuarioActual = resultado.Usuario;
 
-                InterfazInterna.Principal main = new InterfazInterna.Principal(SessionManager.UsuarioActual);
+                HOTELINTERFAZ.Principal main = new HOTELINTERFAZ.Principal(SessionManager.UsuarioActual);
                 main.Show();
                 this.Close();
             }

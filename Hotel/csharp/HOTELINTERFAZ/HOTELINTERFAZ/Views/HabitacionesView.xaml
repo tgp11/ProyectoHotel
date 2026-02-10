@@ -52,15 +52,15 @@
 				</DockPanel>
 			</Border>
 			<!-- Tabla -->
-			<DataGrid x:Name="DgHabitaciones"
-          Grid.Row="2"
-          Style="{StaticResource DarkDataGrid}"
-          AutoGenerateColumns="False"
-          CanUserAddRows="False"
-          IsReadOnly="False"
-          SelectionMode="Single"
-          SelectionUnit="FullRow"
-          RowEditEnding="DgHabitaciones_RowEditEnding">
+            <DataGrid x:Name="DgHabitaciones"
+                Grid.Row="2"
+				Style="{StaticResource DarkDataGrid}"
+				AutoGenerateColumns="False"
+				CanUserAddRows="False"
+				IsReadOnly="False"
+				SelectionMode="Single"
+				SelectionUnit="FullRow"
+				RowEditEnding="DgHabitaciones_RowEditEnding">
 
 				<DataGrid.Columns>
 					<!-- Nº -->
