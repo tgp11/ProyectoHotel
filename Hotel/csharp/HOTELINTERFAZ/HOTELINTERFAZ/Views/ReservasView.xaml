@@ -50,11 +50,12 @@
                     Margin="0,0,8,0"/>
 
             <!-- CHECKBOX FILTRO CANCELADAS -->
-            <CheckBox Content="Mostrar solo canceladas"
+            <CheckBox Content="Mostrar solo activas"
                       Foreground="White"
                       IsChecked="{Binding FiltrarCanceladas, Mode=TwoWay}"
                       VerticalAlignment="Center"
                       Margin="8,0,0,0"/>
+
         </StackPanel>
 
         <!-- DATAGRID -->

@@ -71,12 +71,13 @@ namespace HOTELINTERFAZ.ViewModels
             Reservas.Clear();
 
             var listaFiltrada = _filtrarCanceladas
-                ? _todasReservas.Where(r => r.Cancelacion)
+                ? _todasReservas.Where(r => !r.Cancelacion)
                 : _todasReservas;
 
             foreach (var r in listaFiltrada)
                 Reservas.Add(r);
         }
+
 
         // ===============================
         // INotifyPropertyChanged
@@ -86,4 +87,6 @@ namespace HOTELINTERFAZ.ViewModels
         protected void OnPropertyChanged(string propertyName)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+
+
 }

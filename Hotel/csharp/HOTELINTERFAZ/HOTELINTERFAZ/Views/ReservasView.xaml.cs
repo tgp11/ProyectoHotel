@@ -35,5 +35,7 @@ namespace HOTELINTERFAZ.Views
             nuevaReservaWindow.ShowDialog();
 
         }
+
+
     }
 }
