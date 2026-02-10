@@ -1,7 +1,9 @@
-﻿ using HOTELINTERFAZ.Models;
+﻿using HOTELINTERFAZ.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -9,13 +11,15 @@ using System.Windows;
 
 namespace HOTELINTERFAZ.ViewModels
 {
-    public class ReservasViewModel 
+    public class ReservasViewModel : INotifyPropertyChanged
     {
         public ObservableCollection<Reserva> Reservas { get; } = new();
 
+        private List<Reserva> _todasReservas = new();
+
         private readonly HttpClient _client;
 
-        public ReservasViewModel() 
+        public ReservasViewModel()
         {
             _client = new HttpClient
             {
@@ -25,18 +29,18 @@ namespace HOTELINTERFAZ.ViewModels
             _ = CargarReservas();
         }
 
+        // ===============================
+        // CARGA DE DATOS
+        // ===============================
         public async Task CargarReservas()
         {
             try
             {
                 var lista = await _client.GetFromJsonAsync<List<Reserva>>("reservas");
 
-                Reservas.Clear();
-                foreach (var r in lista)
-                    {
-                    Reservas.Add(r);
-                }
-                    
+                _todasReservas = lista ?? new List<Reserva>();
+
+                AplicarFiltro();
             }
             catch (Exception ex)
             {
@@ -44,6 +48,9 @@ namespace HOTELINTERFAZ.ViewModels
             }
         }
 
+        // ===============================
+        // FILTRO
+        // ===============================
         private bool _filtrarCanceladas;
         public bool FiltrarCanceladas
         {
@@ -61,15 +68,22 @@ namespace HOTELINTERFAZ.ViewModels
 
         private void AplicarFiltro()
         {
-            if (_filtrarCanceladas)
-            {
-                Reservas = new ObservableCollection<Reserva>(_todasReservas.Where(r => r.Cancelacion));
-            }
-            else
-            {
-                Reservas = new ObservableCollection<Reserva>(_todasReservas);
-            }
+            Reservas.Clear();
+
+            var listaFiltrada = _filtrarCanceladas
+                ? _todasReservas.Where(r => r.Cancelacion)
+                : _todasReservas;
+
+            foreach (var r in listaFiltrada)
+                Reservas.Add(r);
         }
 
+        // ===============================
+        // INotifyPropertyChanged
+        // ===============================
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }
