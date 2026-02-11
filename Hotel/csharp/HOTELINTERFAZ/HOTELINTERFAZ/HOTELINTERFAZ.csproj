@@ -13,6 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Models\Cliente.cs">
+      <Generator>MSBuild:Compile</Generator>
+    </Compile>
     <Compile Update="Models\Reserva.cs">
       <Generator>MSBuild:Compile</Generator>
     </Compile>

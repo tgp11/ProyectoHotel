@@ -3,6 +3,23 @@ using System.Text.Json.Serialization;
 
 namespace HOTELINTERFAZ.Models
 {
+    public class HabitacionReducida
+    {
+        [JsonPropertyName("_id")]
+        public string Id { get; set; }
+
+        [JsonPropertyName("numero")]
+        public string Numero { get; set; }
+
+        [JsonPropertyName("maxOcupantes")]
+        public int MaxOcupantes { get; set; }
+
+        [JsonPropertyName("precioNoche")]
+        public decimal PrecioNoche { get; set; }
+
+        public override string ToString() => $"Habitación {Numero}";
+    }
+
     public class ClienteReducido
     {
         [JsonPropertyName("_id")]
@@ -16,12 +33,7 @@ namespace HOTELINTERFAZ.Models
 
         public override string ToString() => $"{Dni} - {Nombre}";
     }
-
-    public class HabitacionReducida
-    {
-        public string Id { get; set; }
-        public string Numero { get; set; }
-    }
+    
 
     public class Reserva
     {
@@ -44,13 +56,13 @@ namespace HOTELINTERFAZ.Models
         public int Personas { get; set; }
 
         [JsonPropertyName("precioTotal")]
-        public double PrecioTotal { get; set; }
+        public decimal PrecioTotal { get; set; }  // Ahora decimal
 
         [JsonPropertyName("cancelacion")]
         public bool Cancelacion { get; set; }
 
         [JsonPropertyName("cliente")]
-        public ClienteReducido Cliente { get; set; }
+        public ClienteReducido Cliente { get; set; } // Solo los datos mínimos (id, dni, nombre)
 
         public override string ToString() => $"Cliente: {Cliente}";
     }

@@ -2,10 +2,9 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Cancelar Reserva"
-        Height="450"
-        Width="650"
+        SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize">
+        ResizeMode="CanResizeWithGrip">
 
     <Grid Margin="20">
         <Grid.RowDefinitions>
@@ -31,18 +30,23 @@
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
                   IsReadOnly="True"
-                  SelectionMode="Single">
+                  SelectionMode="Single"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  ColumnWidth="SizeToCells"
+                  MinWidth="400"
+                  MinHeight="300" >
 
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="150"/>
-                <DataGridTextColumn Header="DNI" Binding="{Binding Cliente.Dni}" Width="120"/>
-                <DataGridTextColumn Header="Cliente" Binding="{Binding Cliente.Nombre}" Width="180"/>
-                <DataGridTextColumn Header="Habitación" Binding="{Binding HabitacionId}" Width="120"/>
-                <DataGridTextColumn Header="Entrada" Binding="{Binding FechaEntrada, StringFormat=dd/MM/yyyy}" Width="100"/>
-                <DataGridTextColumn Header="Salida" Binding="{Binding FechaSalida, StringFormat=dd/MM/yyyy}" Width="100"/>
-                <DataGridTextColumn Header="Personas" Binding="{Binding Personas}" Width="80"/>
-                <DataGridCheckBoxColumn Header="Cancelada" Binding="{Binding Cancelacion}" Width="90"/>
-                <DataGridTemplateColumn Header="Acción" Width="100">
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="Auto"/>
+                <DataGridTextColumn Header="DNI" Binding="{Binding Cliente.Dni}" Width="Auto"/>
+                <DataGridTextColumn Header="Cliente" Binding="{Binding Cliente.Nombre}" Width="Auto"/>
+                <DataGridTextColumn Header="Habitación" Binding="{Binding HabitacionId}" Width="Auto"/>
+                <DataGridTextColumn Header="Entrada" Binding="{Binding FechaEntrada, StringFormat=dd/MM/yyyy}" Width="Auto"/>
+                <DataGridTextColumn Header="Salida" Binding="{Binding FechaSalida, StringFormat=dd/MM/yyyy}" Width="Auto"/>
+                <DataGridTextColumn Header="Personas" Binding="{Binding Personas}" Width="Auto"/>
+                <DataGridCheckBoxColumn Header="Cancelada" Binding="{Binding Cancelacion}" Width="Auto"/>
+                <DataGridTemplateColumn Header="Acción" Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Content="Cancelar"
@@ -51,6 +55,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
+
         </DataGrid>
     </Grid>
 </Window>

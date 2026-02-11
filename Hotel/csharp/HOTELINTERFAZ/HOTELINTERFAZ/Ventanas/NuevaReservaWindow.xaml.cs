@@ -12,22 +12,18 @@ namespace HOTELINTERFAZ.Ventanas
     {
         private readonly ReservasViewModel _reservasVM;
         private readonly HabitacionesViewModel _habitacionesVM;
-
-        private ObservableCollection<Habitacion> _todasHabitaciones = new();
-        private ObservableCollection<Reserva> _todasReservas = new();
+        private readonly ClientesViewModel _clientesVM;
 
         public ObservableCollection<Habitacion> HabitacionesDisponibles { get; set; } = new();
 
-        public NuevaReservaWindow(ReservasViewModel reservasVM, HabitacionesViewModel habitacionesVM)
+        public NuevaReservaWindow(ReservasViewModel reservasVM, HabitacionesViewModel habitacionesVM, ClientesViewModel clientesVM)
         {
             InitializeComponent();
-
             _reservasVM = reservasVM;
             _habitacionesVM = habitacionesVM;
+            _clientesVM = clientesVM;
 
             DataContext = this;
-
-            ConfigurarCalendario();
 
             FechaEntradaPicker.SelectedDateChanged += Fechas_SelectedDateChanged;
             FechaSalidaPicker.SelectedDateChanged += Fechas_SelectedDateChanged;
@@ -38,10 +34,8 @@ namespace HOTELINTERFAZ.Ventanas
         private async void CargarDatosAsync()
         {
             await _habitacionesVM.CargarHabitaciones();
-            await _reservasVM.CargarReservas();
-
-            _todasHabitaciones = _habitacionesVM.Habitaciones;
-            _todasReservas = _reservasVM.Reservas;
+            await _reservasVM.CargarReservasAsync();
+            await _clientesVM.CargarClientesAsync();
 
             ActualizarHabitacionesDisponibles();
         }
@@ -54,18 +48,16 @@ namespace HOTELINTERFAZ.Ventanas
         private void ActualizarHabitacionesDisponibles()
         {
             HabitacionesDisponibles.Clear();
-
             if (!FechaEntradaPicker.SelectedDate.HasValue || !FechaSalidaPicker.SelectedDate.HasValue)
                 return;
 
             DateTime entrada = FechaEntradaPicker.SelectedDate.Value;
             DateTime salida = FechaSalidaPicker.SelectedDate.Value;
 
-            if (salida <= entrada)
-                return;
+            if (salida <= entrada) return;
 
-            var disponibles = _todasHabitaciones
-                .Where(h => !_todasReservas.Any(r =>
+            var disponibles = _habitacionesVM.Habitaciones
+                .Where(h => !_reservasVM.Reservas.Any(r =>
                     r.HabitacionId == h.Id &&
                     !(salida <= r.FechaEntrada || entrada >= r.FechaSalida)
                 ));
@@ -74,37 +66,11 @@ namespace HOTELINTERFAZ.Ventanas
                 HabitacionesDisponibles.Add(h);
         }
 
-        private void ConfigurarCalendario()
-        {
-            DateTime ahora = DateTime.Now;
-            DateTime fechaMinima = ahora.Hour < 4 ? DateTime.Today.AddDays(-1) : DateTime.Today;
-
-            BloquearFechasAnteriores(FechaEntradaPicker, fechaMinima);
-            BloquearFechasAnteriores(FechaSalidaPicker, fechaMinima);
-
-            FechaEntradaPicker.SelectedDate = fechaMinima;
-            FechaSalidaPicker.SelectedDate = fechaMinima.AddDays(1);
-        }
-
-        private void BloquearFechasAnteriores(DatePicker picker, DateTime fechaMinima)
-        {
-            picker.BlackoutDates.Clear();
-            picker.BlackoutDates.Add(new CalendarDateRange(DateTime.MinValue, fechaMinima.AddDays(-1)));
-            picker.DisplayDateStart = fechaMinima;
-        }
-
         private async void Crear_Click(object sender, RoutedEventArgs e)
         {
-            if (FechaEntradaPicker.SelectedDate == null ||
-                FechaSalidaPicker.SelectedDate == null)
+            if (!FechaEntradaPicker.SelectedDate.HasValue || !FechaSalidaPicker.SelectedDate.HasValue)
             {
                 MessageBox.Show("Selecciona las fechas");
-                return;
-            }
-
-            if (FechaSalidaPicker.SelectedDate <= FechaEntradaPicker.SelectedDate)
-            {
-                MessageBox.Show("La fecha de salida debe ser posterior a la de entrada");
                 return;
             }
 
@@ -120,10 +86,6 @@ namespace HOTELINTERFAZ.Ventanas
                 return;
             }
 
-            // Limitar personas al máximo de la habitación
-            if (personas > habitacion.MaxOcupantes)
-                personas = habitacion.MaxOcupantes;
-
             string dni = DniTextBox.Text.Trim();
             if (string.IsNullOrWhiteSpace(dni))
             {
@@ -131,29 +93,30 @@ namespace HOTELINTERFAZ.Ventanas
                 return;
             }
 
-            // Buscar si el cliente ya existe en reservas
-            var clienteExistente = _reservasVM.Reservas
-                .Select(r => r.Cliente)
-                .FirstOrDefault(c => c != null && c.Dni == dni);
+            // 🔑 Buscar cliente en la lista de clientes cargada
+            var clienteExistente = _clientesVM.Clientes
+                .FirstOrDefault(c => c.Dni == dni);
 
             if (clienteExistente == null)
             {
-                MessageBox.Show("El cliente no está dado de alta");
+                MessageBox.Show("El cliente no está registrado");
                 return;
             }
+
+            var dias = (FechaSalidaPicker.SelectedDate.Value - FechaEntradaPicker.SelectedDate.Value).TotalDays;
 
             // Crear reserva
             var reserva = new Reserva
             {
                 Id = Guid.NewGuid().ToString(),
                 ClienteId = clienteExistente.Id,
+                Cliente = clienteExistente,
                 HabitacionId = habitacion.Id,
                 FechaEntrada = FechaEntradaPicker.SelectedDate.Value,
                 FechaSalida = FechaSalidaPicker.SelectedDate.Value,
-                Personas = personas,
-                PrecioTotal = (double)habitacion.PrecioNoche * (FechaSalidaPicker.SelectedDate.Value - FechaEntradaPicker.SelectedDate.Value).Days,
-                Cancelacion = false,
-                Cliente = clienteExistente
+                Personas = Math.Min(personas, habitacion.MaxOcupantes),
+                PrecioTotal = habitacion.PrecioNoche * (decimal)dias, // ⚡ Conversión a decimal
+                Cancelacion = false
             };
 
             bool exito = await _reservasVM.AgregarReservaAsync(reserva);
@@ -168,7 +131,6 @@ namespace HOTELINTERFAZ.Ventanas
                 MessageBox.Show("Error creando la reserva");
             }
         }
-
 
         private void Cancelar_Click(object sender, RoutedEventArgs e)
         {

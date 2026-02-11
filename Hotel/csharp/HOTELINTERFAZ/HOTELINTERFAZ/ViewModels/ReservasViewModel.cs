@@ -1,46 +1,35 @@
 ﻿using HOTELINTERFAZ.Models;
-using HOTELINTERFAZ.Ventanas;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using System.Linq;
+using System.ComponentModel;
 using System.Windows;
 
 namespace HOTELINTERFAZ.ViewModels
 {
     public class ReservasViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<Reserva> Reservas { get; } = new();
-
-        private List<Reserva> _todasReservas = new();
+        public ObservableCollection<Reserva> Reservas { get; } = new ObservableCollection<Reserva>();
+        private List<Reserva> _todasReservas = new List<Reserva>();
 
         private readonly HttpClient _client;
 
         public ReservasViewModel()
         {
-            _client = new HttpClient
-            {
-                BaseAddress = new Uri("http://localhost:3000/")
-            };
-
-            _ = CargarReservas();
+            _client = new HttpClient { BaseAddress = new Uri("http://localhost:3000/") };
+            _ = CargarReservasAsync();
         }
 
-        // ===============================
-        // CARGA DE DATOS
-        // ===============================
-        public async Task CargarReservas()
+        public async Task CargarReservasAsync()
         {
             try
             {
                 var lista = await _client.GetFromJsonAsync<List<Reserva>>("reservas");
-
                 _todasReservas = lista ?? new List<Reserva>();
-
                 AplicarFiltro();
             }
             catch (Exception ex)
@@ -49,9 +38,25 @@ namespace HOTELINTERFAZ.ViewModels
             }
         }
 
-        // ===============================
-        // FILTRO
-        // ===============================
+        public async Task<bool> EliminarReservaAsync(string id)
+        {
+            try
+            {
+                var response = await _client.DeleteAsync($"reservas/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    await CargarReservasAsync();
+                    return true;
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
         private bool _filtrarCanceladas;
         public bool FiltrarCanceladas
         {
@@ -67,7 +72,6 @@ namespace HOTELINTERFAZ.ViewModels
             }
         }
 
-
         private Reserva _reservaSeleccionada;
         public Reserva ReservaSeleccionada
         {
@@ -79,38 +83,12 @@ namespace HOTELINTERFAZ.ViewModels
             }
         }
 
-        public async Task EliminarReserva(string id)
-        {
-            try
-            {
-                var response = await _client.DeleteAsync($"reservas/{id}");
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    MessageBox.Show("No se pudo eliminar la reserva.");
-                    return;
-                }
-
-                MessageBox.Show("Reserva eliminada correctamente.");
-
-                await CargarReservas(); // refresca la tabla
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error eliminando reserva: " + ex.Message);
-            }
-        }
-
-
-
         private void AplicarFiltro()
         {
             Reservas.Clear();
-
             var listaFiltrada = _filtrarCanceladas
                 ? _todasReservas.Where(r => !r.Cancelacion)
                 : _todasReservas;
-
             foreach (var r in listaFiltrada)
                 Reservas.Add(r);
         }
@@ -122,36 +100,13 @@ namespace HOTELINTERFAZ.ViewModels
                 var response = await _client.PostAsJsonAsync("reservas", reserva);
                 if (response.IsSuccessStatusCode)
                 {
-                    await CargarReservas();
+                    await CargarReservasAsync();
                     return true;
                 }
                 return false;
             }
             catch
             {
-                return false;
-            }
-        }
-
-        public async Task<bool> ActualizarReservaAsync(Reserva reserva)
-        {
-            try
-            {
-                // Enviar PUT a la API con la reserva actualizada
-                var response = await _client.PutAsJsonAsync($"reservas/{reserva.Id}", reserva);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    // Recargar la lista de reservas
-                    await CargarReservas();
-                    return true;
-                }
-
-                return false;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al actualizar reserva: " + ex.Message);
                 return false;
             }
         }
@@ -163,7 +118,7 @@ namespace HOTELINTERFAZ.ViewModels
                 var response = await _client.PutAsync($"reservas/{id}/cancelar", null);
                 if (response.IsSuccessStatusCode)
                 {
-                    await CargarReservas(); // Refresca la lista después de cancelar
+                    await CargarReservasAsync();
                     return true;
                 }
                 return false;
@@ -174,19 +129,8 @@ namespace HOTELINTERFAZ.ViewModels
             }
         }
 
-
-
-
-
-        // ===============================
-        // INotifyPropertyChanged
-        // ===============================
         public event PropertyChangedEventHandler PropertyChanged;
-
         protected void OnPropertyChanged(string propertyName)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-
-    
-
 }

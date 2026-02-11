@@ -9,6 +9,8 @@ namespace HOTELINTERFAZ.Views
     {
         private ReservasViewModel _reservasVM = new ReservasViewModel();
         private HabitacionesViewModel _habitacionesVM = new HabitacionesViewModel();
+        private ClientesViewModel _clientesVM = new ClientesViewModel();
+
 
         public ReservasView()
         {
@@ -18,7 +20,7 @@ namespace HOTELINTERFAZ.Views
 
         private void NuevaReserva_Click(object sender, RoutedEventArgs e)
         {
-            var nuevaReservaWindow = new NuevaReservaWindow(_reservasVM, _habitacionesVM);
+            var nuevaReservaWindow = new NuevaReservaWindow(_reservasVM, _habitacionesVM, _clientesVM);
             nuevaReservaWindow.ShowDialog();
         }
 
@@ -89,7 +91,7 @@ namespace HOTELINTERFAZ.Views
 
             if (confirm == MessageBoxResult.Yes)
             {
-                await _reservasVM.EliminarReserva(_reservasVM.ReservaSeleccionada.Id);
+                await _reservasVM.EliminarReservaAsync(_reservasVM.ReservaSeleccionada.Id);
             }
         }
 
