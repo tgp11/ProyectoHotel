@@ -14,4 +14,8 @@ router.get('/:id', reservaController.obtenerReservaPorId);
 // Cancelar reserva
 router.put('/:id/cancelar', reservaController.cancelarReserva);
 
+// Eliminar reserva (solo si está cancelada)
+router.delete('/:id', reservaController.eliminarReserva);
+
+
 module.exports = router;

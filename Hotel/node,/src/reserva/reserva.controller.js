@@ -50,6 +50,30 @@ exports.crearReserva = async (req, res) => {
   }
 };
 
+exports.eliminarReserva = async (req, res) => {
+  try {
+    const reserva = await Reserva.findById(req.params.id);
+
+    if (!reserva) {
+      return res.status(404).json({ msg: 'Reserva no encontrada' });
+    }
+
+    // 🔒 SOLO si está cancelada
+    if (!reserva.cancelacion) {
+      return res.status(400).json({
+        msg: 'Solo se pueden eliminar reservas canceladas'
+      });
+    }
+
+    await Reserva.findByIdAndDelete(req.params.id);
+
+    res.json({ msg: 'Reserva eliminada correctamente' });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.obtenerReservas = async (req, res) => {
   try {
     // 1. Pillamos las reservas como objetos planos

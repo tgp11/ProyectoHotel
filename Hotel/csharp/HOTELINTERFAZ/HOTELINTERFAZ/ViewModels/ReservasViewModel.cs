@@ -1,4 +1,5 @@
 ﻿using HOTELINTERFAZ.Models;
+using HOTELINTERFAZ.Ventanas;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -66,6 +67,42 @@ namespace HOTELINTERFAZ.ViewModels
             }
         }
 
+
+        private Reserva _reservaSeleccionada;
+        public Reserva ReservaSeleccionada
+        {
+            get => _reservaSeleccionada;
+            set
+            {
+                _reservaSeleccionada = value;
+                OnPropertyChanged(nameof(ReservaSeleccionada));
+            }
+        }
+
+        public async Task EliminarReserva(string id)
+        {
+            try
+            {
+                var response = await _client.DeleteAsync($"reservas/{id}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    MessageBox.Show("No se pudo eliminar la reserva.");
+                    return;
+                }
+
+                MessageBox.Show("Reserva eliminada correctamente.");
+
+                await CargarReservas(); // refresca la tabla
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error eliminando reserva: " + ex.Message);
+            }
+        }
+
+
+
         private void AplicarFiltro()
         {
             Reservas.Clear();
@@ -78,6 +115,68 @@ namespace HOTELINTERFAZ.ViewModels
                 Reservas.Add(r);
         }
 
+        public async Task<bool> AgregarReservaAsync(Reserva reserva)
+        {
+            try
+            {
+                var response = await _client.PostAsJsonAsync("reservas", reserva);
+                if (response.IsSuccessStatusCode)
+                {
+                    await CargarReservas();
+                    return true;
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> ActualizarReservaAsync(Reserva reserva)
+        {
+            try
+            {
+                // Enviar PUT a la API con la reserva actualizada
+                var response = await _client.PutAsJsonAsync($"reservas/{reserva.Id}", reserva);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Recargar la lista de reservas
+                    await CargarReservas();
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al actualizar reserva: " + ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> CancelarReservaAsync(string id)
+        {
+            try
+            {
+                var response = await _client.PutAsync($"reservas/{id}/cancelar", null);
+                if (response.IsSuccessStatusCode)
+                {
+                    await CargarReservas(); // Refresca la lista después de cancelar
+                    return true;
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
+
+
 
         // ===============================
         // INotifyPropertyChanged
@@ -88,5 +187,6 @@ namespace HOTELINTERFAZ.ViewModels
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
+    
 
 }

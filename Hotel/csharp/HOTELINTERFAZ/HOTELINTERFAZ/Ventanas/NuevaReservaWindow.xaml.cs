@@ -10,50 +10,40 @@ namespace HOTELINTERFAZ.Ventanas
 {
     public partial class NuevaReservaWindow : Window
     {
-        // Todas las habitaciones y reservas
+        private readonly ReservasViewModel _reservasVM;
+        private readonly HabitacionesViewModel _habitacionesVM;
+
         private ObservableCollection<Habitacion> _todasHabitaciones = new();
         private ObservableCollection<Reserva> _todasReservas = new();
 
-        // Colección filtrada para el ComboBox
         public ObservableCollection<Habitacion> HabitacionesDisponibles { get; set; } = new();
 
-        public NuevaReservaWindow()
+        public NuevaReservaWindow(ReservasViewModel reservasVM, HabitacionesViewModel habitacionesVM)
         {
             InitializeComponent();
+
+            _reservasVM = reservasVM;
+            _habitacionesVM = habitacionesVM;
 
             DataContext = this;
 
             ConfigurarCalendario();
 
-            // Cargar datos asíncronamente
-            CargarDatosAsync();
-
-            // Actualizar habitaciones al cambiar fechas
             FechaEntradaPicker.SelectedDateChanged += Fechas_SelectedDateChanged;
             FechaSalidaPicker.SelectedDateChanged += Fechas_SelectedDateChanged;
+
+            CargarDatosAsync();
         }
 
         private async void CargarDatosAsync()
         {
-            try
-            {
-                var habitacionesVM = new HabitacionesViewModel();
-                var reservasVM = new ReservasViewModel();
+            await _habitacionesVM.CargarHabitaciones();
+            await _reservasVM.CargarReservas();
 
-                // Esperar a que cargue la API
-                await habitacionesVM.CargarHabitaciones();
-                await reservasVM.CargarReservas();
+            _todasHabitaciones = _habitacionesVM.Habitaciones;
+            _todasReservas = _reservasVM.Reservas;
 
-                _todasHabitaciones = habitacionesVM.Habitaciones;
-                _todasReservas = reservasVM.Reservas;
-
-                // Filtrar habitaciones disponibles
-                ActualizarHabitacionesDisponibles();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar datos: " + ex.Message);
-            }
+            ActualizarHabitacionesDisponibles();
         }
 
         private void Fechas_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -84,7 +74,6 @@ namespace HOTELINTERFAZ.Ventanas
                 HabitacionesDisponibles.Add(h);
         }
 
-        #region Configuración calendario
         private void ConfigurarCalendario()
         {
             DateTime ahora = DateTime.Now;
@@ -103,9 +92,8 @@ namespace HOTELINTERFAZ.Ventanas
             picker.BlackoutDates.Add(new CalendarDateRange(DateTime.MinValue, fechaMinima.AddDays(-1)));
             picker.DisplayDateStart = fechaMinima;
         }
-        #endregion
 
-        private void Crear_Click(object sender, RoutedEventArgs e)
+        private async void Crear_Click(object sender, RoutedEventArgs e)
         {
             if (FechaEntradaPicker.SelectedDate == null ||
                 FechaSalidaPicker.SelectedDate == null)
@@ -120,16 +108,67 @@ namespace HOTELINTERFAZ.Ventanas
                 return;
             }
 
-            if (ComboBoxHabitacion.SelectedItem == null)
+            if (!int.TryParse(TextBoxPersonas.Text, out int personas))
             {
-                MessageBox.Show("Selecciona una habitación disponible");
+                MessageBox.Show("Número de personas inválido");
                 return;
             }
 
-            // Aquí guardarías la reserva usando API o ViewModel
-            MessageBox.Show("Reserva creada correctamente");
-            Close();
+            if (ComboBoxHabitacion.SelectedItem is not Habitacion habitacion)
+            {
+                MessageBox.Show("Selecciona una habitación");
+                return;
+            }
+
+            // Limitar personas al máximo de la habitación
+            if (personas > habitacion.MaxOcupantes)
+                personas = habitacion.MaxOcupantes;
+
+            string dni = DniTextBox.Text.Trim();
+            if (string.IsNullOrWhiteSpace(dni))
+            {
+                MessageBox.Show("Ingresa el DNI del cliente");
+                return;
+            }
+
+            // Buscar si el cliente ya existe en reservas
+            var clienteExistente = _reservasVM.Reservas
+                .Select(r => r.Cliente)
+                .FirstOrDefault(c => c != null && c.Dni == dni);
+
+            if (clienteExistente == null)
+            {
+                MessageBox.Show("El cliente no está dado de alta");
+                return;
+            }
+
+            // Crear reserva
+            var reserva = new Reserva
+            {
+                Id = Guid.NewGuid().ToString(),
+                ClienteId = clienteExistente.Id,
+                HabitacionId = habitacion.Id,
+                FechaEntrada = FechaEntradaPicker.SelectedDate.Value,
+                FechaSalida = FechaSalidaPicker.SelectedDate.Value,
+                Personas = personas,
+                PrecioTotal = (double)habitacion.PrecioNoche * (FechaSalidaPicker.SelectedDate.Value - FechaEntradaPicker.SelectedDate.Value).Days,
+                Cancelacion = false,
+                Cliente = clienteExistente
+            };
+
+            bool exito = await _reservasVM.AgregarReservaAsync(reserva);
+
+            if (exito)
+            {
+                MessageBox.Show("Reserva creada correctamente");
+                Close();
+            }
+            else
+            {
+                MessageBox.Show("Error creando la reserva");
+            }
         }
+
 
         private void Cancelar_Click(object sender, RoutedEventArgs e)
         {

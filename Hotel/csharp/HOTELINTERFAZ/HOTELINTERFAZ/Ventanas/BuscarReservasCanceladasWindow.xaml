@@ -1,0 +1,71 @@
+﻿<Window x:Class="HOTELINTERFAZ.Ventanas.BuscarReservasCanceladasWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Reservas canceladas por DNI"
+        Height="450"
+        Width="700"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- BUSCAR -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="DNI:"
+                       VerticalAlignment="Center"
+                       Margin="0,0,6,0"/>
+
+            <TextBox x:Name="txtDni"
+                     Width="200"
+                     Margin="0,0,10,0"/>
+
+            <Button Content="Buscar"
+                    Width="100"
+                    Click="Buscar_Click"/>
+        </StackPanel>
+
+        <!-- DATAGRID -->
+        <DataGrid x:Name="dgReservas"
+                  Grid.Row="1"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  IsReadOnly="True">
+
+            <DataGrid.Columns>
+
+                <DataGridTextColumn Header="ID"
+                                    Binding="{Binding Id}"
+                                    Width="180"/>
+
+                <DataGridTextColumn Header="Entrada"
+                                    Binding="{Binding FechaEntrada, StringFormat=dd/MM/yyyy}"
+                                    Width="120"/>
+
+                <DataGridTextColumn Header="Salida"
+                                    Binding="{Binding FechaSalida, StringFormat=dd/MM/yyyy}"
+                                    Width="120"/>
+
+                <DataGridCheckBoxColumn Header="Cancelada"
+                                        Binding="{Binding Cancelacion}"
+                                        Width="100"/>
+
+                <!-- BOTÓN ELIMINAR -->
+                <DataGridTemplateColumn Header="Acción" Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Eliminar"
+                                    Background="Red"
+                                    Foreground="White"
+                                    Click="Eliminar_Click"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+        </DataGrid>
+
+    </Grid>
+</Window>

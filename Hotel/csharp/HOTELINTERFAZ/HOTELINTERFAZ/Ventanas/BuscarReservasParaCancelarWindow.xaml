@@ -1,0 +1,56 @@
+﻿<Window x:Class="HOTELINTERFAZ.Ventanas.BuscarReservasParaCancelarWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Cancelar Reserva"
+        Height="450"
+        Width="650"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Búsqueda por DNI -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+            <StackPanel Orientation="Vertical">
+                <TextBlock Text="DNI del cliente" Margin="0,0,0,2"/>
+                <TextBox x:Name="txtDni" Width="200" VerticalContentAlignment="Center"/>
+            </StackPanel>
+            <Button Content="Buscar"
+                    Width="100"
+                    Margin="12,18,0,0"
+                    Click="Buscar_Click2"/>
+        </StackPanel>
+
+        <!-- DataGrid de reservas -->
+        <DataGrid x:Name="dgReservas"
+                  Grid.Row="1"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="150"/>
+                <DataGridTextColumn Header="DNI" Binding="{Binding Cliente.Dni}" Width="120"/>
+                <DataGridTextColumn Header="Cliente" Binding="{Binding Cliente.Nombre}" Width="180"/>
+                <DataGridTextColumn Header="Habitación" Binding="{Binding HabitacionId}" Width="120"/>
+                <DataGridTextColumn Header="Entrada" Binding="{Binding FechaEntrada, StringFormat=dd/MM/yyyy}" Width="100"/>
+                <DataGridTextColumn Header="Salida" Binding="{Binding FechaSalida, StringFormat=dd/MM/yyyy}" Width="100"/>
+                <DataGridTextColumn Header="Personas" Binding="{Binding Personas}" Width="80"/>
+                <DataGridCheckBoxColumn Header="Cancelada" Binding="{Binding Cancelacion}" Width="90"/>
+                <DataGridTemplateColumn Header="Acción" Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Cancelar"
+                                    Click="Cancelar_Click"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

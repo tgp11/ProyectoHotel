@@ -33,13 +33,15 @@
                     Margin="0,0,8,0"
                     Click="NuevaReserva_Click"/>
 
-            <Button Content="Editar"
+            <Button Content="Cancelar"
                     Width="110"
-                    Margin="0,0,8,0"/>
+                    Margin="0,0,8,0"
+                    Click="Cancelar_Click"/>
 
             <Button Content="Eliminar"
                     Width="110"
-                    Margin="0,0,8,0"/>
+                    Margin="0,0,8,0"
+                    Click="Eliminar_Click"/>
 
             <TextBox Width="260"
                      Margin="18,0,8,0"
@@ -55,53 +57,26 @@
                       IsChecked="{Binding FiltrarCanceladas, Mode=TwoWay}"
                       VerticalAlignment="Center"
                       Margin="8,0,0,0"/>
-
         </StackPanel>
 
         <!-- DATAGRID -->
         <DataGrid Grid.Row="2"
                   ItemsSource="{Binding Reservas}"
+                  SelectedItem="{Binding ReservaSeleccionada, Mode=TwoWay}"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
-                  IsReadOnly="True"
-                  SelectionChanged="DataGrid_SelectionChanged">
+                  IsReadOnly="True">
 
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID"
-                                    Binding="{Binding Id}"
-                                    Width="160"/>
-
-                <DataGridTextColumn Header="DNI"
-                    Binding="{Binding Cliente.Dni}"
-                    Width="140"/>
-
-                <DataGridTextColumn Header="Cliente"
-                    Binding="{Binding Cliente.Nombre}"
-                    Width="180"/>
-
-                <DataGridTextColumn Header="Habitación"
-                                    Binding="{Binding HabitacionId}"
-                                    Width="160"/>
-
-                <DataGridTextColumn Header="Entrada"
-                                    Binding="{Binding FechaEntrada, StringFormat=dd/MM/yyyy}"
-                                    Width="110"/>
-
-                <DataGridTextColumn Header="Salida"
-                                    Binding="{Binding FechaSalida, StringFormat=dd/MM/yyyy}"
-                                    Width="110"/>
-
-                <DataGridTextColumn Header="Personas"
-                                    Binding="{Binding Personas}"
-                                    Width="90"/>
-
-                <DataGridTextColumn Header="Total"
-                                    Binding="{Binding PrecioTotal}"
-                                    Width="90"/>
-
-                <DataGridCheckBoxColumn Header="Cancelada"
-                                        Binding="{Binding Cancelacion}"
-                                        Width="100"/>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="160"/>
+                <DataGridTextColumn Header="DNI" Binding="{Binding Cliente.Dni}" Width="140"/>
+                <DataGridTextColumn Header="Cliente" Binding="{Binding Cliente.Nombre}" Width="180"/>
+                <DataGridTextColumn Header="Habitación" Binding="{Binding HabitacionId}" Width="160"/>
+                <DataGridTextColumn Header="Entrada" Binding="{Binding FechaEntrada, StringFormat=dd/MM/yyyy}" Width="110"/>
+                <DataGridTextColumn Header="Salida" Binding="{Binding FechaSalida, StringFormat=dd/MM/yyyy}" Width="110"/>
+                <DataGridTextColumn Header="Personas" Binding="{Binding Personas}" Width="90"/>
+                <DataGridTextColumn Header="Total" Binding="{Binding PrecioTotal}" Width="90"/>
+                <DataGridCheckBoxColumn Header="Cancelada" Binding="{Binding Cancelacion}" Width="100"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

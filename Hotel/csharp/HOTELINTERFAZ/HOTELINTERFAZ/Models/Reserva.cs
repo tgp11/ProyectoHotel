@@ -3,11 +3,10 @@ using System.Text.Json.Serialization;
 
 namespace HOTELINTERFAZ.Models
 {
-    // Archivo: Reserva.cs
     public class ClienteReducido
     {
         [JsonPropertyName("_id")]
-        public string Id { get; set; }   // 👈 NECESARIO PARA POST /reservas
+        public string Id { get; set; }
 
         [JsonPropertyName("dni")]
         public string Dni { get; set; }
@@ -15,10 +14,7 @@ namespace HOTELINTERFAZ.Models
         [JsonPropertyName("nombre")]
         public string Nombre { get; set; }
 
-        public override string ToString()
-        {
-            return $"{Dni} - {Nombre}";
-        }
+        public override string ToString() => $"{Dni} - {Nombre}";
     }
 
     public class HabitacionReducida
@@ -27,13 +23,11 @@ namespace HOTELINTERFAZ.Models
         public string Numero { get; set; }
     }
 
-
     public class Reserva
     {
         [JsonPropertyName("_id")]
         public string Id { get; set; }
 
-        // Debe llamarse igual que el campo en tu esquema de reserva.models.js
         [JsonPropertyName("clienteId")]
         public string ClienteId { get; set; }
 
@@ -58,9 +52,6 @@ namespace HOTELINTERFAZ.Models
         [JsonPropertyName("cliente")]
         public ClienteReducido Cliente { get; set; }
 
-        public override string ToString()
-        {
-            return "cliente" + Cliente;
-        }
+        public override string ToString() => $"Cliente: {Cliente}";
     }
 }
