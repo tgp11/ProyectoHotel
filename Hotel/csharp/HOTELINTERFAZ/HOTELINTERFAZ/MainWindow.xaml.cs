@@ -1,14 +1,16 @@
-﻿using System.Text;
+﻿using HOTELINTERFAZ.ViewModels;
+using HOTELINTERFAZ.Views;
+using System.Text;
+using System.Windows;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows;
-using HOTELINTERFAZ.Views;
 
 namespace InterfazInterna
 {
     public partial class Principal : Window
     {
+        private readonly HabitacionesViewModel _habitacionesVM = new();
         public Principal()
         {
             InitializeComponent();
@@ -29,7 +31,7 @@ namespace InterfazInterna
         // ================== HABITACIONES ==================
         private void GestionHabitaciones_Click(object sender, RoutedEventArgs e)
         {
-            contentControl.Content = new HabitacionesView();
+            contentControl.Content = new HabitacionesView(_habitacionesVM);
         }
 
         // ================== RESERVAS ==================

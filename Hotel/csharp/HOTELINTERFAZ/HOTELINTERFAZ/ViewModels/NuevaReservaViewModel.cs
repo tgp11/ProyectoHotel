@@ -16,10 +16,10 @@ public class NuevaReservaViewModel
     public DateTime? FechaSalida { get; set; }
 
     public ObservableCollection<ClienteReducido> Clientes { get; } = new();
-    public ObservableCollection<HabitacionReducida> Habitaciones { get; } = new();
+    public ObservableCollection<Habitacion> Habitaciones { get; } = new();
 
     public ClienteReducido ClienteSeleccionado { get; set; }
-    public HabitacionReducida HabitacionSeleccionada { get; set; }
+    public Habitacion HabitacionSeleccionada { get; set; }
 
     public ICommand GuardarCommand { get; }
 
@@ -32,7 +32,7 @@ public class NuevaReservaViewModel
     private async Task CargarDatos()
     {
         var clientes = await _client.GetFromJsonAsync<List<ClienteReducido>>("cliente");
-        var habitaciones = await _client.GetFromJsonAsync<List<HabitacionReducida>>("habitaciones");
+        var habitaciones = await _client.GetFromJsonAsync<List<Habitacion>>("habitaciones");
 
         clientes.ForEach(c => Clientes.Add(c));
         habitaciones.ForEach(h => Habitaciones.Add(h));
