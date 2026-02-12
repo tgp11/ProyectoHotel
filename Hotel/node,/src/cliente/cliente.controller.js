@@ -1,9 +1,10 @@
 const Cliente = require('./cliente.models');
+const fs = require("fs");
 
 
 exports.crearCliente = async (req, res) => {
   try {
-    const { nombre, dni, email, password, fechaNacimiento, sexo, foto, ciudad, vip } = req.body;  
+    const { nombre, dni, email, password, fechaNacimiento, sexo, ciudad, vip } = req.body;  
     if (!nombre || !dni || !email || !password || !fechaNacimiento || !sexo || !ciudad || vip === undefined) {
         return res.status(400).json({ msg: 'Faltan datos obligatorios' });  
     }
@@ -29,6 +30,10 @@ exports.crearCliente = async (req, res) => {
     if (!esPasswordValida(password)) {
       return res.status(400).json({ msg: 'La contraseña debe tener al menos 6 caracteres, una mayúscula, una minúscula, un número y un carácter especial' });
     }
+    let foto = null;
+    if (req.file) {
+      foto = `/uploads/${req.file.filename}`;
+    }
 
     const fecha = validarFechaNacimiento(fechaNacimiento);
 
@@ -50,6 +55,7 @@ exports.crearCliente = async (req, res) => {
 
     res.status(201).json(clienteJSON);
   } catch (error) {
+    borrarArchivo(req.file);
     res.status(500).json({ error: error.message });
   }
 };
@@ -88,72 +94,108 @@ exports.obtenerClientePorId = async (req, res) => {
 
 exports.actualizarCliente = async (req, res) => {
   try {
-    const { nombre, dni, email, password, fechaNacimiento, sexo, foto, ciudad, vip } = req.body;  
+
+    const { nombre, dni, email, password, fechaNacimiento, sexo, ciudad, vip } = req.body;
+
     if (!nombre || !dni || !email || !password || !fechaNacimiento || !sexo || !ciudad || vip === undefined) {
-        return res.status(400).json({ msg: 'Faltan datos obligatorios' });  
+      borrarArchivo(req.file);
+      return res.status(400).json({ msg: 'Faltan datos obligatorios' });
     }
+
     if (!validarDNI(dni)) {
+      borrarArchivo(req.file);
       return res.status(400).json({ msg: 'DNI inválido' });
     }
+
+    const cliente = await Cliente.findById(req.params.id);
+
+    if (!cliente) {
+      borrarArchivo(req.file);
+      return res.status(404).json({ msg: 'Cliente no encontrado' });
+    }
+
     const dniExiste = await Cliente.findOne({
       dni,
       _id: { $ne: req.params.id }
     });
+
     if (dniExiste) {
+      borrarArchivo(req.file);
       return res.status(409).json({ msg: 'El DNI ya está registrado' });
     }
+
     const emailEnUso = await Cliente.findOne({
       email,
       _id: { $ne: req.params.id }
     });
 
     if (emailEnUso) {
+      borrarArchivo(req.file);
       return res.status(409).json({ msg: 'El email ya está registrado' });
     }
 
     if (!esEmailValido(email)) {
+      borrarArchivo(req.file);
       return res.status(400).json({ msg: 'Email inválido' });
     }
 
     if (!esPasswordValida(password)) {
-      return res.status(400).json({ msg: 'La contraseña debe tener al menos 6 caracteres, una mayúscula, una minúscula, un número y un carácter especial' });
+      borrarArchivo(req.file);
+      return res.status(400).json({ msg: 'Password inválido' });
     }
 
     const fecha = validarFechaNacimiento(fechaNacimiento);
 
-    if(!fecha) {
-      return res.status(400).json({ msg: 'Fecha de nacimiento inválida. Formato correcto DD/MM/YYYY' });
+    if (!fecha) {
+      borrarArchivo(req.file);
+      return res.status(400).json({ msg: 'Fecha inválida' });
     }
 
     if (!['M', 'F', 'X'].includes(sexo)) {
-      return res.status(400).json({ msg: 'Sexo inválido. Debe ser M, F o X' });
+      borrarArchivo(req.file);
+      return res.status(400).json({ msg: 'Sexo inválido' });
     }
 
-    const cliente = await Cliente.findById(req.params.id);
-    if (!cliente) {
-      return res.status(404).json({ msg: 'Cliente no encontrado' });
+    let foto = cliente.foto;
+
+    if (req.file) {
+
+      // borrar foto antigua
+      if (cliente.foto) {
+        const rutaVieja = "." + cliente.foto;
+
+        if (fs.existsSync(rutaVieja)) {
+          fs.unlinkSync(rutaVieja);
+        }
+      }
+
+      foto = `/uploads/${req.file.filename}`;
     }
 
+    
     cliente.nombre = nombre;
     cliente.dni = dni;
     cliente.email = email;
-    cliente.password = password; 
+    cliente.password = password;
     cliente.fechaNacimiento = fecha;
     cliente.sexo = sexo;
     cliente.foto = foto;
     cliente.ciudad = ciudad;
     cliente.vip = vip;
 
-    await cliente.save(); 
+    await cliente.save();
 
     const clienteJSON = cliente.toObject();
     delete clienteJSON.password;
 
     res.status(200).json(clienteJSON);
+
   } catch (error) {
+    borrarArchivo(req.file);
     res.status(500).json({ error: error.message });
   }
 };
+
 
 exports.eliminarCliente = async (req, res) => {
   try {
@@ -212,4 +254,14 @@ function validarFechaNacimiento(fechaNacimiento) {
   const date = new Date(year, month - 1, day)
 
   return date
+}
+
+function borrarArchivo(file) {
+  if (!file) return;
+
+  const ruta = file.path;
+
+  if (fs.existsSync(ruta)) {
+    fs.unlinkSync(ruta);
+  }
 }
