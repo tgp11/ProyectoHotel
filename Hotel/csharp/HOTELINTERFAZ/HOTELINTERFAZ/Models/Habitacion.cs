@@ -25,8 +25,8 @@ namespace HOTELINTERFAZ.Models
         [JsonPropertyName("imagen")]
         public string Imagen { get; set; } = "";
 
-        [JsonPropertyName("precionoche")]
-        public decimal PrecioNoche { get; set; }
+        [JsonPropertyName("precioxnoche")]
+        public double PrecioNoche { get; set; }
 
         [JsonPropertyName("rate")]
         public double Rate { get; set; }
