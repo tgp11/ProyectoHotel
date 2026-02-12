@@ -18,12 +18,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\Imagen_Hotel.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Imagen_Hotel_Larga.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    <Compile Update="Models\Cliente.cs">
+      <Generator>MSBuild:Compile</Generator>
+    </Compile>
+    <Compile Update="Models\Reserva.cs">
+      <Generator>MSBuild:Compile</Generator>
+    </Compile>
+    <Compile Update="ViewModels\ReservasViewModel.cs">
+      <Generator>MSBuild:Compile</Generator>
+    </Compile>
   </ItemGroup>
 
 

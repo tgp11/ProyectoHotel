@@ -1,9 +1,10 @@
 const Empleado = require('./empleado.models');
+const fs = require("fs");
 
 
 exports.crearEmpleado = async (req, res) => {
   try {
-    const { nombre, dni, email, password, fechaNacimiento, sexo, foto, administrador } = req.body;  
+    const { nombre, dni, email, password, fechaNacimiento, sexo, administrador } = req.body;  
     if (!nombre || !dni || !email || !password || !fechaNacimiento || !sexo || administrador === undefined) {
         return res.status(400).json({ msg: 'Faltan datos obligatorios' });  
     }
@@ -37,6 +38,11 @@ exports.crearEmpleado = async (req, res) => {
       return res.status(400).json({ msg: 'Sexo inválido. Debe ser M, F o X' });
     }
 
+    let foto = null;
+    if (req.file) {
+      foto = `/uploads/${req.file.filename}`;
+    }
+
     const nuevoEmpleado  = new Empleado({ nombre, dni, email, password, fechaNacimiento : fecha, sexo, foto, administrador });
     const empleadoGuardado = await nuevoEmpleado.save();
 
@@ -45,7 +51,8 @@ exports.crearEmpleado = async (req, res) => {
     
     res.status(201).json(empleadoJSON);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+      borrarArchivo(req.file);
+      res.status(500).json({ error: error.message });
     }
 };
 exports.obtenerEmpleados = async (req, res) => {
@@ -80,7 +87,7 @@ exports.obtenerEmpleadoPorId = async (req, res) => {
 
 exports.actualizarEmpleado = async (req, res) => {
   try {
-    const { nombre, dni, email, password, fechaNacimiento, sexo, foto, administrador } = req.body;  
+    const { nombre, dni, email, password, fechaNacimiento, sexo, administrador } = req.body;  
     if (!nombre || !dni || !email || !password|| !fechaNacimiento || !sexo || administrador === undefined) {
         return res.status(400).json({ msg: 'Faltan datos obligatorios' });  
     }
@@ -115,11 +122,32 @@ exports.actualizarEmpleado = async (req, res) => {
     if (!['M', 'F', 'X'].includes(sexo)) {
       return res.status(400).json({ msg: 'Sexo inválido. Debe ser M, F o X' });
     }
+
     
     const empleado = await Empleado.findById(req.params.id);
     if (!empleado) {
       return res.status(404).json({ msg: 'Empleado no encontrado' });
     }
+
+    let foto = empleado.foto; // Mantener la foto actual si no se sube una nueva
+
+    if (req.file) {
+
+      //BORRAR FOTO ANTIGUA
+      if (empleado.foto) {
+        const rutaVieja = "." + empleado.foto;
+
+        if (fs.existsSync(rutaVieja)) {
+          fs.unlinkSync(rutaVieja);
+        }
+      }
+
+      //GUARDAR NUEVA
+      foto = `/uploads/${req.file.filename}`;
+    }
+
+    empleado.foto = foto;
+
     empleado.nombre = nombre;
     empleado.dni = dni;
     empleado.email = email;
@@ -198,4 +226,14 @@ function validarFechaNacimiento(fechaNacimiento) {
   const date = new Date(year, month - 1, day)
 
   return date
+}
+
+function borrarArchivo(file) {
+  if (!file) return;
+
+  const ruta = file.path;
+
+  if (fs.existsSync(ruta)) {
+    fs.unlinkSync(ruta);
+  }
 }

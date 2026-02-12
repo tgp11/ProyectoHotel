@@ -2,7 +2,16 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
-    <Compile Update="Views\EmpleadosView.xaml.cs">
+    <Compile Update="Ventanas\BuscarReservasCanceladasWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Ventanas\BuscarReservasParaCancelarWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Ventanas\NuevaReservaWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="ViewModels\ClientesViewModel.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\HabitacionesView.xaml.cs">

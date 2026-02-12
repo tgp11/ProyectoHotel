@@ -65,9 +65,9 @@
                 <DataGridTextColumn Header="Reserva"
                     Binding="{Binding ReservaId}"
                     Width="160"/>
-                
-                <DataGridTextColumn Header="Cliente"
-                                    Binding="{Binding ClienteId}"
+
+                <DataGridTextColumn Header="DNI Cliente"
+                                    Binding="{Binding Cliente.Dni}" 
                                     Width="160"/>
 
                 <DataGridTextColumn Header="Habitación"
