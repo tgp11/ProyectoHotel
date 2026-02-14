@@ -13,16 +13,13 @@ using Microsoft.Win32;
 using System.ComponentModel;
 using System.Windows.Data;
 
-
-
 namespace HOTELINTERFAZ.ViewModels
 {
-    public class EmpleadosViewModel
+    public class ClientesViewModel
     {
-        public ObservableCollection<Empleado> Empleados { get; set; } = new();
-        public Empleado EmpleadoSeleccionado { get; set; }
+        public Cliente ClienteSeleccionado { get; set; }
         
-        public ICollectionView EmpleadosView { get; set; }
+        public ICollectionView ClienteView { get; set; }
 
         
         public string FotoUrlCompleta { get; set; }
@@ -37,37 +34,38 @@ namespace HOTELINTERFAZ.ViewModels
         public string PasswordNuevo { get; set; }
         public DateTime FechaNacimientoNuevo { get; set; } = DateTime.Now;
         public string SexoNuevo { get; set; }
-        public bool AdministradorNuevo { get; set; }
+        public bool vipNuevo { get; set; }
+        public string ciudadNuevo { get; set; }
 
         public string RutaImagenSeleccionada { get; set; }
+        public ObservableCollection<ClienteReducido> Clientes { get; } = new ObservableCollection<ClienteReducido>();
+        public ObservableCollection<Cliente> ClientesNoReducido { get; } = new ObservableCollection<Cliente>();
+        
 
-        public EmpleadosViewModel()
+        public ClientesViewModel()
         {
             _client = new HttpClient
             {
                 BaseAddress = new Uri("http://localhost:3000/")
             };
             
-            EmpleadosView = CollectionViewSource.GetDefaultView(Empleados);
-            
-            _ = CargarEmpleados();
-            
-           
+            ClienteView = CollectionViewSource.GetDefaultView(ClientesNoReducido);
+
+            // Cargar clientes al iniciar por antonio
+            _ = CargarClientesAsync();
         }
         
-        
-
-        public async Task CargarEmpleados()
+        public async Task CargarClientesAsync()
         {
             try
             {
-                var lista = await _client.GetFromJsonAsync<List<Empleado>>("empleado");
+                var lista = await _client.GetFromJsonAsync<List<Cliente>>("cliente");
 
 
-                Empleados.Clear();
+                ClientesNoReducido.Clear();
 
-                foreach (var emp in lista)
-                    Empleados.Add(emp);
+                foreach (var cli in lista)
+                    ClientesNoReducido.Add(cli);
             }
             catch (Exception ex)
             {
@@ -75,6 +73,26 @@ namespace HOTELINTERFAZ.ViewModels
             }
         }
         
+        public void CargarClienteParaEditar(Cliente cli)
+        {
+            ClienteSeleccionado = cli;
+            
+
+            NombreNuevo = cli.Nombre;
+            DniNuevo = cli.DNI;
+            EmailNuevo = cli.Email;
+            FechaNacimientoNuevo = cli.FechaNacimiento;
+            SexoNuevo = cli.Sexo;
+            vipNuevo = cli.Vip;
+            ciudadNuevo = cli.Ciudad;
+
+            RutaImagenSeleccionada = null;
+            
+            if (!string.IsNullOrEmpty(cli.Foto))
+            {
+                FotoUrlCompleta = "http://localhost:3000" + cli.Foto;
+            }
+        }
         public void SeleccionarImagen()
         {
             OpenFileDialog ofd = new OpenFileDialog();
@@ -86,7 +104,64 @@ namespace HOTELINTERFAZ.ViewModels
             }
         }
         
-        public async Task CrearEmpleado()
+        public async Task ActualizarCliente()
+        {
+            try
+            {
+                var form = new MultipartFormDataContent();
+
+                form.Add(new StringContent(NombreNuevo), "nombre");
+                form.Add(new StringContent(DniNuevo), "dni");
+                form.Add(new StringContent(EmailNuevo), "email");
+                if (!string.IsNullOrWhiteSpace(PasswordNuevo))
+                {
+                    form.Add(new StringContent(PasswordNuevo), "password");
+                }
+                form.Add(new StringContent(FechaNacimientoNuevo.ToString("dd/MM/yyyy")), "fechaNacimiento");
+                form.Add(new StringContent(SexoNuevo), "sexo");
+                form.Add(new StringContent(vipNuevo.ToString().ToLower()), "vip");
+                form.Add(new StringContent(ciudadNuevo), "ciudad");
+
+                if (!string.IsNullOrEmpty(RutaImagenSeleccionada))
+                {
+                    var bytes = File.ReadAllBytes(RutaImagenSeleccionada);
+
+                    var fileContent = new ByteArrayContent(bytes);
+                    var extension = Path.GetExtension(RutaImagenSeleccionada).ToLower();
+                    
+                    string mime = extension switch
+                    {
+                        ".png" => "image/png",
+                        ".jpg" => "image/jpeg",
+                        ".jpeg" => "image/jpeg",
+                        _ => "application/octet-stream"
+                    };
+                    
+                    fileContent.Headers.ContentType =
+                        new System.Net.Http.Headers.MediaTypeHeaderValue(mime);
+
+                    form.Add(fileContent, "foto", Path.GetFileName(RutaImagenSeleccionada));
+                }
+
+                var response = await _client.PutAsync($"cliente/{ClienteSeleccionado.Id}", form);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    MessageBox.Show("Cliente actualizado");
+                    await CargarClientesAsync();
+                }
+                else
+                {
+                    MessageBox.Show(await response.Content.ReadAsStringAsync());
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+        
+        public async Task CrearCliente()
         {
             try
             {
@@ -98,7 +173,8 @@ namespace HOTELINTERFAZ.ViewModels
                 form.Add(new StringContent(PasswordNuevo), "password");
                 form.Add(new StringContent(FechaNacimientoNuevo.ToString("dd/MM/yyyy")), "fechaNacimiento");
                 form.Add(new StringContent(SexoNuevo), "sexo");
-                form.Add(new StringContent(AdministradorNuevo.ToString().ToLower()), "administrador");
+                form.Add(new StringContent(vipNuevo.ToString().ToLower()), "vip");
+                form.Add(new StringContent(ciudadNuevo), "ciudad");
 
                 // FOTO
                 if (!string.IsNullOrEmpty(RutaImagenSeleccionada))
@@ -120,12 +196,12 @@ namespace HOTELINTERFAZ.ViewModels
                     form.Add(fileContent, "foto", Path.GetFileName(RutaImagenSeleccionada));
                 }
 
-                var response = await _client.PostAsync("empleado", form);
+                var response = await _client.PostAsync("cliente", form);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    MessageBox.Show("Empleado creado correctamente");
-                    await CargarEmpleados();
+                    MessageBox.Show("Cliente creado correctamente");
+                    await CargarClientesAsync();
                 }
                 else
                 {
@@ -138,92 +214,17 @@ namespace HOTELINTERFAZ.ViewModels
             }
         }
         
-        public void CargarEmpleadoParaEditar(Empleado emp)
+        public async Task EliminarCliente()
         {
-            EmpleadoSeleccionado = emp;
-            
-
-            NombreNuevo = emp.Nombre;
-            DniNuevo = emp.DNI;
-            EmailNuevo = emp.Email;
-            FechaNacimientoNuevo = emp.FechaNacimiento;
-            SexoNuevo = emp.Sexo;
-            AdministradorNuevo = emp.Administrador;
-
-            RutaImagenSeleccionada = null;
-            
-            if (!string.IsNullOrEmpty(emp.Foto))
-            {
-                FotoUrlCompleta = "http://localhost:3000" + emp.Foto;
-            }
-        }
-        
-        public async Task ActualizarEmpleado()
-        {
-            try
-            {
-                var form = new MultipartFormDataContent();
-
-                form.Add(new StringContent(NombreNuevo), "nombre");
-                form.Add(new StringContent(DniNuevo), "dni");
-                form.Add(new StringContent(EmailNuevo), "email");
-                if (!string.IsNullOrWhiteSpace(PasswordNuevo))
-                {
-                    form.Add(new StringContent(PasswordNuevo), "password");
-                }
-                form.Add(new StringContent(FechaNacimientoNuevo.ToString("dd/MM/yyyy")), "fechaNacimiento");
-                form.Add(new StringContent(SexoNuevo), "sexo");
-                form.Add(new StringContent(AdministradorNuevo.ToString().ToLower()), "administrador");
-
-                if (!string.IsNullOrEmpty(RutaImagenSeleccionada))
-                {
-                    var bytes = File.ReadAllBytes(RutaImagenSeleccionada);
-
-                    var fileContent = new ByteArrayContent(bytes);
-                    var extension = Path.GetExtension(RutaImagenSeleccionada).ToLower();
-
-                    string mime = extension switch
-                    {
-                        ".png" => "image/png",
-                        ".jpg" => "image/jpeg",
-                        ".jpeg" => "image/jpeg",
-                        _ => "application/octet-stream"
-                    };
-                    fileContent.Headers.ContentType =
-                        new System.Net.Http.Headers.MediaTypeHeaderValue(mime);
-
-                    form.Add(fileContent, "foto", Path.GetFileName(RutaImagenSeleccionada));
-                }
-
-                var response = await _client.PutAsync($"empleado/{EmpleadoSeleccionado.Id}", form);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    MessageBox.Show("Empleado actualizado");
-                    await CargarEmpleados();
-                }
-                else
-                {
-                    MessageBox.Show(await response.Content.ReadAsStringAsync());
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        public async Task EliminarEmpleado()
-        {
-            if (EmpleadoSeleccionado == null)
+            if (ClienteSeleccionado == null)
             {
                 MessageBox.Show("Seleccione un empleado primero.");
                 return;
             }
 
             var resultado = MessageBox.Show(
-                $"¿Está seguro de eliminar a {EmpleadoSeleccionado.Nombre}?",
-                "Eliminar Empleado",
+                $"¿Está seguro de eliminar a {ClienteSeleccionado.Nombre}?",
+                "Eliminar Cliente",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
 
@@ -235,13 +236,13 @@ namespace HOTELINTERFAZ.ViewModels
             {
                 try
                 {
-                    var response = await _client.DeleteAsync($"empleado/{EmpleadoSeleccionado.Id}");
+                    var response = await _client.DeleteAsync($"cliente/{ClienteSeleccionado.Id}");
 
                     if (response.IsSuccessStatusCode)
                     {
-                        MessageBox.Show("Empleado eliminado correctamente");
+                        MessageBox.Show("Cliente eliminado correctamente");
 
-                        await CargarEmpleados(); 
+                        await CargarClientesAsync(); 
                     }
                     else
                     {
@@ -253,29 +254,23 @@ namespace HOTELINTERFAZ.ViewModels
                     MessageBox.Show(ex.Message);
                 }
             }
-                
-
-            
         }
-        
         public void BuscarPorDni(string dni)
         {
             if (string.IsNullOrWhiteSpace(dni))
             {
-                EmpleadosView.Filter = null;
+                ClienteView.Filter = null;
             }
             else
             {
-                EmpleadosView.Filter = e =>
+                ClienteView.Filter = e =>
                 {
-                    var emp = e as Empleado;
-                    return emp.DNI.Contains(dni, StringComparison.OrdinalIgnoreCase);
+                    var cli = e as Cliente;
+                    return cli.DNI.Contains(dni, StringComparison.OrdinalIgnoreCase);
                 };
             }
 
-            EmpleadosView.Refresh();
+            ClienteView.Refresh();
         }
-
     }
 }
-

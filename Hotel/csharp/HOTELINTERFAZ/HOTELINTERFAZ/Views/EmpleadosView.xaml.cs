@@ -58,11 +58,7 @@ namespace HOTELINTERFAZ.Views
         {
             await _vm.EliminarEmpleado();
         }
-
-        private void Buscar_Empleado_Click(object sender, RoutedEventArgs e)
-        {
-            _vm.BuscarPorDni(TxtBuscar.Text);
-        }
+        
         private void TxtBuscar_TextChanged(object sender, TextChangedEventArgs e)
         {
             _vm.BuscarPorDni(TxtBuscar.Text);

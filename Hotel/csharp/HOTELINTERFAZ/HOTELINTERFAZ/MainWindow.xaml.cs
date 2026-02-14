@@ -29,13 +29,21 @@ namespace HOTELINTERFAZ
         // ================== CLIENTES ==================
         private void GestionUsuarios_Click(object sender, RoutedEventArgs e)
         {
-            contentControl.Content = new ReservasView();
+            contentControl.Content = new ClienteView();
         }
 
         // ================== EMPLEADOS ==================
         private void GestionEmpleados_Click(object sender, RoutedEventArgs e)
         {
-            contentControl.Content = new EmpleadosView();
+            if (usuario.Administrador)
+            {
+                contentControl.Content = new EmpleadosView();
+            }
+            else
+            {
+                MessageBox.Show("Solo los Administradores tinen acceso a los empleados.");
+            }
+            
         }
 
         // ================== HABITACIONES ==================

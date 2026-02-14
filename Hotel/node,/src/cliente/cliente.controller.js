@@ -181,7 +181,6 @@ exports.actualizarCliente = async (req, res) => {
     cliente.nombre = nombre;
     cliente.dni = dni;
     cliente.email = email;
-    cliente.password = password;
     cliente.fechaNacimiento = fecha;
     cliente.sexo = sexo;
     cliente.foto = foto;
