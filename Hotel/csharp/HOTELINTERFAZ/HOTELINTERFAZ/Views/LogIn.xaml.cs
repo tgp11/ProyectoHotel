@@ -57,5 +57,21 @@ namespace HOTELINTERFAZ.Views
                 MessageBox.Show(ex.Message);
             }
         }
+        
+        private void CBMostrarContra_Checked(object sender, RoutedEventArgs e)
+        {
+            txtPassVisible.Text = txtPassLogIn.Password;
+
+            txtPassVisible.Visibility = Visibility.Visible;
+            txtPassLogIn.Visibility = Visibility.Collapsed;
+        }
+
+        private void CBMostrarContra_Unchecked(object sender, RoutedEventArgs e)
+        {
+            txtPassLogIn.Password = txtPassVisible.Text;
+
+            txtPassVisible.Visibility = Visibility.Collapsed;
+            txtPassLogIn.Visibility = Visibility.Visible;
+        }
     }
 }

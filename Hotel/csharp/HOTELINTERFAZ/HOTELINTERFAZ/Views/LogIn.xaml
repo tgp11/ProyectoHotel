@@ -9,7 +9,7 @@
         Title="LogIn" Height="450" Width="800">
     <Grid>
         <Grid.Background>
-            <ImageBrush ImageSource="../Resources/Imagen_Hotel_Larga.png"
+            <ImageBrush ImageSource="/Resuources/Imagen_Hotel_Larga.png"
                         Stretch="UniformToFill"/>
         </Grid.Background>
 
@@ -30,10 +30,23 @@
                <StackPanel VerticalAlignment="Center"  >
 
                     <TextBlock Text="Email"/>
-                <TextBox x:Name="txtEmailLogIn" Margin="0,5,0,10" Background="#E6C86E" BorderBrush="#1C1C1C"/>
+                    <TextBox x:Name="txtEmailLogIn" Margin="0,5,0,10" Background="#E6C86E" BorderBrush="#1C1C1C"/>
 
                     <TextBlock Text="Contraseña"/>
-                <PasswordBox x:Name="txtPassLogIn" Margin="0,5,0,15" Background="#E6C86E" BorderBrush="#1C1C1C" PasswordChar="●" />
+                    <PasswordBox x:Name="txtPassLogIn" 
+                                 Margin="0,5,0,10" 
+                                 Background="#E6C86E" 
+                                 BorderBrush="#1C1C1C" 
+                                 PasswordChar="●" />
+                    <TextBox x:Name="txtPassVisible"
+                             Margin="0,5,0,10"
+                             Background="#E6C86E"
+                             BorderBrush="#1C1C1C"
+                             Visibility="Collapsed"/>
+                   <CheckBox Content="Mostrar Contraseña" Margin="0, 0,0,5" 
+                             x:Name="CBMostrarContra"  
+                             Checked="CBMostrarContra_Checked" 
+                             Unchecked="CBMostrarContra_Unchecked"/>
 
 
                     <Button Content="Entrar"

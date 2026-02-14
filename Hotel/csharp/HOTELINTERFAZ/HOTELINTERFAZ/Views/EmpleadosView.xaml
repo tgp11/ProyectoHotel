@@ -42,12 +42,17 @@
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                        <TextBlock Text="Buscar DNI"
+                                   Foreground="White"
+                                   FontSize="23"
+                                   FontWeight="Bold"
+                                   Margin="0,5,10,16"/>
                         <TextBox x:Name="TxtBuscar"
-                             Width="280"
-                             Margin="0,0,10,0"
-                             VerticalContentAlignment="Center"
-                             Style="{StaticResource DarkTextBox}"/>
-                        <Button Content="Buscar" Style="{StaticResource AccentButton}" Click="Buscar_Empleado_Click"/>
+                                 Width="280"
+                                 Margin="0,0,10,0"
+                                 VerticalContentAlignment="Center"
+                                 Style="{StaticResource DarkTextBox}"
+                                 TextChanged="TxtBuscar_TextChanged"/>
                     </StackPanel>
                 </DockPanel>
             </Border>
@@ -61,7 +66,7 @@
                   SelectionMode="Single"
                   SelectionUnit="FullRow"
                   RowEditEnding="DgEmpleados_RowEditEnding"
-                  ItemsSource="{Binding Empleados}"
+                  ItemsSource="{Binding  EmpleadosView}"
                   SelectedItem="{Binding EmpleadoSeleccionado}">
 
                 <DataGrid.Columns>

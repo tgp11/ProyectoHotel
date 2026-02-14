@@ -97,7 +97,7 @@ exports.actualizarCliente = async (req, res) => {
 
     const { nombre, dni, email, password, fechaNacimiento, sexo, ciudad, vip } = req.body;
 
-    if (!nombre || !dni || !email || !password || !fechaNacimiento || !sexo || !ciudad || vip === undefined) {
+    if (!nombre || !dni || !email || !fechaNacimiento || !sexo || !ciudad || vip === undefined) {
       borrarArchivo(req.file);
       return res.status(400).json({ msg: 'Faltan datos obligatorios' });
     }
@@ -139,10 +139,6 @@ exports.actualizarCliente = async (req, res) => {
       return res.status(400).json({ msg: 'Email inválido' });
     }
 
-    if (!esPasswordValida(password)) {
-      borrarArchivo(req.file);
-      return res.status(400).json({ msg: 'Password inválido' });
-    }
 
     const fecha = validarFechaNacimiento(fechaNacimiento);
 
@@ -154,6 +150,15 @@ exports.actualizarCliente = async (req, res) => {
     if (!['M', 'F', 'X'].includes(sexo)) {
       borrarArchivo(req.file);
       return res.status(400).json({ msg: 'Sexo inválido' });
+    }
+
+    // PASSWORD OPCIONAL
+    if (password && password.trim() !== "") {
+      if (!esPasswordValida(password)) {
+        return res.status(400).json({ msg: 'Password inválida' });
+      }
+
+      cliente.password = password;
     }
 
     let foto = cliente.foto;

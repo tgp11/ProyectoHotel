@@ -13,6 +13,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using HOTELINTERFAZ.Models;
+using HOTELINTERFAZ.Ventanas;
+using System.Windows.Controls;
+
 
 namespace HOTELINTERFAZ.Views
 {
@@ -21,12 +25,14 @@ namespace HOTELINTERFAZ.Views
     /// </summary>
     public partial class EmpleadosView : UserControl
     {
-        private readonly EmpleadosViewModel _vm = new();
+        private readonly EmpleadosViewModel _vm;
         private readonly ICollectionView _view;
         public EmpleadosView()
         {
             InitializeComponent();
-            DataContext = new EmpleadosViewModel();
+
+            _vm = new EmpleadosViewModel();
+            DataContext = _vm;
 
             _view = CollectionViewSource.GetDefaultView(DgEmpleados.ItemsSource);
             
@@ -34,23 +40,34 @@ namespace HOTELINTERFAZ.Views
 
         private void Editar_Empleado_Click(object sender, RoutedEventArgs e)
         {
-
+            if (DgEmpleados.SelectedItem is Empleado emp)
+            {
+                var ventana = new EditarEmpleado(_vm, emp);
+                ventana.ShowDialog();
+            }
         }
+
 
         private void Nuevo_Empleado_Click(object sender, RoutedEventArgs e)
         {
-
+            NuevoEmpleado ventana = new NuevoEmpleado();
+            ventana.ShowDialog();
         }
 
-        private void Eliminar_Empleado_Click(object sender, RoutedEventArgs e)
+        private async void Eliminar_Empleado_Click(object sender, RoutedEventArgs e)
         {
-
+            await _vm.EliminarEmpleado();
         }
 
         private void Buscar_Empleado_Click(object sender, RoutedEventArgs e)
         {
-
+            _vm.BuscarPorDni(TxtBuscar.Text);
         }
+        private void TxtBuscar_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            _vm.BuscarPorDni(TxtBuscar.Text);
+        }
+
 
         private void DgEmpleados_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
