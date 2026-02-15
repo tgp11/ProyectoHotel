@@ -1,33 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using HOTELINTERFAZ.Models;
 using HOTELINTERFAZ.ViewModels;
 
 namespace HOTELINTERFAZ.Views
 {
-    /// <summary>
-    /// Lógica de interacción para HabitacionesView.xaml
-    /// </summary>
     public partial class HabitacionesView : UserControl
     {
-        private readonly HabitacionesViewModel _vm = new();
+        private readonly HabitacionesViewModel _vm;
         private readonly ICollectionView _view;
-        public HabitacionesView()
+
+        public HabitacionesView(HabitacionesViewModel vm)
         {
             InitializeComponent();
+
+            _vm = vm;
+            DataContext = _vm;
+
             DgHabitaciones.ItemsSource = _vm.Habitaciones;
 
             _view = CollectionViewSource.GetDefaultView(DgHabitaciones.ItemsSource);
@@ -49,7 +44,6 @@ namespace HOTELINTERFAZ.Views
 
         private void Nueva_Click(object sender, RoutedEventArgs e)
         {
-            // Crea una fila nueva con valores por defecto
             var nueva = new Habitacion
             {
                 Numero = GetNextNumeroDisponible(),
@@ -61,7 +55,6 @@ namespace HOTELINTERFAZ.Views
 
             _vm.Habitaciones.Add(nueva);
 
-            // Seleccionarla y entrar en edición
             DgHabitaciones.SelectedItem = nueva;
             DgHabitaciones.ScrollIntoView(nueva);
 
@@ -82,7 +75,6 @@ namespace HOTELINTERFAZ.Views
                 return;
             }
 
-            // Entrar en edición de la fila seleccionada
             DgHabitaciones.ScrollIntoView(selected);
             DgHabitaciones.CurrentCell = new DataGridCellInfo(selected, DgHabitaciones.Columns[0]);
             DgHabitaciones.BeginEdit();
@@ -115,56 +107,43 @@ namespace HOTELINTERFAZ.Views
             _view.Refresh();
         }
 
-        // ===== VALIDACIÓN AL TERMINAR EDICIÓN DE FILA =====
+        // ===== VALIDACIÓN =====
 
         private void DgHabitaciones_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
             if (e.EditAction != DataGridEditAction.Commit) return;
             if (e.Row.Item is not Habitacion h) return;
 
-            // Forzar commit para tener valores finales
             Dispatcher.InvokeAsync(() =>
             {
-                // Validaciones básicas
                 if (h.Numero <= 0)
                 {
-                    MessageBox.Show("El número debe ser mayor que 0.", "Validación",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                    CancelEditKeepRow(e);
+                    ShowValidation("El número debe ser mayor que 0.", e);
                     return;
                 }
 
                 if (string.IsNullOrWhiteSpace(h.Tipo))
                 {
-                    MessageBox.Show("El tipo es obligatorio.", "Validación",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                    CancelEditKeepRow(e);
+                    ShowValidation("El tipo es obligatorio.", e);
                     return;
                 }
 
                 if (h.MaxOcupantes <= 0)
                 {
-                    MessageBox.Show("La capacidad debe ser mayor que 0.", "Validación",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                    CancelEditKeepRow(e);
+                    ShowValidation("La capacidad debe ser mayor que 0.", e);
                     return;
                 }
 
                 if (h.PrecioNoche < 0)
                 {
-                    MessageBox.Show("El precio/noche no puede ser negativo.", "Validación",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                    CancelEditKeepRow(e);
+                    ShowValidation("El precio/noche no puede ser negativo.", e);
                     return;
                 }
 
-                // No duplicar Numero
                 int repes = _vm.Habitaciones.Count(x => x.Numero == h.Numero);
                 if (repes > 1)
                 {
-                    MessageBox.Show("Ya existe una habitación con ese número.", "Validación",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                    CancelEditKeepRow(e);
+                    ShowValidation("Ya existe una habitación con ese número.", e);
                     return;
                 }
 
@@ -172,9 +151,11 @@ namespace HOTELINTERFAZ.Views
             });
         }
 
-        private void CancelEditKeepRow(DataGridRowEditEndingEventArgs e)
+        private void ShowValidation(string mensaje, DataGridRowEditEndingEventArgs e)
         {
-            // Cancela la edición y vuelve a editar esa misma fila para que lo corrijan
+            MessageBox.Show(mensaje, "Validación",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+
             DgHabitaciones.CancelEdit(DataGridEditingUnit.Row);
 
             DgHabitaciones.Dispatcher.InvokeAsync(() =>
@@ -188,9 +169,7 @@ namespace HOTELINTERFAZ.Views
         private int GetNextNumeroDisponible()
         {
             if (_vm.Habitaciones.Count == 0) return 1;
-            int max = _vm.Habitaciones.Max(h => h.Numero);
-            return max + 1;
+            return _vm.Habitaciones.Max(h => h.Numero) + 1;
         }
     }
 }
-

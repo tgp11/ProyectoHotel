@@ -16,9 +16,13 @@ namespace HOTELINTERFAZ.Ventanas
 
         public ObservableCollection<Habitacion> HabitacionesDisponibles { get; set; } = new();
 
-        public NuevaReservaWindow(ReservasViewModel reservasVM, HabitacionesViewModel habitacionesVM, ClientesViewModel clientesVM)
+        public NuevaReservaWindow(
+            ReservasViewModel reservasVM,
+            HabitacionesViewModel habitacionesVM,
+            ClientesViewModel clientesVM)
         {
             InitializeComponent();
+
             _reservasVM = reservasVM;
             _habitacionesVM = habitacionesVM;
             _clientesVM = clientesVM;
@@ -48,13 +52,15 @@ namespace HOTELINTERFAZ.Ventanas
         private void ActualizarHabitacionesDisponibles()
         {
             HabitacionesDisponibles.Clear();
+
             if (!FechaEntradaPicker.SelectedDate.HasValue || !FechaSalidaPicker.SelectedDate.HasValue)
                 return;
 
-            DateTime entrada = FechaEntradaPicker.SelectedDate.Value;
-            DateTime salida = FechaSalidaPicker.SelectedDate.Value;
+            DateTime entrada = FechaEntradaPicker.SelectedDate.Value.Date;
+            DateTime salida = FechaSalidaPicker.SelectedDate.Value.Date;
 
-            if (salida <= entrada) return;
+            if (salida <= entrada)
+                return;
 
             var disponibles = _habitacionesVM.Habitaciones
                 .Where(h => !_reservasVM.Reservas.Any(r =>
@@ -80,6 +86,8 @@ namespace HOTELINTERFAZ.Ventanas
                 return;
             }
 
+            
+
             if (ComboBoxHabitacion.SelectedItem is not Habitacion habitacion)
             {
                 MessageBox.Show("Selecciona una habitación");
@@ -93,7 +101,6 @@ namespace HOTELINTERFAZ.Ventanas
                 return;
             }
 
-            // 🔑 Buscar cliente en la lista de clientes cargada
             var clienteExistente = _clientesVM.Clientes
                 .FirstOrDefault(c => c.Dni == dni);
 
@@ -103,19 +110,26 @@ namespace HOTELINTERFAZ.Ventanas
                 return;
             }
 
-            var dias = (FechaSalidaPicker.SelectedDate.Value - FechaEntradaPicker.SelectedDate.Value).TotalDays;
+            int dias = (FechaSalidaPicker.SelectedDate.Value.Date - FechaEntradaPicker.SelectedDate.Value.Date).Days;
+            if (dias <= 0)
+            {
+                MessageBox.Show("La fecha de salida debe ser posterior a la de entrada");
+                return;
+            }
 
-            // Crear reserva
+            // ✅ Convertimos a decimal directamente
+            decimal precioTotal = Convert.ToDecimal(habitacion.PrecioNoche) * dias;
+
             var reserva = new Reserva
             {
                 Id = Guid.NewGuid().ToString(),
                 ClienteId = clienteExistente.Id,
                 Cliente = clienteExistente,
                 HabitacionId = habitacion.Id,
-                FechaEntrada = FechaEntradaPicker.SelectedDate.Value,
-                FechaSalida = FechaSalidaPicker.SelectedDate.Value,
+                FechaEntrada = FechaEntradaPicker.SelectedDate.Value.Date,
+                FechaSalida = FechaSalidaPicker.SelectedDate.Value.Date,
                 Personas = Math.Min(personas, habitacion.MaxOcupantes),
-                PrecioTotal = habitacion.PrecioNoche * (decimal)dias, // ⚡ Conversión a decimal
+                PrecioTotal = (double)precioTotal, // tu modelo usa double
                 Cancelacion = false
             };
 

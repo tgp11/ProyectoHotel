@@ -39,6 +39,7 @@ namespace HOTELINTERFAZ.ViewModels
                     foreach (var h in lista)
                         Habitaciones.Add(h);
                 }
+
             }
             catch (Exception ex)
             {

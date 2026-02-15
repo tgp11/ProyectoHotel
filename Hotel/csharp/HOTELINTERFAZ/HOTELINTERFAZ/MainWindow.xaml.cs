@@ -1,8 +1,10 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
+using System.Windows;
 using HOTELINTERFAZ.Views;
 using HOTELINTERFAZ.Models;
+using HOTELINTERFAZ.ViewModels;
+using System.Text;
+using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace HOTELINTERFAZ
 {
@@ -10,6 +12,8 @@ namespace HOTELINTERFAZ
     {
         private Usuario usuario;
         public Principal(Usuario _usuario)
+        private readonly HabitacionesViewModel _habitacionesVM = new();
+        public Principal()
         {
             InitializeComponent();
             usuario = _usuario;
@@ -49,7 +53,7 @@ namespace HOTELINTERFAZ
         // ================== HABITACIONES ==================
         private void GestionHabitaciones_Click(object sender, RoutedEventArgs e)
         {
-            contentControl.Content = new HabitacionesView();
+            contentControl.Content = new HabitacionesView(_habitacionesVM);
         }
 
         // ================== RESERVAS ==================
