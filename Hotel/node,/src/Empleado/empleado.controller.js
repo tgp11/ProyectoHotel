@@ -87,82 +87,82 @@ exports.obtenerEmpleadoPorId = async (req, res) => {
 
 exports.actualizarEmpleado = async (req, res) => {
   try {
-    const { nombre, dni, email, password, fechaNacimiento, sexo, administrador } = req.body;  
-    if (!nombre || !dni || !email || !password|| !fechaNacimiento || !sexo || administrador === undefined) {
-        return res.status(400).json({ msg: 'Faltan datos obligatorios' });  
+
+    const { nombre, dni, email, password, fechaNacimiento, sexo, administrador } = req.body;
+
+    if (!nombre || !dni || !email || !fechaNacimiento || !sexo || administrador === undefined) {
+      return res.status(400).json({ msg: 'Faltan datos obligatorios' });
     }
+
     if (!validarDNI(dni)) {
       return res.status(400).json({ msg: 'DNI inválido' });
     }
-    const dniExiste = await Empleado.findOne({
-  dni,
-  _id: { $ne: req.params.id }
-});
-        if (dniExiste) {
-          return res.status(409).json({ msg: 'El DNI ya está registrado' });
-        }
 
-    const emailEnUso = await Empleado.findOne({
-      email,
-      _id: { $ne: req.params.id }
-    });
-    if (emailEnUso) {
-      return res.status(409).json({ msg: 'El email ya está registrado' });
-    }
-    if (!esEmailValido(email)) {
-        return res.status(400).json({ msg: 'Email inválido' });
-    }
-    if (!esPasswordValida(password)) {
-      return res.status(400).json({ msg: 'La contraseña debe tener al menos 6 caracteres, una mayúscula, una minúscula, un número y un carácter especial' });
-    }
-    const fecha = validarFechaNacimiento(fechaNacimiento);
-    if(!fecha) {
-      return res.status(400).json({ msg: 'Fecha de nacimiento inválida. Formato correcto DD/MM/YYYY' });
-    } 
-    if (!['M', 'F', 'X'].includes(sexo)) {
-      return res.status(400).json({ msg: 'Sexo inválido. Debe ser M, F o X' });
-    }
-
-    
     const empleado = await Empleado.findById(req.params.id);
     if (!empleado) {
       return res.status(404).json({ msg: 'Empleado no encontrado' });
     }
 
-    let foto = empleado.foto; // Mantener la foto actual si no se sube una nueva
+    const dniExiste = await Empleado.findOne({ dni, _id: { $ne: req.params.id } });
+    if (dniExiste) {
+      return res.status(409).json({ msg: 'El DNI ya está registrado' });
+    }
 
-    if (req.file) {
+    const emailEnUso = await Empleado.findOne({ email, _id: { $ne: req.params.id } });
+    if (emailEnUso) {
+      return res.status(409).json({ msg: 'El email ya está registrado' });
+    }
 
-      //BORRAR FOTO ANTIGUA
-      if (empleado.foto) {
-        const rutaVieja = "." + empleado.foto;
+    if (!esEmailValido(email)) {
+      return res.status(400).json({ msg: 'Email inválido' });
+    }
 
-        if (fs.existsSync(rutaVieja)) {
-          fs.unlinkSync(rutaVieja);
-        }
+    const fecha = validarFechaNacimiento(fechaNacimiento);
+    if (!fecha) {
+      return res.status(400).json({ msg: 'Fecha inválida' });
+    }
+
+    if (!['M', 'F', 'X'].includes(sexo)) {
+      return res.status(400).json({ msg: 'Sexo inválido' });
+    }
+
+    // PASSWORD OPCIONAL
+    if (password && password.trim() !== "") {
+      if (!esPasswordValida(password)) {
+        return res.status(400).json({ msg: 'Password inválida' });
       }
 
-      //GUARDAR NUEVA
+      empleado.password = password;
+    }
+
+    // FOTO
+    let foto = empleado.foto;
+
+    if (req.file) {
+      if (empleado.foto) {
+        const rutaVieja = "." + empleado.foto;
+        if (fs.existsSync(rutaVieja)) fs.unlinkSync(rutaVieja);
+      }
+
       foto = `/uploads/${req.file.filename}`;
     }
 
-    empleado.foto = foto;
-
+    // ACTUALIZAR CAMPOS
     empleado.nombre = nombre;
     empleado.dni = dni;
     empleado.email = email;
-    empleado.password = password;
     empleado.fechaNacimiento = fecha;
     empleado.sexo = sexo;
     empleado.foto = foto;
     empleado.administrador = administrador;
 
-    const empleadoActualizado = await empleado.save();
+    const actualizado = await empleado.save();
 
-    const empleadoJSON = empleadoActualizado.toObject();
-    delete empleadoJSON.password;
+    const json = actualizado.toObject();
+    delete json.password;
 
-    res.status(200).json(empleadoJSON);
+    res.status(200).json(json);
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -9,6 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Imagen_Hotel.png" />
+    <None Remove="Resources\Imagen_Hotel_Larga.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MongoDB.Driver" Version="3.6.0" />
   </ItemGroup>
 
@@ -23,5 +28,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Compile>
   </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resuources\Imagen_Hotel_Larga.png" />
+    <Resource Include="Resuources\Imagen_Hotel_Larga.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+
 
 </Project>

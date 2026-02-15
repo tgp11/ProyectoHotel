@@ -1,31 +1,53 @@
-﻿using HOTELINTERFAZ.ViewModels;
+using System.Windows;
 using HOTELINTERFAZ.Views;
+using HOTELINTERFAZ.Models;
+using HOTELINTERFAZ.ViewModels;
 using System.Text;
-using System.Windows;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace InterfazInterna
+namespace HOTELINTERFAZ
 {
     public partial class Principal : Window
     {
+        private Usuario usuario;
+        public Principal(Usuario _usuario)
         private readonly HabitacionesViewModel _habitacionesVM = new();
         public Principal()
         {
             InitializeComponent();
+            usuario = _usuario;
+
+            lblNombreUsuario.Content = usuario.Nombre;
+
+            if (usuario.Administrador)
+            {
+                lblAdminEmp.Content = "Administrador";
+            }
+            else
+            {
+                lblAdminEmp.Content = "Empleado";
+            }
         }
 
         // ================== CLIENTES ==================
         private void GestionUsuarios_Click(object sender, RoutedEventArgs e)
         {
-            contentControl.Content = new ReservasView();
+            contentControl.Content = new ClienteView();
         }
 
         // ================== EMPLEADOS ==================
         private void GestionEmpleados_Click(object sender, RoutedEventArgs e)
         {
-            contentControl.Content = new ReservasView();
+            if (usuario.Administrador)
+            {
+                contentControl.Content = new EmpleadosView();
+            }
+            else
+            {
+                MessageBox.Show("Solo los Administradores tinen acceso a los empleados.");
+            }
+            
         }
 
         // ================== HABITACIONES ==================
@@ -49,8 +71,10 @@ namespace InterfazInterna
         // ================== LOGOUT ==================
         private void CerrarSesion_Click(object sender, RoutedEventArgs e)
         {
-            var login = new ReservasView();
+            HOTELINTERFAZ.Views.LogIn login  =  new LogIn();
+            login.Show();
             this.Close();
+            
         }
     }
 }
