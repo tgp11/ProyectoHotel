@@ -5,7 +5,6 @@
              Height="Auto"
              Width="Auto">
 
-    <!-- DataContext -->
     <UserControl.DataContext>
         <vm:ResenasViewModel/>
     </UserControl.DataContext>
@@ -17,70 +16,34 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- TÍTULO -->
         <TextBlock Text="Gestión de reseñas"
                    FontSize="22"
                    FontWeight="SemiBold"
                    Foreground="White"
                    Margin="0,0,0,12"/>
 
-        <!-- BOTONES -->
-        <StackPanel Grid.Row="1"
-                    Orientation="Horizontal"
-                    Margin="0,0,0,12">
-
-            <Button Content="Nueva"
-                    Width="110"
-                    Margin="0,0,8,0"/>
-
-            <Button Content="Editar"
-                    Width="110"
-                    Margin="0,0,8,0"/>
-
-            <Button Content="Eliminar"
-                    Width="110"
-                    Margin="0,0,8,0"/>
-
-            <TextBox Width="260"
-                     Margin="18,0,8,0"
-                     VerticalContentAlignment="Center"/>
-
-            <Button Content="Buscar"
-                    Width="110"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12">
+            <Button Content="Nueva" Width="110" Margin="0,0,8,0"/>
+            <Button Content="Editar" Width="110" Margin="0,0,8,0"/>
+            <Button Content="Eliminar" Width="110" Margin="0,0,8,0"/>
+            <TextBox Width="260" Margin="18,0,8,0" VerticalContentAlignment="Center"/>
+            <Button Content="Buscar" Width="110"/>
         </StackPanel>
 
-        <!-- DATAGRID -->
         <DataGrid Grid.Row="2"
                   ItemsSource="{Binding Resenas}"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
                   IsReadOnly="True">
-
             <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="160"/>
+                <DataGridTextColumn Header="Reserva" Binding="{Binding ReservaId}" Width="160"/>
 
-                <DataGridTextColumn Header="ID"
-                                    Binding="{Binding Id}"
-                                    Width="160"/>
+                <DataGridTextColumn Header="DNI" Binding="{Binding Cliente.Dni}" Width="140"/>
 
-                <DataGridTextColumn Header="Reserva"
-                    Binding="{Binding ReservaId}"
-                    Width="160"/>
-
-                <DataGridTextColumn Header="DNI Cliente"
-                                    Binding="{Binding Cliente.Dni}" 
-                                    Width="160"/>
-
-                <DataGridTextColumn Header="Habitación"
-                                    Binding="{Binding HabitacionId}"
-                                    Width="160"/>
-
-                <DataGridTextColumn Header="Puntuación"
-                                    Binding="{Binding Puntuacion}"
-                                    Width="110"/>
-
-                <DataGridTextColumn Header="Comentario"
-                                    Binding="{Binding Comentario}"
-                                    Width="*"/>
+                <DataGridTextColumn Header="Habitación" Binding="{Binding HabitacionId}" Width="160"/>
+                <DataGridTextColumn Header="Puntuación" Binding="{Binding Puntuacion}" Width="110"/>
+                <DataGridTextColumn Header="Comentario" Binding="{Binding Comentario}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

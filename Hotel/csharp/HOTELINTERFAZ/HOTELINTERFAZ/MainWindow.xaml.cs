@@ -64,7 +64,8 @@ namespace HOTELINTERFAZ
         // ================== RESEÑAS ==================
         private void GestionResenas_Click(object sender, RoutedEventArgs e)
         {
-            contentControl.Content = new ReservasView();
+            contentControl.Content = new ResenasView();
+            
         }
 
         // ================== LOGOUT ==================

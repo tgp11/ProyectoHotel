@@ -7,7 +7,6 @@ using System.Text.Json.Serialization;
 
 namespace HOTELINTERFAZ.Models
 {
-  
     public class Resena
     {
         [JsonPropertyName("_id")]

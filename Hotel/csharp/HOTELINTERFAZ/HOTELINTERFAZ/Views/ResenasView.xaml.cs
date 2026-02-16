@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 
 namespace HOTELINTERFAZ.Views
 {
+
     public partial class ResenasView : UserControl
     {
         public ResenasView()
