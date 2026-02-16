@@ -11,9 +11,6 @@
     <Compile Update="Ventanas\NuevaReservaWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="ViewModels\ClientesViewModel.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Update="Views\HabitacionesView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
