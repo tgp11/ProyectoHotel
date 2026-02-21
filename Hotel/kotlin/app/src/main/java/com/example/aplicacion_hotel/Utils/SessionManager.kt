@@ -36,4 +36,27 @@ class SessionManager(context: Context) {
     fun logout() {
         prefs.edit().clear().apply()
     }
+
+
+    private val KEY_CARRITO = "carrito_habitaciones_ids"
+
+    fun getCarritoIds(): Set<String> {
+        return prefs.getStringSet(KEY_CARRITO, emptySet()) ?: emptySet()
+    }
+
+    fun setCarritoIds(ids: Set<String>) {
+        prefs.edit().putStringSet(KEY_CARRITO, ids).apply()
+    }
+
+    fun toggleCarrito(idHabitacion: String): Set<String> {
+        val actual = getCarritoIds().toMutableSet()
+        if (actual.contains(idHabitacion)) actual.remove(idHabitacion) else actual.add(idHabitacion)
+        setCarritoIds(actual)
+        return actual
+    }
+
+    fun clearCarrito() {
+        prefs.edit().remove(KEY_CARRITO).apply()
+    }
+
 }
