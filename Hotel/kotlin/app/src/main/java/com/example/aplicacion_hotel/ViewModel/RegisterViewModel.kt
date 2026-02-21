@@ -10,8 +10,9 @@ import com.example.aplicacion_hotel.Model.Cliente
 import com.example.aplicacion_hotel.Model.Reserva
 import com.example.aplicacion_hotel.Repository.AuthRepository
 import com.example.aplicacion_hotel.Repository.ClienteRepository
-import com.example.aplicacion_hotel.Repository.ReservaRepository
+import com.example.aplicacion_hotel.utils.httpErrorMessage
 import com.example.aplicacion_hotel.utils.HotelSessionManager
+import com.example.aplicacion_hotel.Repository.ReservaRepository
 import com.example.aplicacion_hotel.utils.httpErrorMessage
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -32,6 +33,9 @@ class RegisterViewModel(
 
     private val clienteRepository = ClienteRepository()
     private val authRepository = AuthRepository()
+
+    private val clienteRepository = ClienteRepository()
+    private val authRepository = AuthRepository()
     private val reservaRepository = ReservaRepository()
 
     private val _reservas = mutableStateOf<List<Reserva>>(emptyList())
@@ -49,6 +53,10 @@ class RegisterViewModel(
         viewModelScope.launch {
             isLoading = true
             errorMessage = null
+
+            try {
+            isLoading = true
+            errorMessage = null
             registerSuccess = false
 
             try {
@@ -63,8 +71,11 @@ class RegisterViewModel(
                     ciudad = ciudad,
                     vip = false
                 )
+
+                // 1) Crear
                 clienteRepository.crearCliente(nuevoCliente)
 
+                // 2) Login auto
                 // 2) Login automático
                 val loginResponse = authRepository.login(email, password)
 
@@ -73,6 +84,10 @@ class RegisterViewModel(
                     return@launch
                 }
 
+                // 3) Guardar token + cliente
+                hotelSessionManager.saveToken(loginResponse.token)
+                val clienteCompleto = clienteRepository.getClienteById(loginResponse.usuario.id)
+                hotelSessionManager.saveCliente(clienteCompleto)
                 // 3) Guardar token
                 hotelSessionManager.saveToken(loginResponse.token)
 
@@ -83,10 +98,16 @@ class RegisterViewModel(
                 registerSuccess = true
 
             } catch (e: HttpException) {
+                errorMessage = httpErrorMessage(e) // aquí verás “DNI inválido”, “Email ya registrado”, etc.
+            } catch (e: IOException) {
+                errorMessage = "Error de red. Revisa tu conexión."
+            } catch (e: HttpException) {
                 errorMessage = httpErrorMessage(e)
             } catch (e: IOException) {
                 errorMessage = "Error de red. Revisa tu conexión."
             } catch (e: Exception) {
+                errorMessage = "Error inesperado: ${e.message}"
+            } finally {
                 errorMessage = "Error inesperado: ${e.message ?: e.toString()}"
             } finally {
                 isLoading = false

@@ -2,10 +2,9 @@ package com.example.aplicacion_hotel.utils
 
 import android.content.Context
 import com.example.aplicacion_hotel.Model.Cliente
-import com.example.aplicacion_hotel.Model.Usuario
 import com.google.gson.Gson
 
-class SessionManager(context: Context) {
+class HotelSessionManager(context: Context) {
 
     private val prefs =
         context.getSharedPreferences("hotel_session", Context.MODE_PRIVATE)

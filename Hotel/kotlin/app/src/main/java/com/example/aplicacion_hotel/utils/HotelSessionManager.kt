@@ -6,7 +6,13 @@ import com.google.gson.Gson
 
 class HotelSessionManager(context: Context) {
 
+<<<<<<< HEAD
     private val prefs = context.getSharedPreferences("hotel_session", Context.MODE_PRIVATE)
+=======
+    private val prefs =
+        context.getSharedPreferences("hotel_session", Context.MODE_PRIVATE)
+
+>>>>>>> 62a9fd2950d9fb3aaa5d6b3538f4896430af0836
     private val gson = Gson()
 
     fun saveToken(token: String) {
@@ -29,6 +35,7 @@ class HotelSessionManager(context: Context) {
         } else null
     }
 
+<<<<<<< HEAD
     fun getUserId(): String? {
         return getCliente()?._id
     }
@@ -37,3 +44,12 @@ class HotelSessionManager(context: Context) {
         prefs.edit().clear().apply()
     }
 }
+=======
+    fun logout() {
+        prefs.edit().clear().apply()
+    }
+    fun getUserId(): String? {
+        return prefs.getString("userId", null)
+    }
+}
+>>>>>>> 62a9fd2950d9fb3aaa5d6b3538f4896430af0836

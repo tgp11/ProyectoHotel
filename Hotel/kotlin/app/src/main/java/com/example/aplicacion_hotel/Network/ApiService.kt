@@ -6,10 +6,15 @@ import com.example.aplicacion_hotel.Model.LoginRequest
 import com.example.aplicacion_hotel.Model.LoginResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Multipart
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
@@ -37,24 +42,6 @@ interface ApiService {
     suspend fun crearCliente(
         @Body cliente: Cliente
     ): Cliente
-
-    @POST("reservas")
-    suspend fun crearReserva(
-        @Body reserva: CrearReservaRequest
-    ): Response<Unit>
-
-    @GET("reservas")
-    suspend fun obtenerReservasUsuario(
-        @Query("clienteId") clienteId: String
-    ): Response<List<Reserva>>
-
-    // --- CORREGIDO PARA TU BACKEND ---
-    // Tu backend espera /reservas/{id}/cancelar
-    @PUT("reservas/{id}/cancelar")
-    suspend fun cancelarReserva(
-        @Path("id") id: String
-    ): Response<Reserva>
-
 
     @Multipart
     @PUT("cliente/{id}")
