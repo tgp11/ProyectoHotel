@@ -7,7 +7,18 @@ using System.Text.Json.Serialization;
 
 namespace HOTELINTERFAZ.Models
 {
-  
+    public class ClienteReducido
+    {
+        [JsonPropertyName("_id")]
+        public string Id { get; set; }
+
+        [JsonPropertyName("dni")]
+        public string Dni { get; set; }
+
+        [JsonPropertyName("nombre")]
+        public string Nombre { get; set; }
+    }
+
     public class Resena
     {
         [JsonPropertyName("_id")]

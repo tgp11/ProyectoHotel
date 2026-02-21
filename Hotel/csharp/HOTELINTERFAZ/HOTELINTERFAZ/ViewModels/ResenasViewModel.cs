@@ -39,5 +39,10 @@ namespace HOTELINTERFAZ.ViewModels
                 MessageBox.Show("Error de API: " + ex.Message);
             }
         }
+
+        public async Task EliminarResena()
+        {
+
+        }
     }
 }
