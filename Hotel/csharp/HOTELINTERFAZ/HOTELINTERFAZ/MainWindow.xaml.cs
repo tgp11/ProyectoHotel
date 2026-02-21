@@ -11,9 +11,8 @@ namespace HOTELINTERFAZ
     public partial class Principal : Window
     {
         private Usuario usuario;
-        public Principal(Usuario _usuario)
         private readonly HabitacionesViewModel _habitacionesVM = new();
-        public Principal()
+        public Principal(Usuario _usuario)
         {
             InitializeComponent();
             usuario = _usuario;
@@ -65,7 +64,8 @@ namespace HOTELINTERFAZ
         // ================== RESEÑAS ==================
         private void GestionResenas_Click(object sender, RoutedEventArgs e)
         {
-            contentControl.Content = new ReservasView();
+            contentControl.Content = new ResenasView();
+            
         }
 
         // ================== LOGOUT ==================
