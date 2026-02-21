@@ -80,7 +80,7 @@ namespace HOTELINTERFAZ.Views
             DgHabitaciones.BeginEdit();
         }
 
-        private void Eliminar_Click(object sender, RoutedEventArgs e)
+        private async void Eliminar_Click(object sender, RoutedEventArgs e)
         {
             if (DgHabitaciones.SelectedItem is not Habitacion selected)
             {
@@ -114,41 +114,44 @@ namespace HOTELINTERFAZ.Views
             if (e.EditAction != DataGridEditAction.Commit) return;
             if (e.Row.Item is not Habitacion h) return;
 
-            Dispatcher.InvokeAsync(() =>
+            // Muy importante: lanzar el guardado DESPUÉS de que el DataGrid termine el commit
+            Dispatcher.BeginInvoke(new Action(async () =>
             {
-                if (h.Numero <= 0)
+                try
                 {
-                    ShowValidation("El número debe ser mayor que 0.", e);
-                    return;
+                    // ===== VALIDACIÓN (la tuya, igual) =====
+                    if (h.Numero <= 0) { ShowValidation("El número debe ser mayor que 0.", e); return; }
+                    if (string.IsNullOrWhiteSpace(h.Tipo)) { ShowValidation("El tipo es obligatorio.", e); return; }
+                    if (h.MaxOcupantes <= 0) { ShowValidation("La capacidad debe ser mayor que 0.", e); return; }
+                    if (h.PrecioNoche < 0) { ShowValidation("El precio/noche no puede ser negativo.", e); return; }
+
+                    int repes = _vm.Habitaciones.Count(x => x.Numero == h.Numero);
+                    if (repes > 1) { ShowValidation("Ya existe una habitación con ese número.", e); return; }
+
+                    // ===== GUARDADO API =====
+                    if (string.IsNullOrWhiteSpace(h.Id))
+                    {
+                        // CREATE (POST)
+                        var creada = await _vm.CrearHabitacionAsync(h);
+
+                        // Si la API devuelve el _id, lo metemos en el objeto que está en la lista
+                        if (creada != null && !string.IsNullOrWhiteSpace(creada.Id))
+                            h.Id = creada.Id;
+                    }
+                    else
+                    {
+                        // UPDATE (PUT)
+                        await _vm.ActualizarHabitacionAsync(h);
+                    }
+
+                    _view.Refresh();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error guardando", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
 
-                if (string.IsNullOrWhiteSpace(h.Tipo))
-                {
-                    ShowValidation("El tipo es obligatorio.", e);
-                    return;
-                }
-
-                if (h.MaxOcupantes <= 0)
-                {
-                    ShowValidation("La capacidad debe ser mayor que 0.", e);
-                    return;
-                }
-
-                if (h.PrecioNoche < 0)
-                {
-                    ShowValidation("El precio/noche no puede ser negativo.", e);
-                    return;
-                }
-
-                int repes = _vm.Habitaciones.Count(x => x.Numero == h.Numero);
-                if (repes > 1)
-                {
-                    ShowValidation("Ya existe una habitación con ese número.", e);
-                    return;
-                }
-
-                _view.Refresh();
-            });
+            }), System.Windows.Threading.DispatcherPriority.Background);
         }
 
         private void ShowValidation(string mensaje, DataGridRowEditEndingEventArgs e)

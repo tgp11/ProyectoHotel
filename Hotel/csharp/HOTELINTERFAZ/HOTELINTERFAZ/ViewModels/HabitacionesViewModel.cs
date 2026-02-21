@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using HOTELINTERFAZ.Models;
-using System.Windows;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using System.Windows;
+using HOTELINTERFAZ.Models;
 
 namespace HOTELINTERFAZ.ViewModels
 {
@@ -16,6 +16,13 @@ namespace HOTELINTERFAZ.ViewModels
         public ObservableCollection<Habitacion> Habitaciones { get; } = new();
 
         private readonly HttpClient _client;
+
+        // Importante: ignorar nulls para NO mandar "_id": null en el POST
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            PropertyNamingPolicy = null
+        };
 
         public HabitacionesViewModel()
         {
@@ -35,15 +42,63 @@ namespace HOTELINTERFAZ.ViewModels
 
                 Habitaciones.Clear();
                 if (lista != null)
-                {
                     foreach (var h in lista)
                         Habitaciones.Add(h);
-                }
-
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error de API: " + ex.Message);
+                MessageBox.Show("Error de API (GET habitaciones): " + ex.Message);
+            }
+        }
+
+        public async Task<Habitacion?> CrearHabitacionAsync(Habitacion h)
+        {
+            // Por seguridad: en CREATE no mandes Id
+            h.Id = null;
+
+            var resp = await _client.PostAsJsonAsync("habitaciones", h, JsonOptions);
+            if (!resp.IsSuccessStatusCode)
+            {
+                var err = await resp.Content.ReadAsStringAsync();
+                throw new Exception($"POST /habitaciones falló: {(int)resp.StatusCode} - {err}");
+            }
+
+            // Si tu API devuelve la habitación creada (con _id), la leemos:
+            try
+            {
+                var creada = await resp.Content.ReadFromJsonAsync<Habitacion>(JsonOptions);
+                return creada;
+            }
+            catch
+            {
+                // Si tu API NO devuelve el objeto creado, devolvemos null (pero el POST fue OK)
+                return null;
+            }
+        }
+
+        public async Task ActualizarHabitacionAsync(Habitacion h)
+        {
+            if (string.IsNullOrWhiteSpace(h.Id))
+                throw new Exception("No se puede actualizar una habitación sin Id.");
+
+            var resp = await _client.PutAsJsonAsync($"habitaciones/{h.Id}", h, JsonOptions);
+            if (!resp.IsSuccessStatusCode)
+            {
+                var err = await resp.Content.ReadAsStringAsync();
+                throw new Exception($"PUT /habitaciones/{h.Id} falló: {(int)resp.StatusCode} - {err}");
+            }
+        }
+
+        public async Task EliminarHabitacionAsync(Habitacion h)
+        {
+            if (string.IsNullOrWhiteSpace(h.Id))
+                throw new Exception("No se puede borrar una habitación sin Id.");
+
+            var resp = await _client.DeleteAsync($"habitaciones/{h.Id}");
+            if (!resp.IsSuccessStatusCode)
+            {
+                var err = await resp.Content.ReadAsStringAsync();
+                throw new Exception($"DELETE /habitaciones/{h.Id} falló: {(int)resp.StatusCode} - {err}");
             }
         }
     }
