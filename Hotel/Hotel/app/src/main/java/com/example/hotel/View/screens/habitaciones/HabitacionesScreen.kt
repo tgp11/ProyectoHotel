@@ -12,4 +12,5 @@ fun HabitacionesScreen() {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text("Habitaciones")
     }
+    //navController.navigate("reservas/${habitacion.id}")
 }

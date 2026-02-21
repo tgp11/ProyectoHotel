@@ -35,4 +35,7 @@ class SessionManager(context: Context) {
     fun logout() {
         prefs.edit().clear().apply()
     }
+    fun getUserId(): String? {
+        return prefs.getString("userId", null)
+    }
 }

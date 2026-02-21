@@ -1,5 +1,6 @@
 package com.example.aplicacion_hotel.View.screens.home
 
+import View.screens.reservas.ReservasScreen
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -16,7 +17,7 @@ import com.example.aplicacion_hotel.View.Scaffold.HotelTopBar
 import com.example.aplicacion_hotel.View.navigation.BottomNavigationBar
 import com.example.aplicacion_hotel.View.screens.carrito.CarritoScreen
 import com.example.aplicacion_hotel.View.screens.habitaciones.HabitacionesScreen
-import com.example.aplicacion_hotel.View.screens.reservas.ReservasScreen
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,7 +49,7 @@ fun HomeScreen(navController: NavController) {
             }
 
             composable(Routes.Reservas.route) {
-                ReservasScreen()
+                ReservasScreen("1")
             }
 
             composable(Routes.Carrito.route) {

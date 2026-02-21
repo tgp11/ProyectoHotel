@@ -1,6 +1,6 @@
 package com.example.aplicacion_hotel.ViewModel
 
-import AuthViewModel
+import com.example.hotel.ViewModel.AuthViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.aplicacion_hotel.utils.SessionManager
