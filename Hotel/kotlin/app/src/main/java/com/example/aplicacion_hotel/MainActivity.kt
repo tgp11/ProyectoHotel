@@ -9,29 +9,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.aplicacion_hotel.View.navigation.AppNavigation
 import com.example.aplicacion_hotel.ui.theme.Aplicacion_HotelTheme
+import com.example.aplicacion_hotel.utils.SessionManager
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
+            val sessionManager = SessionManager(this)
+            val startDestination =
+                if (sessionManager.getToken() != null) "home"
+                else "login"
+
             AppNavigation()
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Aplicacion_HotelTheme {
-        Greeting("Android")
     }
 }
