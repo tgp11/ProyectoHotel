@@ -1,13 +1,16 @@
 package com.example.aplicacion_hotel.ViewModel
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.aplicacion_hotel.Model.Cliente
+import com.example.aplicacion_hotel.Model.Reserva
 import com.example.aplicacion_hotel.Repository.AuthRepository
 import com.example.aplicacion_hotel.Repository.ClienteRepository
+import com.example.aplicacion_hotel.Repository.ReservaRepository
 import com.example.aplicacion_hotel.utils.SessionManager
 import kotlinx.coroutines.launch
 
@@ -20,12 +23,16 @@ class RegisterViewModel(
 
     private val clienteRepository = ClienteRepository()
     private val authRepository = AuthRepository()
+    private val reservaRepository = ReservaRepository()
 
     var registerSuccess by mutableStateOf(false)
         private set
 
     var errorMessage by mutableStateOf<String?>(null)
         private set
+
+    private val _reservas = mutableStateOf<List<Reserva>>(emptyList())
+    val reservas: State<List<Reserva>> = _reservas
 
     fun register(
         nombre: String,
@@ -40,7 +47,6 @@ class RegisterViewModel(
             try {
                 isLoading = true
                 errorMessage = null
-
 
                 // 1️⃣ Crear cliente
                 val nuevoCliente = Cliente(
@@ -78,8 +84,26 @@ class RegisterViewModel(
 
             } catch (e: Exception) {
                 errorMessage = e.message
-            }finally {
+            } finally {
                 isLoading = false
+            }
+        }
+    }
+
+    fun cargarReservas(clienteIdLoggeado: String) {
+        viewModelScope.launch {
+            try {
+                errorMessage = null
+                // 1. Usar el nombre de variable correcto (reservaRepository)
+                val todasLasReservas = reservaRepository.obtenerReservasUsuario(clienteIdLoggeado)
+
+                // 2. Filtramos en el cliente (Android) para mostrar solo las del usuario
+                _reservas.value = todasLasReservas?.filter { reserva ->
+                    reserva.clienteId == clienteIdLoggeado
+                } ?: emptyList()
+
+            } catch (e: Exception) {
+                errorMessage = "Error al cargar las reservas: ${e.message}"
             }
         }
     }

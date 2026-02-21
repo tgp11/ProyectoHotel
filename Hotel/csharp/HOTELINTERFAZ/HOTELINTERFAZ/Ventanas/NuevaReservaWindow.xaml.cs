@@ -86,8 +86,6 @@ namespace HOTELINTERFAZ.Ventanas
                 return;
             }
 
-            
-
             if (ComboBoxHabitacion.SelectedItem is not Habitacion habitacion)
             {
                 MessageBox.Show("Selecciona una habitación");
@@ -101,8 +99,9 @@ namespace HOTELINTERFAZ.Ventanas
                 return;
             }
 
-            var clienteExistente = _clientesVM.Clientes
-                .FirstOrDefault(c => c.Dni == dni);
+            // Usar la colección ClientesNoReducido para buscar el cliente
+            var clienteExistente = _clientesVM.ClientesNoReducido
+                .FirstOrDefault(c => c.DNI.Trim().Equals(dni.ToUpper(), StringComparison.OrdinalIgnoreCase));
 
             if (clienteExistente == null)
             {
@@ -124,7 +123,6 @@ namespace HOTELINTERFAZ.Ventanas
             {
                 Id = Guid.NewGuid().ToString(),
                 ClienteId = clienteExistente.Id,
-                Cliente = clienteExistente,
                 HabitacionId = habitacion.Id,
                 FechaEntrada = FechaEntradaPicker.SelectedDate.Value.Date,
                 FechaSalida = FechaSalidaPicker.SelectedDate.Value.Date,

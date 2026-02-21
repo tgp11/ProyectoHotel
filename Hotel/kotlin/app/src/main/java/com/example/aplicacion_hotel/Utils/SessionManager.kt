@@ -2,14 +2,11 @@ package com.example.aplicacion_hotel.utils
 
 import android.content.Context
 import com.example.aplicacion_hotel.Model.Cliente
-import com.example.aplicacion_hotel.Model.Usuario
 import com.google.gson.Gson
 
 class SessionManager(context: Context) {
 
-    private val prefs =
-        context.getSharedPreferences("hotel_session", Context.MODE_PRIVATE)
-
+    private val prefs = context.getSharedPreferences("hotel_session", Context.MODE_PRIVATE)
     private val gson = Gson()
 
     fun saveToken(token: String) {
@@ -30,6 +27,10 @@ class SessionManager(context: Context) {
         return if (json != null) {
             gson.fromJson(json, Cliente::class.java)
         } else null
+    }
+
+    fun getUserId(): String? {
+        return getCliente()?._id
     }
 
     fun logout() {
