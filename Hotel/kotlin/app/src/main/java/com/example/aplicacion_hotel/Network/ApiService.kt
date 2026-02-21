@@ -4,9 +4,14 @@ import com.example.aplicacion_hotel.Model.Cliente
 import com.example.aplicacion_hotel.Model.Habitacion
 import com.example.aplicacion_hotel.Model.LoginRequest
 import com.example.aplicacion_hotel.Model.LoginResponse
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface ApiService {
@@ -28,5 +33,22 @@ interface ApiService {
     @POST("cliente")
     suspend fun crearCliente(
         @Body cliente: Cliente
+    ): Cliente
+
+    @Multipart
+    @PUT("cliente/{id}")
+    suspend fun actualizarCliente(
+        @Path("id") id: String,
+
+        @Part("nombre") nombre: RequestBody,
+        @Part("dni") dni: RequestBody,
+        @Part("email") email: RequestBody,
+        @Part("fechaNacimiento") fechaNacimiento: RequestBody,
+        @Part("sexo") sexo: RequestBody,
+        @Part("ciudad") ciudad: RequestBody,
+        @Part("vip") vip: RequestBody,
+
+        // upload.single('foto') => fieldName "foto"
+        @Part foto: MultipartBody.Part? = null
     ): Cliente
 }
