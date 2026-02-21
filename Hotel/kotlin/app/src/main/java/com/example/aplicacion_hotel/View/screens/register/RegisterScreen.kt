@@ -32,6 +32,10 @@ import com.example.aplicacion_hotel.View.navigation.Routes
 import com.example.aplicacion_hotel.ViewModel.RegisterViewModel
 import com.example.aplicacion_hotel.ViewModel.RegisterViewModelFactory
 import com.example.aplicacion_hotel.utils.SessionManager
+import androidx.compose.material3.ExperimentalMaterial3Api
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun RegisterScreen(navController: NavController) {
@@ -56,6 +60,7 @@ fun RegisterScreen(navController: NavController) {
     var expanded by remember { mutableStateOf(false) }
 
     var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -192,22 +197,24 @@ fun RegisterScreen(navController: NavController) {
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
-                Button(onClick = { showDatePicker = false }) {
+                Button(onClick = {
+                    val millis = datePickerState.selectedDateMillis
+                    if (millis != null) {
+                        val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                        fechaNacimiento = formatter.format(Date(millis))
+                    }
+                    showDatePicker = false
+                }) {
                     Text("Aceptar")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDatePicker = false }) {
+                    Text("Cancelar")
                 }
             }
         ) {
-            val datePickerState = rememberDatePickerState()
-
-            DatePicker(
-                state = datePickerState
-            )
-
-            datePickerState.selectedDateMillis?.let { millis ->
-                val date = java.text.SimpleDateFormat("dd/MM/yyyy")
-                    .format(java.util.Date(millis))
-                fechaNacimiento = date
-            }
+            DatePicker(state = datePickerState)
         }
     }
 }
