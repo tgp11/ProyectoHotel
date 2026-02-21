@@ -20,12 +20,12 @@ interface ApiService {
     @GET("habitaciones")
     suspend fun getHabitaciones(): List<Habitacion>
 
-    @GET("clientes/{id}")
+    @GET("cliente/{id}")
     suspend fun getClienteById(
         @Path("id") id: String
     ): Cliente
 
-    @POST("clientes")
+    @POST("cliente")
     suspend fun crearCliente(
         @Body cliente: Cliente
     ): Cliente
