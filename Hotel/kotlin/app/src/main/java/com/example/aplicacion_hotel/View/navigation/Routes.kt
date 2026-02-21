@@ -1,7 +1,9 @@
 package com.example.aplicacion_hotel.View.navigation
-
 sealed class Routes(val route: String) {
 
+    object Pago : Routes("pago/{habitacionId}/{precioNoche}") {
+        fun createRoute(habitacionId: String, precioNoche: Double) = "pago/$habitacionId/$precioNoche"
+    }
     object Login : Routes("login")
     object Register : Routes("register")
     object Home : Routes("home")
