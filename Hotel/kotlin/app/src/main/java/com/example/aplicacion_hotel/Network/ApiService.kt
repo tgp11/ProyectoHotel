@@ -7,10 +7,12 @@ import com.example.aplicacion_hotel.Model.LoginResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import com.example.aplicacion_hotel.Model.CrearReservaRequest
 import com.example.aplicacion_hotel.Model.Reserva
 import retrofit2.Response
+import retrofit2.http.Query
 
 interface ApiService {
 
@@ -18,7 +20,6 @@ interface ApiService {
     suspend fun login(
         @Body request: LoginRequest
     ): LoginResponse
-
 
     @GET("habitaciones")
     suspend fun getHabitaciones(): List<Habitacion>
@@ -38,8 +39,15 @@ interface ApiService {
         @Body reserva: CrearReservaRequest
     ): Response<Unit>
 
-    @GET("reservas/{clienteId}")
+    @GET("reservas")
     suspend fun obtenerReservasUsuario(
-        @Path("clienteId") clienteId: String
+        @Query("clienteId") clienteId: String
     ): Response<List<Reserva>>
+
+    // --- CORREGIDO PARA TU BACKEND ---
+    // Tu backend espera /reservas/{id}/cancelar
+    @PUT("reservas/{id}/cancelar")
+    suspend fun cancelarReserva(
+        @Path("id") id: String
+    ): Response<Reserva>
 }

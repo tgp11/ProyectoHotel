@@ -15,11 +15,9 @@ class ReservaViewModel : ViewModel() {
 
     private val repository = ReservaRepository()
 
-    // --- Para crear una reserva ---
     private val _reservaExitosa = mutableStateOf<Boolean?>(null)
     val reservaExitosa: State<Boolean?> = _reservaExitosa
 
-    // --- Para obtener la lista de reservas ---
     private val _reservas = mutableStateOf<List<Reserva>>(emptyList())
     val reservas: State<List<Reserva>> = _reservas
 
@@ -53,14 +51,33 @@ class ReservaViewModel : ViewModel() {
         }
     }
 
-    fun cargarReservas(clienteId: String) {
+    fun cargarReservas(clienteIdLoggeado: String) {
         viewModelScope.launch {
             try {
                 errorMessage = null
-                val listaReservas = repository.obtenerReservasUsuario(clienteId)
-                _reservas.value = listaReservas ?: emptyList()
+                val todasLasReservas = repository.obtenerReservasUsuario(clienteIdLoggeado)
+
+                _reservas.value = todasLasReservas?.filter { reserva ->
+                    reserva.clienteId == clienteIdLoggeado
+                } ?: emptyList()
+
             } catch (e: Exception) {
                 errorMessage = "Error al cargar las reservas: ${e.message}"
+            }
+        }
+    }
+
+    fun cancelarReserva(reservaId: String, clienteId: String) {
+        viewModelScope.launch {
+            try {
+                val exito = repository.cancelarReserva(reservaId)
+                if (exito) {
+                    cargarReservas(clienteId) // Esto refresca la lista filtrada
+                } else {
+                    errorMessage = "Error del servidor al cancelar"
+                }
+            } catch (e: Exception) {
+                errorMessage = "Fallo de conexión: ${e.message}"
             }
         }
     }

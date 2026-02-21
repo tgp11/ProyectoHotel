@@ -90,12 +90,18 @@ class RegisterViewModel(
         }
     }
 
-    fun cargarReservas(clienteId: String) {
+    fun cargarReservas(clienteIdLoggeado: String) {
         viewModelScope.launch {
             try {
                 errorMessage = null
-                val listaReservas = reservaRepository.obtenerReservasUsuario(clienteId)
-                _reservas.value = listaReservas ?: emptyList()
+                // 1. Usar el nombre de variable correcto (reservaRepository)
+                val todasLasReservas = reservaRepository.obtenerReservasUsuario(clienteIdLoggeado)
+
+                // 2. Filtramos en el cliente (Android) para mostrar solo las del usuario
+                _reservas.value = todasLasReservas?.filter { reserva ->
+                    reserva.clienteId == clienteIdLoggeado
+                } ?: emptyList()
+
             } catch (e: Exception) {
                 errorMessage = "Error al cargar las reservas: ${e.message}"
             }

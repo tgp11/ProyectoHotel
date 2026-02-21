@@ -8,12 +8,14 @@ class ReservaRepository {
 
     private val api = RetrofitInstance.api
 
-
     suspend fun obtenerReservasUsuario(clienteId: String): List<Reserva>? {
         return try {
             val response = api.obtenerReservasUsuario(clienteId)
-            if (response.isSuccessful) response.body()
-            else null
+            if (response.isSuccessful) {
+                response.body()
+            } else {
+                null
+            }
         } catch (e: Exception) {
             null
         }
@@ -22,10 +24,17 @@ class ReservaRepository {
     suspend fun crearReserva(request: CrearReservaRequest): Boolean {
         return try {
             val response = api.crearReserva(request)
-            // Devuelve 'true' si la llamada fue exitosa (código 2xx)
             response.isSuccessful
         } catch (e: Exception) {
-            // Devuelve 'false' si hubo cualquier error
+            false
+        }
+    }
+
+    suspend fun cancelarReserva(id: String): Boolean {
+        return try {
+            val response = api.cancelarReserva(id)
+            response.isSuccessful
+        } catch (e: Exception) {
             false
         }
     }
