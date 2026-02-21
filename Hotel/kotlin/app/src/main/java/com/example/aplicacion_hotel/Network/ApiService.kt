@@ -54,7 +54,6 @@ interface ApiService {
     suspend fun cancelarReserva(
         @Path("id") id: String
     ): Response<Reserva>
-}
 
 
     @Multipart

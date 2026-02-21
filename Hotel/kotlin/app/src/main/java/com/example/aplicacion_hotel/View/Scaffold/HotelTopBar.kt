@@ -1,50 +1,34 @@
 package com.example.aplicacion_hotel.View.Scaffold
 
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.navigation.NavController
-import com.example.aplicacion_hotel.View.navigation.Routes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
-
-
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
+import com.example.aplicacion_hotel.View.navigation.Routes
+import com.example.aplicacion_hotel.utils.HotelSessionManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HotelTopBar(
     navController: NavController
 ) {
+    val context = LocalContext.current
+    val session = remember { HotelSessionManager(context) } //ahora existe
 
     var expanded by remember { mutableStateOf(false) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
 
     TopAppBar(
-
         title = { Text("Hotel App") },
-
         actions = {
-
-            // Botón info hotel
-            IconButton(onClick = {
-                navController.navigate(Routes.InfoHotel.route)
-            }) {
+            IconButton(onClick = { navController.navigate(Routes.InfoHotel.route) }) {
                 Icon(Icons.Default.Info, contentDescription = "Info")
             }
 
-            // Botón menú perfil
-            IconButton(onClick = {
-                expanded = true
-            }) {
+            IconButton(onClick = { expanded = true }) {
                 Icon(Icons.Default.AccountCircle, contentDescription = "Perfil")
             }
 
@@ -52,7 +36,6 @@ fun HotelTopBar(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-
                 DropdownMenuItem(
                     text = { Text("Ver perfil") },
                     onClick = {
@@ -73,13 +56,34 @@ fun HotelTopBar(
                     text = { Text("Cerrar sesión") },
                     onClick = {
                         expanded = false
-
-                        navController.navigate(Routes.Login.route) {
-                            popUpTo(Routes.Home.route) { inclusive = true }
-                        }
+                        showLogoutDialog = true
                     }
                 )
             }
         }
     )
+
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = { Text("Cerrar sesión") },
+            text = { Text("¿Estás seguro de que quieres cerrar sesión?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showLogoutDialog = false
+                        session.logout() //ahora compila
+
+                        navController.navigate(Routes.Login.route) {
+                            popUpTo(0) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
+                ) { Text("Sí") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLogoutDialog = false }) { Text("No") }
+            }
+        )
+    }
 }

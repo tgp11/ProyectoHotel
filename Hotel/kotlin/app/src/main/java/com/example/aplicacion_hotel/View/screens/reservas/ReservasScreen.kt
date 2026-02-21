@@ -32,13 +32,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.aplicacion_hotel.ViewModel.ReservaViewModel
-import com.example.aplicacion_hotel.utils.SessionManager
+import com.example.aplicacion_hotel.utils.HotelSessionManager
 
 
 @Composable
 fun ReservasScreen() {
     val context = LocalContext.current
-    val sessionManager = SessionManager(context)
+    val sessionManager = HotelSessionManager(context)
 
     // Obtenemos el ID del usuario que inició sesión
     val clienteId = remember { sessionManager.getUserId() }
