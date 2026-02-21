@@ -5,9 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.aplicacion_hotel.Model.Habitacion
+import com.example.aplicacion_hotel.Model.Reserva
+import com.example.aplicacion_hotel.Network.RetrofitInstance
 import com.example.aplicacion_hotel.Repository.HabitacionRepository
 import com.example.aplicacion_hotel.utils.SessionManager
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 class HabitacionesViewModel(
     private val sessionManager: SessionManager,
@@ -39,11 +43,56 @@ class HabitacionesViewModel(
                     todas
                 }
 
-                // refresca carrito desde prefs por si cambió
                 _idsCarrito.value = sessionManager.getCarritoIds()
 
             } catch (e: Exception) {
                 _error.value = "Error al cargar habitaciones: ${e.message}"
+            } finally {
+                _cargando.value = false
+            }
+        }
+    }
+
+    fun buscarDisponibles(fechaEntrada: String, fechaSalida: String) {
+        viewModelScope.launch {
+            try {
+                _cargando.value = true
+                _error.value = null
+
+                // 1. Cargamos todas las habitaciones y todas las reservas
+                val rooms = repository.getHabitaciones()
+                
+                // Usamos el endpoint para traer todas las reservas
+                val resResponse = RetrofitInstance.api.obtenerTodasLasReservas()
+                val allRes = if (resResponse.isSuccessful) resResponse.body() ?: emptyList() else emptyList()
+
+                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val start = sdf.parse(fechaEntrada)
+                val end = sdf.parse(fechaSalida)
+
+                if (start == null || end == null || end.before(start)) {
+                    _error.value = "Rango de fechas inválido"
+                    return@launch
+                }
+
+                // 2. Filtrar habitaciones que NO tengan reservas que se solapen con el rango
+                _habitaciones.value = rooms.filter { hab ->
+                    val reservasDeEstaHab = allRes.filter { it.habitacionId == hab._id && !it.cancelacion }
+
+                    val solapada = reservasDeEstaHab.any { res ->
+                        val resStart = sdf.parse(res.fechaEntrada)
+                        val resEnd = sdf.parse(res.fechaSalida)
+                        
+                        if (resStart != null && resEnd != null) {
+                            // Una reserva se solapa si NO termina antes de que empecemos 
+                            // ni empieza después de que terminemos
+                            !(end <= resStart || start >= resEnd)
+                        } else false
+                    }
+                    !solapada
+                }
+            } catch (e: Exception) {
+                _error.value = "Error al buscar: ${e.message}"
             } finally {
                 _cargando.value = false
             }

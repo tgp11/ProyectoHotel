@@ -1,16 +1,18 @@
 package com.example.aplicacion_hotel.View.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.aplicacion_hotel.View.screens.editarPerfil.EditarPerfilScreen
 import com.example.aplicacion_hotel.View.screens.home.HomeScreen
 import com.example.aplicacion_hotel.View.screens.infoHotel.InfoHotelScreen
 import com.example.aplicacion_hotel.View.screens.login.LoginScreen
 import com.example.aplicacion_hotel.View.screens.perfil.PerfilScreen
 import com.example.aplicacion_hotel.View.screens.register.RegisterScreen
-import com.example.aplicacion_hotel.View.screens.reservas.ReservasScreen
+import com.example.aplicacion_hotel.View.screens.pago.PagoScreen
 
 @Composable
 fun AppNavigation() {
@@ -45,9 +47,20 @@ fun AppNavigation() {
         composable(Routes.InfoHotel.route) {
             InfoHotelScreen()
         }
-        composable("reservas/{habitacionId}") { backStackEntry ->
-            val habitacionId = backStackEntry.arguments?.getString("habitacionId") ?: ""
-            ReservasScreen()
+
+        // --- RUTA CORREGIDA: Definimos los argumentos correctamente ---
+        composable(
+            route = Routes.Pago.route,
+            arguments = listOf(
+                navArgument("habitacionId") { type = NavType.StringType },
+                navArgument("precioNoche") { type = NavType.FloatType }
+            )
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("habitacionId") ?: ""
+            val precio = backStackEntry.arguments?.getFloat("precioNoche")?.toDouble() ?: 0.0
+            
+            // Llamamos a la nueva pantalla de Pago
+            PagoScreen(navController, id, precio)
         }
     }
 }

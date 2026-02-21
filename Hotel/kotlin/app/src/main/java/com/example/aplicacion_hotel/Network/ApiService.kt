@@ -39,13 +39,16 @@ interface ApiService {
         @Body reserva: CrearReservaRequest
     ): Response<Unit>
 
+    // Obtener todas las reservas (para filtrar disponibilidad localmente)
+    @GET("reservas")
+    suspend fun obtenerTodasLasReservas(): Response<List<Reserva>>
+
     @GET("reservas")
     suspend fun obtenerReservasUsuario(
         @Query("clienteId") clienteId: String
     ): Response<List<Reserva>>
 
     // --- CORREGIDO PARA TU BACKEND ---
-    // Tu backend espera /reservas/{id}/cancelar
     @PUT("reservas/{id}/cancelar")
     suspend fun cancelarReserva(
         @Path("id") id: String

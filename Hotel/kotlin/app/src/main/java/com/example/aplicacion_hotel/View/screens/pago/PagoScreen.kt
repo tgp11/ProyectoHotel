@@ -1,5 +1,6 @@
 package com.example.aplicacion_hotel.View.screens.pago
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -136,7 +137,7 @@ fun PagoScreen(
 
         if (precioTotal > 0) {
             Text(
-                text = "Total a pagar: ${String.format(java.util.Locale.US, "%.2f", precioTotal)} €",
+                text = "Total a pagar: ${String.format(Locale.US, "%.2f", precioTotal)} €",
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -169,7 +170,7 @@ fun PagoScreen(
 
 private fun calcularPrecioTotal(entrada: String, salida: String, precioNoche: Double): Double {
     if (entrada.length < 10 || salida.length < 10) return 0.0
-    val sdf = SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     sdf.isLenient = false
     return try {
         val date1 = sdf.parse(entrada)
@@ -191,14 +192,14 @@ private fun calcularPrecioTotal(entrada: String, salida: String, precioNoche: Do
     }
 }
 
-private fun validarCampos(entrada: String, salida: String, personas: String, tarjeta: String, cvv: String, context: android.content.Context): Boolean {
+private fun validarCampos(entrada: String, salida: String, personas: String, tarjeta: String, cvv: String, context: Context): Boolean {
     if (entrada.isEmpty() || salida.isEmpty() || personas.isEmpty()) {
         Toast.makeText(context, "Rellena todos los campos", Toast.LENGTH_SHORT).show()
         return false
     }
 
     try {
-        val sdf = SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         sdf.isLenient = false
         val d1 = sdf.parse(entrada)
         val d2 = sdf.parse(salida)
