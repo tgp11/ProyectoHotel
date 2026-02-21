@@ -8,6 +8,9 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import com.example.aplicacion_hotel.Model.CrearReservaRequest
+import com.example.aplicacion_hotel.Model.Reserva
+import retrofit2.Response
 
 interface ApiService {
 
@@ -29,4 +32,14 @@ interface ApiService {
     suspend fun crearCliente(
         @Body cliente: Cliente
     ): Cliente
+
+    @POST("reservas")
+    suspend fun crearReserva(
+        @Body reserva: CrearReservaRequest
+    ): Response<Unit>
+
+    @GET("reservas/{clienteId}")
+    suspend fun obtenerReservasUsuario(
+        @Path("clienteId") clienteId: String
+    ): Response<List<Reserva>>
 }

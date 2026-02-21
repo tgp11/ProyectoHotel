@@ -13,3 +13,4 @@ fun HabitacionesScreen() {
         Text("Habitaciones")
     }
 }
+//navController.navigate("reservas/${habitacion.id}")

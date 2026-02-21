@@ -10,6 +10,7 @@ import com.example.aplicacion_hotel.View.screens.infoHotel.InfoHotelScreen
 import com.example.aplicacion_hotel.View.screens.login.LoginScreen
 import com.example.aplicacion_hotel.View.screens.perfil.PerfilScreen
 import com.example.aplicacion_hotel.View.screens.register.RegisterScreen
+import com.example.aplicacion_hotel.View.screens.reservas.ReservasScreen
 
 @Composable
 fun AppNavigation() {
@@ -43,6 +44,10 @@ fun AppNavigation() {
 
         composable(Routes.InfoHotel.route) {
             InfoHotelScreen()
+        }
+        composable("reservas/{habitacionId}") { backStackEntry ->
+            val habitacionId = backStackEntry.arguments?.getString("habitacionId") ?: ""
+            ReservasScreen()
         }
     }
 }
