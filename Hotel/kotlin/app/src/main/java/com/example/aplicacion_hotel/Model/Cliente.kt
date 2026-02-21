@@ -1,5 +1,8 @@
 package com.example.aplicacion_hotel.Model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Cliente(
     val _id: String? = null,
     val nombre: String,

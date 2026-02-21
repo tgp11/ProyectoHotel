@@ -14,6 +14,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +31,7 @@ import com.example.aplicacion_hotel.utils.SessionManager
 
 @Composable
 fun LoginScreen(navController: NavController) {
+
     val context = LocalContext.current
     val sessionManager = remember { SessionManager(context) }
     var email by remember { mutableStateOf("") }
@@ -38,6 +40,13 @@ fun LoginScreen(navController: NavController) {
     val viewModel: AuthViewModel = viewModel(
         factory = AuthViewModelFactory(sessionManager)
     )
+    LaunchedEffect(viewModel.loginSuccess) {
+        if (viewModel.loginSuccess) {
+            navController.navigate(Routes.Home.route) {
+                popUpTo(Routes.Login.route) { inclusive = true }
+            }
+        }
+    }
 
 
     Column(
@@ -57,16 +66,12 @@ fun LoginScreen(navController: NavController) {
             label = { Text("Contraseña") }
         )
         Row {
-            Button(onClick = {
+            Button(
+                onClick = {
                     viewModel.login(email, password)
-                    if (viewModel.loginSuccess) {
-                        navController.navigate(Routes.Home.route) {
-                            popUpTo(Routes.Login.route) { inclusive = true }
-                        }
-                    }
                 },
-                    enabled = !viewModel.isLoading
-                ) {
+                enabled = !viewModel.isLoading
+            ) {
                 if (viewModel.isLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(20.dp),
@@ -74,6 +79,12 @@ fun LoginScreen(navController: NavController) {
                     )
                 } else {
                     Text("Iniciar sesión")
+                }
+                if (viewModel.errorMessage != null) {
+                    Text(
+                        text = viewModel.errorMessage!!,
+                        color = androidx.compose.ui.graphics.Color.Red
+                    )
                 }
             }
             Button(onClick = {
@@ -95,4 +106,5 @@ fun LoginScreen(navController: NavController) {
             Text("Crear cuenta")
         }*/
     }
+
 }

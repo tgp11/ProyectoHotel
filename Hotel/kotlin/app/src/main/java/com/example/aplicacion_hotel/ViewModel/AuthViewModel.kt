@@ -1,10 +1,14 @@
+import android.util.Log
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.aplicacion_hotel.Repository.AuthRepository
 import com.example.aplicacion_hotel.Repository.ClienteRepository
+import com.example.aplicacion_hotel.View.navigation.Routes
 import kotlinx.coroutines.launch
 
 class AuthViewModel(
@@ -25,6 +29,7 @@ class AuthViewModel(
     private val clienteRepository = ClienteRepository()
 
     fun login(email: String, password: String) {
+        Log.d("LOGIN_DEBUG", "Entrando al login con $email")
 
         viewModelScope.launch {
 
@@ -54,9 +59,15 @@ class AuthViewModel(
 
             } catch (e: Exception) {
                 errorMessage = e.message
+                Log.e("LOGIN_ERROR", e.toString())
+                errorMessage = e.toString()
             }finally {
                 isLoading = false
             }
+
         }
+
     }
+
 }
+
