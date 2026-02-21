@@ -2,17 +2,14 @@ package com.example.aplicacion_hotel.View.screens.login
 
 import AuthViewModel
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,18 +24,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.aplicacion_hotel.View.navigation.Routes
 import com.example.aplicacion_hotel.ViewModel.AuthViewModelFactory
-import com.example.aplicacion_hotel.utils.SessionManager
+import com.example.aplicacion_hotel.utils.HotelSessionManager
+import androidx.compose.material3.SnackbarHostState
 
 @Composable
 fun LoginScreen(navController: NavController) {
 
     val context = LocalContext.current
-    val sessionManager = remember { SessionManager(context) }
+    val hotelSessionManager = remember { HotelSessionManager(context) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     val viewModel: AuthViewModel = viewModel(
-        factory = AuthViewModelFactory(sessionManager)
+        factory = AuthViewModelFactory(hotelSessionManager)
     )
     LaunchedEffect(viewModel.loginSuccess) {
         if (viewModel.loginSuccess) {
@@ -47,6 +45,16 @@ fun LoginScreen(navController: NavController) {
             }
         }
     }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(viewModel.errorMessage) {
+        viewModel.errorMessage?.let { msg ->
+            snackbarHostState.showSnackbar(msg)
+            // opcional: limpiar el error si tu VM tiene función para ello
+            // viewModel.clearError()
+        }
+    }
+
 
 
     Column(
@@ -68,7 +76,7 @@ fun LoginScreen(navController: NavController) {
         Row {
             Button(
                 onClick = {
-                    viewModel.login(email, password)
+                    viewModel.login(email.trim(), password.trim())
                 },
                 enabled = !viewModel.isLoading
             ) {
@@ -80,18 +88,20 @@ fun LoginScreen(navController: NavController) {
                 } else {
                     Text("Iniciar sesión")
                 }
-                if (viewModel.errorMessage != null) {
-                    Text(
-                        text = viewModel.errorMessage!!,
-                        color = androidx.compose.ui.graphics.Color.Red
-                    )
-                }
+
             }
             Button(onClick = {
                 navController.navigate(Routes.Register.route)
             }) {
                 Text("Crear cuenta")
             }
+
+        }
+        if (viewModel.errorMessage != null) {
+            Text(
+                text = viewModel.errorMessage!!,
+                color = androidx.compose.ui.graphics.Color.Red
+            )
         }
 
         /*Button(onClick = {

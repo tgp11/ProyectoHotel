@@ -1,17 +1,16 @@
 package com.example.aplicacion_hotel.View.screens.register
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
@@ -31,22 +30,35 @@ import androidx.navigation.NavController
 import com.example.aplicacion_hotel.View.navigation.Routes
 import com.example.aplicacion_hotel.ViewModel.RegisterViewModel
 import com.example.aplicacion_hotel.ViewModel.RegisterViewModelFactory
-import com.example.aplicacion_hotel.utils.SessionManager
+import com.example.aplicacion_hotel.utils.HotelSessionManager
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.runtime.LaunchedEffect
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(navController: NavController) {
 
 
     val context = LocalContext.current
-    val sessionManager = remember { SessionManager(context) }
+    val hotelSessionManager = remember { HotelSessionManager(context) }
 
     val viewModel: RegisterViewModel = viewModel(
-        factory = RegisterViewModelFactory(sessionManager)
+        factory = RegisterViewModelFactory(hotelSessionManager)
     )
+
+    LaunchedEffect(viewModel.registerSuccess) {
+        if (viewModel.registerSuccess) {
+            navController.navigate(Routes.Home.route) {
+                popUpTo(Routes.Register.route) { inclusive = true }
+            }
+        }
+    }
 
     var nombre by remember { mutableStateOf("") }
     var dni by remember { mutableStateOf("") }
@@ -94,48 +106,61 @@ fun RegisterScreen(navController: NavController) {
 
         OutlinedTextField(
             value = fechaNacimiento,
-            onValueChange = { },
-            readOnly = true,
-            label = { Text("Fecha de nacimiento") },
-            modifier = Modifier.clickable { showDatePicker = true }
-        )
-
-        OutlinedTextField(
-            value = txtSexo,
             onValueChange = {},
             readOnly = true,
-            label = { Text("Sexo") },
-            modifier = Modifier.clickable { expanded = true }
+            enabled = false, // ✅ evita que el TextField “se coma” el click
+            label = { Text("Fecha de nacimiento") },
+            trailingIcon = {
+                IconButton(onClick = { showDatePicker = true }) {
+                    Icon(Icons.Default.CalendarToday, contentDescription = "Elegir fecha")
+                }
+            },
+            modifier = Modifier
         )
 
-        DropdownMenu(
+
+        ExposedDropdownMenuBox(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onExpandedChange = { expanded = !expanded }
         ) {
-            DropdownMenuItem(
-                text = { Text("Hombre") },
-                onClick = {
-                    sexo = "M"
-                    txtSexo = "Hombre"
-                    expanded = false
-                }
+            OutlinedTextField(
+                value = txtSexo,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Sexo") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier.menuAnchor()
             )
-            DropdownMenuItem(
-                text = { Text("Mujer") },
-                onClick = {
-                    sexo = "F"
-                    txtSexo = "Mujer"
-                    expanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Otro") },
-                onClick = {
-                    sexo = "X"
-                    txtSexo = "Otro"
-                    expanded = false
-                }
-            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Hombre") },
+                    onClick = {
+                        sexo = "M"
+                        txtSexo = "Hombre"
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Mujer") },
+                    onClick = {
+                        sexo = "F"
+                        txtSexo = "Mujer"
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Otro") },
+                    onClick = {
+                        sexo = "X"
+                        txtSexo = "Otro"
+                        expanded = false
+                    }
+                )
+            }
         }
 
         OutlinedTextField(
@@ -146,50 +171,43 @@ fun RegisterScreen(navController: NavController) {
 
         Row {
 
-            Button(onClick = {
-                viewModel.register(
-                    nombre,
-                    dni,
-                    email,
-                    password,
-                    fechaNacimiento,
-                    sexo,
-                    ciudad
-                )
-                if (viewModel.registerSuccess) {
-                    navController.navigate(Routes.Home.route) {
-                        popUpTo(Routes.Register.route) { inclusive = true }
-                    }
-                }
-            },enabled = !viewModel.isLoading)
-            {
+            Button(
+                onClick = {
+                    viewModel.register(
+                        nombre.trim(),
+                        dni.trim(),
+                        email.trim(),
+                        password,
+                        fechaNacimiento,
+                        sexo,
+                        ciudad.trim()
+                    )
+                },
+                enabled = !viewModel.isLoading
+            ) {
                 if (viewModel.isLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(20.dp),
                         strokeWidth = 2.dp
                     )
                 } else {
-                    Text("Crear Cuenta")
+                    Text("Crear cuenta")
                 }
             }
 
-            Button(onClick = {
-                navController.popBackStack()
-            }) {if (viewModel.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
-                    strokeWidth = 2.dp
-                )
-            } else {
+            Button(
+                onClick = { navController.popBackStack() },
+                enabled = !viewModel.isLoading
+            ) {
                 Text("Volver")
-                }
             }
         }
 
-        if (viewModel.registerSuccess) {
-            navController.navigate(Routes.Login.route) {
-                popUpTo(Routes.Register.route) { inclusive = true }
-            }
+        viewModel.errorMessage?.let { msg ->
+            Text(
+                text = msg,
+                color = androidx.compose.ui.graphics.Color.Red
+            )
         }
     }
 
