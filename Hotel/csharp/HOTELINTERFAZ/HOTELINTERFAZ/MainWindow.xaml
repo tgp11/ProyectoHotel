@@ -102,7 +102,7 @@
                     Height="80" Margin="10" Foreground="White" FontSize="15"
                     Background="Transparent" BorderBrush="Transparent"
                     HorizontalContentAlignment="Left" Cursor="Hand"
-                    Click="GestionReservas_Click"/>
+                    Click="GestionResenas_Click"/>
 
             
         </StackPanel>

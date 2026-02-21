@@ -1,9 +1,11 @@
-﻿using System;
+﻿using HOTELINTERFAZ.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -21,9 +23,12 @@ namespace HOTELINTERFAZ.Views
             InitializeComponent();
         }
 
-        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void Eliminar_Click(object sender, RoutedEventArgs e)
         {
-
+            if (DataContext is ResenasViewModel vm)
+            {
+                //await vm.EliminarResena();
+            }
         }
     }
 }

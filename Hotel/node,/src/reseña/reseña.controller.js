@@ -28,11 +28,40 @@ exports.crearResena = async (req, res) => {
   }
 };
 
+// 1. Asegúrate de tener el modelo de Cliente importado arriba
+const Cliente = require('../cliente/cliente.models'); // Ajusta la ruta a tu proyecto
+
+// ... (otros métodos)
+
 exports.obtenerResenas = async (req, res) => {
   try {
-    const resenas = await Resena.find(); // ❌ sin populate
-    res.json(resenas);
+    // Traemos las reseñas
+    const resenas = await Resena.find().lean(); 
+    
+    // IMPORTANTE: Buscamos en la colección de Clientes, NO en Usuarios
+    const clientes = await Cliente.find().lean();
+
+    const resultado = resenas.map(resena => {
+      // Buscamos el cliente que coincide con el ID de la reseña
+      const clienteEncontrado = clientes.find(c => 
+        c._id.toString() === resena.clienteId.toString()
+      );
+
+      return {
+        ...resena,
+        // Construimos el objeto cliente para que C# lo entienda
+        cliente: clienteEncontrado ? {
+          _id: clienteEncontrado._id,
+          dni: clienteEncontrado.dni, // C# lo leerá gracias a [JsonPropertyName("dni")]
+          nombre: clienteEncontrado.nombre
+        } : null
+      };
+    });
+
+    res.json(resultado);
+
   } catch (error) {
+    console.error("Error en obtenerResenas:", error);
     res.status(500).json({ error: error.message });
   }
 };
