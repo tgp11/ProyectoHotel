@@ -3,30 +3,6 @@ package com.example.aplicacion_hotel.utils
 import android.content.Context
 import com.example.aplicacion_hotel.Model.Cliente
 import com.google.gson.Gson
-import kotlin.collections.remove
-import kotlin.text.contains
-
-class SessionManager(context: Context) {
-
-    private val prefs = context.getSharedPreferences("hotel_session", Context.MODE_PRIVATE)
-    private val gson = Gson()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-}
 
 
 class HotelSessionManager(context: Context) {

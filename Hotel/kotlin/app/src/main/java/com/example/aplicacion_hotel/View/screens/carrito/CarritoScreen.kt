@@ -17,12 +17,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.aplicacion_hotel.Model.Habitacion
 import com.example.aplicacion_hotel.ViewModel.CarritoViewModel
 import com.example.aplicacion_hotel.ViewModel.CarritoViewModelFactory
-import com.example.aplicacion_hotel.utils.SessionManager
+import com.example.aplicacion_hotel.utils.HotelSessionManager
 
 @Composable
 fun CarritoScreen() {
     val context = LocalContext.current
-    val sessionManager = remember { SessionManager(context) }
+    val sessionManager = remember { HotelSessionManager(context) }
 
     val vm: CarritoViewModel = viewModel(factory = CarritoViewModelFactory(sessionManager))
 

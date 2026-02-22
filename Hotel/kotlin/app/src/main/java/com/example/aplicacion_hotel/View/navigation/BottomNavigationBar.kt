@@ -34,9 +34,9 @@ fun BottomNavigationBar(navController: NavController) {
 
         NavigationBarItem(
             selected = false,
-            onClick = { navController.navigate(Routes.Carrito.route) },
-            label = { Text("Carrito") },
-            icon = { Icon(Icons.Default.ShoppingCart, null) }
+            onClick = { navController.navigate(Routes.Vip.route) },
+            label = { Text("VIP") },
+            icon = { Icon(Icons.Default.Star, null) }
         )
     }
 }

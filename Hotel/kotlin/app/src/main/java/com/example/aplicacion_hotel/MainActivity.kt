@@ -9,14 +9,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.aplicacion_hotel.View.navigation.AppNavigation
 import com.example.aplicacion_hotel.ui.theme.Aplicacion_HotelTheme
-import com.example.aplicacion_hotel.utils.SessionManager
+import com.example.aplicacion_hotel.utils.HotelSessionManager
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val sessionManager = SessionManager(this)
+            val sessionManager = HotelSessionManager(this)
             val startDestination =
                 if (sessionManager.getToken() != null) "home"
                 else "login"

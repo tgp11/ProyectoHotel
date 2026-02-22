@@ -6,11 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.aplicacion_hotel.Model.Habitacion
 import com.example.aplicacion_hotel.Repository.HabitacionRepository
-import com.example.aplicacion_hotel.utils.SessionManager
+import com.example.aplicacion_hotel.utils.HotelSessionManager
 import kotlinx.coroutines.launch
 
 class CarritoViewModel(
-    private val sessionManager: SessionManager,
+    private val sessionManager: HotelSessionManager,
     private val repository: HabitacionRepository = HabitacionRepository()
 ) : ViewModel() {
 

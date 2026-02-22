@@ -27,13 +27,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.aplicacion_hotel.View.navigation.Routes
 import com.example.aplicacion_hotel.ViewModel.AuthViewModelFactory
-import com.example.aplicacion_hotel.utils.SessionManager
+import com.example.aplicacion_hotel.utils.HotelSessionManager
 
 @Composable
 fun LoginScreen(navController: NavController) {
 
     val context = LocalContext.current
-    val sessionManager = remember { SessionManager(context) }
+    val sessionManager = remember { HotelSessionManager(context) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 

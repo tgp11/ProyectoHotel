@@ -12,7 +12,7 @@ import com.example.aplicacion_hotel.View.navigation.Routes
 import kotlinx.coroutines.launch
 
 class AuthViewModel(
-    private val sessionManager: com.example.aplicacion_hotel.utils.SessionManager
+    private val sessionManager: com.example.aplicacion_hotel.utils.HotelSessionManager
 ) : ViewModel() {
 
     var isLoading by mutableStateOf(false)

@@ -31,7 +31,7 @@ import androidx.navigation.NavController
 import com.example.aplicacion_hotel.View.navigation.Routes
 import com.example.aplicacion_hotel.ViewModel.RegisterViewModel
 import com.example.aplicacion_hotel.ViewModel.RegisterViewModelFactory
-import com.example.aplicacion_hotel.utils.SessionManager
+import com.example.aplicacion_hotel.utils.HotelSessionManager
 import androidx.compose.material3.ExperimentalMaterial3Api
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -42,7 +42,7 @@ fun RegisterScreen(navController: NavController) {
 
 
     val context = LocalContext.current
-    val sessionManager = remember { SessionManager(context) }
+    val sessionManager = remember { HotelSessionManager(context) }
 
     val viewModel: RegisterViewModel = viewModel(
         factory = RegisterViewModelFactory(sessionManager)

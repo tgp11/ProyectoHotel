@@ -13,6 +13,7 @@ import com.example.aplicacion_hotel.View.screens.login.LoginScreen
 import com.example.aplicacion_hotel.View.screens.perfil.PerfilScreen
 import com.example.aplicacion_hotel.View.screens.register.RegisterScreen
 import com.example.aplicacion_hotel.View.screens.pago.PagoScreen
+import com.example.aplicacion_hotel.View.screens.vip.VipScreen
 
 @Composable
 fun AppNavigation() {
@@ -58,9 +59,14 @@ fun AppNavigation() {
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getString("habitacionId") ?: ""
             val precio = backStackEntry.arguments?.getFloat("precioNoche")?.toDouble() ?: 0.0
-            
+
             // Llamamos a la nueva pantalla de Pago
             PagoScreen(navController, id, precio)
+        }
+
+        //IVAN
+        composable(Routes.Vip.route) {
+            VipScreen(navController)
         }
     }
 }

@@ -11,11 +11,11 @@ import com.example.aplicacion_hotel.Model.Reserva
 import com.example.aplicacion_hotel.Repository.AuthRepository
 import com.example.aplicacion_hotel.Repository.ClienteRepository
 import com.example.aplicacion_hotel.Repository.ReservaRepository
-import com.example.aplicacion_hotel.utils.SessionManager
+import com.example.aplicacion_hotel.utils.HotelSessionManager
 import kotlinx.coroutines.launch
 
 class RegisterViewModel(
-    private val sessionManager: SessionManager
+    private val sessionManager: HotelSessionManager
 ) : ViewModel() {
 
     var isLoading by mutableStateOf(false)

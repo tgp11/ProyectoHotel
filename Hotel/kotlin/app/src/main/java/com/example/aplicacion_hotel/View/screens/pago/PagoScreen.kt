@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.aplicacion_hotel.ViewModel.ReservaViewModel
-import com.example.aplicacion_hotel.utils.SessionManager
+import com.example.aplicacion_hotel.utils.HotelSessionManager
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -27,7 +27,7 @@ fun PagoScreen(
     precioNoche: Double
 ) {
     val context = LocalContext.current
-    val sessionManager = SessionManager(context)
+    val sessionManager = HotelSessionManager(context)
     val clienteId = remember { sessionManager.getUserId() }
 
     val viewModel: ReservaViewModel = viewModel()

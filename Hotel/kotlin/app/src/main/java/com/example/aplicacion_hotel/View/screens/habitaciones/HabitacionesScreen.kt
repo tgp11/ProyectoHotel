@@ -23,12 +23,12 @@ import com.example.aplicacion_hotel.Model.Habitacion
 import com.example.aplicacion_hotel.ViewModel.HabitacionesViewModel
 import com.example.aplicacion_hotel.ViewModel.HabitacionesViewModelFactory
 import com.example.aplicacion_hotel.View.navigation.Routes
-import com.example.aplicacion_hotel.utils.SessionManager
+import com.example.aplicacion_hotel.utils.HotelSessionManager
 
 @Composable
 fun HabitacionesScreen(navController: NavController) {
     val context = LocalContext.current
-    val sessionManager = remember { SessionManager(context) }
+    val sessionManager = remember { HotelSessionManager(context) }
 
     val vm: HabitacionesViewModel = viewModel(
         factory = HabitacionesViewModelFactory(sessionManager)

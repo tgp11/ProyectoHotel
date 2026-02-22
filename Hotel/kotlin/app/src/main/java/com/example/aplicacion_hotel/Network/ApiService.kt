@@ -11,7 +11,11 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 import com.example.aplicacion_hotel.Model.CrearReservaRequest
 import com.example.aplicacion_hotel.Model.Reserva
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
+import retrofit2.http.Multipart
+import retrofit2.http.Part
 import retrofit2.http.Query
 
 interface ApiService {
@@ -34,6 +38,7 @@ interface ApiService {
         @Body cliente: Cliente
     ): Cliente
 
+
     @POST("reservas")
     suspend fun crearReserva(
         @Body reserva: CrearReservaRequest
@@ -48,9 +53,25 @@ interface ApiService {
         @Query("clienteId") clienteId: String
     ): Response<List<Reserva>>
 
-    // --- CORREGIDO PARA TU BACKEND ---
     @PUT("reservas/{id}/cancelar")
     suspend fun cancelarReserva(
         @Path("id") id: String
     ): Response<Reserva>
+
+    @Multipart
+    @PUT("cliente/{id}")
+    suspend fun actualizarCliente(
+        @Path("id") id: String,
+
+        @Part("nombre") nombre: RequestBody,
+        @Part("dni") dni: RequestBody,
+        @Part("email") email: RequestBody,
+        @Part("fechaNacimiento") fechaNacimiento: RequestBody,
+        @Part("sexo") sexo: RequestBody,
+        @Part("ciudad") ciudad: RequestBody,
+        @Part("vip") vip: RequestBody,
+
+        // upload.single('foto') => fieldName "foto"
+        @Part foto: MultipartBody.Part? = null
+    ): Cliente
 }

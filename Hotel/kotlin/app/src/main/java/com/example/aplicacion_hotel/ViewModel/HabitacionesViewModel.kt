@@ -8,13 +8,13 @@ import com.example.aplicacion_hotel.Model.Habitacion
 import com.example.aplicacion_hotel.Model.Reserva
 import com.example.aplicacion_hotel.Network.RetrofitInstance
 import com.example.aplicacion_hotel.Repository.HabitacionRepository
-import com.example.aplicacion_hotel.utils.SessionManager
+import com.example.aplicacion_hotel.utils.HotelSessionManager
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
 class HabitacionesViewModel(
-    private val sessionManager: SessionManager,
+    private val sessionManager: HotelSessionManager,
     private val repository: HabitacionRepository = HabitacionRepository()
 ) : ViewModel() {
 

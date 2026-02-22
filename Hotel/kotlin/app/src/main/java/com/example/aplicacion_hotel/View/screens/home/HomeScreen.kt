@@ -15,6 +15,7 @@ import com.example.aplicacion_hotel.View.navigation.Routes
 import com.example.aplicacion_hotel.View.screens.carrito.CarritoScreen
 import com.example.aplicacion_hotel.View.screens.habitaciones.HabitacionesScreen
 import com.example.aplicacion_hotel.View.screens.reservas.ReservasScreen
+import com.example.aplicacion_hotel.View.screens.vip.VipScreen
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,8 +48,8 @@ fun HomeScreen(navController: NavController) {
                 ReservasScreen()
             }
 
-            composable(Routes.Carrito.route) {
-                CarritoScreen()
+            composable(Routes.Vip.route) {
+                VipScreen(navController)
             }
         }
     }
