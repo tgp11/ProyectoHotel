@@ -19,5 +19,8 @@ if (!URI) {
 mongoose.connect(URI)
   .then(() => console.log('Conectado a MongoDB Atlas'))
   .catch(err => console.log('Error de conexión:', err));
+  mongoose.connection.once("open", () => {
+  console.log("DB name:", mongoose.connection.name);
+});
 
 module.exports = mongoose;
