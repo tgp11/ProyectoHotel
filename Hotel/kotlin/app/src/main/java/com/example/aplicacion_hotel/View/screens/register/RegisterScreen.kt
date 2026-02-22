@@ -1,26 +1,12 @@
 package com.example.aplicacion_hotel.View.screens.register
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -31,19 +17,12 @@ import com.example.aplicacion_hotel.View.navigation.Routes
 import com.example.aplicacion_hotel.ViewModel.RegisterViewModel
 import com.example.aplicacion_hotel.ViewModel.RegisterViewModelFactory
 import com.example.aplicacion_hotel.utils.HotelSessionManager
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.runtime.LaunchedEffect
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(navController: NavController) {
-
 
     val context = LocalContext.current
     val hotelSessionManager = remember { HotelSessionManager(context) }
@@ -74,140 +53,179 @@ fun RegisterScreen(navController: NavController) {
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
 
-    Column(
+    Surface(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        color = MaterialTheme.colorScheme.background
     ) {
-
-        OutlinedTextField(
-            value = nombre,
-            onValueChange = { nombre = it },
-            label = { Text("Nombre") }
-        )
-
-        OutlinedTextField(
-            value = dni,
-            onValueChange = { dni = it },
-            label = { Text("DNI") }
-        )
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") }
-        )
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Contraseña") }
-        )
-
-        OutlinedTextField(
-            value = fechaNacimiento,
-            onValueChange = {},
-            readOnly = true,
-            enabled = false, // ✅ evita que el TextField “se coma” el click
-            label = { Text("Fecha de nacimiento") },
-            trailingIcon = {
-                IconButton(onClick = { showDatePicker = true }) {
-                    Icon(Icons.Default.CalendarToday, contentDescription = "Elegir fecha")
-                }
-            },
+        Column(
             modifier = Modifier
-        )
-
-
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = !expanded }
+                .fillMaxSize()
+                .padding(24.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Text(
+                text = "Crear Cuenta",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
             OutlinedTextField(
-                value = txtSexo,
+                value = nombre,
+                onValueChange = { nombre = it },
+                label = { Text("Nombre") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = dni,
+                onValueChange = { dni = it },
+                label = { Text("DNI") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Contraseña") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = fechaNacimiento,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Sexo") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier.menuAnchor()
+                label = { Text("Fecha de nacimiento") },
+                trailingIcon = {
+                    IconButton(onClick = { showDatePicker = true }) {
+                        Icon(Icons.Default.CalendarToday, contentDescription = "Elegir fecha")
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
             )
 
-            ExposedDropdownMenu(
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ExposedDropdownMenuBox(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onExpandedChange = { expanded = !expanded },
+                modifier = Modifier.fillMaxWidth()
             ) {
-                DropdownMenuItem(
-                    text = { Text("Hombre") },
-                    onClick = {
-                        sexo = "M"
-                        txtSexo = "Hombre"
-                        expanded = false
-                    }
+                OutlinedTextField(
+                    value = txtSexo,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Sexo") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    modifier = Modifier.menuAnchor().fillMaxWidth()
                 )
-                DropdownMenuItem(
-                    text = { Text("Mujer") },
-                    onClick = {
-                        sexo = "F"
-                        txtSexo = "Mujer"
-                        expanded = false
-                    }
-                )
-                DropdownMenuItem(
-                    text = { Text("Otro") },
-                    onClick = {
-                        sexo = "X"
-                        txtSexo = "Otro"
-                        expanded = false
-                    }
-                )
-            }
-        }
 
-        OutlinedTextField(
-            value = ciudad,
-            onValueChange = { ciudad = it },
-            label = { Text("Ciudad") }
-        )
-
-        Row {
-
-            Button(
-                onClick = {
-                    viewModel.register(
-                        nombre.trim(),
-                        dni.trim(),
-                        email.trim(),
-                        password,
-                        fechaNacimiento,
-                        sexo,
-                        ciudad.trim()
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Hombre") },
+                        onClick = {
+                            sexo = "M"
+                            txtSexo = "Hombre"
+                            expanded = false
+                        }
                     )
-                },
-                enabled = !viewModel.isLoading
-            ) {
-                if (viewModel.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        strokeWidth = 2.dp
+                    DropdownMenuItem(
+                        text = { Text("Mujer") },
+                        onClick = {
+                            sexo = "F"
+                            txtSexo = "Mujer"
+                            expanded = false
+                        }
                     )
-                } else {
-                    Text("Crear cuenta")
+                    DropdownMenuItem(
+                        text = { Text("Otro") },
+                        onClick = {
+                            sexo = "X"
+                            txtSexo = "Otro"
+                            expanded = false
+                        }
+                    )
                 }
             }
 
-            Button(
-                onClick = { navController.popBackStack() },
-                enabled = !viewModel.isLoading
-            ) {
-                Text("Volver")
-            }
-        }
+            Spacer(modifier = Modifier.height(8.dp))
 
-        viewModel.errorMessage?.let { msg ->
-            Text(
-                text = msg,
-                color = androidx.compose.ui.graphics.Color.Red
+            OutlinedTextField(
+                value = ciudad,
+                onValueChange = { ciudad = it },
+                label = { Text("Ciudad") },
+                modifier = Modifier.fillMaxWidth()
             )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Button(
+                    onClick = {
+                        viewModel.register(
+                            nombre.trim(),
+                            dni.trim(),
+                            email.trim(),
+                            password,
+                            fechaNacimiento,
+                            sexo,
+                            ciudad.trim()
+                        )
+                    },
+                    enabled = !viewModel.isLoading,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    if (viewModel.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    } else {
+                        Text("Crear cuenta")
+                    }
+                }
+
+                Button(
+                    onClick = { navController.popBackStack() },
+                    enabled = !viewModel.isLoading,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Volver")
+                }
+            }
+
+            viewModel.errorMessage?.let { msg ->
+                Text(
+                    text = msg,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+            }
         }
     }
 
@@ -215,7 +233,7 @@ fun RegisterScreen(navController: NavController) {
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
-                Button(onClick = {
+                TextButton(onClick = {
                     val millis = datePickerState.selectedDateMillis
                     if (millis != null) {
                         val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -227,7 +245,7 @@ fun RegisterScreen(navController: NavController) {
                 }
             },
             dismissButton = {
-                Button(onClick = { showDatePicker = false }) {
+                TextButton(onClick = { showDatePicker = false }) {
                     Text("Cancelar")
                 }
             }

@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 const Reserva = require('./reserva.models');
 const Usuario = require('../usuario/usuario.models');
-
+const Habitacion = require('../habitacion/habitacion.models');
 
 
 
@@ -76,23 +76,47 @@ exports.eliminarReserva = async (req, res) => {
 
 exports.obtenerReservas = async (req, res) => {
   try {
-    // 1. Pillamos las reservas como objetos planos
+
+    // 1️⃣ Traer reservas
     const reservas = await Reserva.find().lean();
 
-    
+    // 2️⃣ Traer clientes
     const clientes = await Usuario.find().lean();
 
-    console.log(clientes)
+    // 3️⃣ Traer habitaciones
+    const habitaciones = await Habitacion.find().lean();
 
+    // 4️⃣ Mapear resultado completo
     const resultado = reservas.map(reserva => {
-      const cliente = clientes.find(c => c._id.toString() === reserva.clienteId.toString());
+
+      const cliente = clientes.find(
+        c => c._id.toString() === reserva.clienteId.toString()
+      );
+
+      const habitacion = habitaciones.find(
+        h => h._id.toString() === reserva.habitacionId.toString()
+      );
+
       return {
         ...reserva,
-        cliente: cliente ? cliente: null
+
+        cliente: cliente
+          ? {
+              dni: cliente.dni,
+              nombre: cliente.nombre
+            }
+          : null,
+
+        habitacion: habitacion
+          ? {
+              numero: habitacion.numero
+            }
+          : null
       };
-    })
+    });
 
     res.json(resultado);
+
   } catch (error) {
     console.error("ERROR EN EL SERVIDOR:", error);
     res.status(500).json({ error: "Error interno", detalle: error.message });

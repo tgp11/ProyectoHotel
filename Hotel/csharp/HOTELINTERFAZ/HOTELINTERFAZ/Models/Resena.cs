@@ -18,6 +18,11 @@ namespace HOTELINTERFAZ.Models
         [JsonPropertyName("nombre")]
         public string Nombre { get; set; }
     }
+    public class HabitacionReducida
+    {
+        [JsonPropertyName("numero")]
+        public int Numero { get; set; }
+    }
 
     public class Resena
     {
@@ -41,5 +46,6 @@ namespace HOTELINTERFAZ.Models
 
         [JsonPropertyName("cliente")]
         public ClienteReducido Cliente { get; set; }
+
     }
 }

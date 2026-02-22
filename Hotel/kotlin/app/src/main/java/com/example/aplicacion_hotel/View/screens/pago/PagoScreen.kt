@@ -5,10 +5,10 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -20,6 +20,51 @@ import com.example.aplicacion_hotel.utils.HotelSessionManager
 import java.text.SimpleDateFormat
 import java.util.*
 
+// Funciones de utilidad movidas arriba para evitar errores de referencia
+fun calcularPrecioTotal(entrada: String, salida: String, precioNoche: Double): Double {
+    if (entrada.isEmpty() || salida.isEmpty()) return 0.0
+    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    sdf.isLenient = false
+    return try {
+        val date1 = sdf.parse(entrada)
+        val date2 = sdf.parse(salida)
+        if (date1 != null && date2 != null) {
+            val diffInMillies = date2.time - date1.time
+            if (diffInMillies < 0) return 0.0
+            val noches = (diffInMillies / (1000 * 60 * 60 * 24)).toInt()
+            val dias = (noches + 1).coerceAtLeast(1)
+            dias * precioNoche
+        } else 0.0
+    } catch (e: Exception) {
+        0.0
+    }
+}
+
+fun validarCampos(entrada: String, salida: String, personas: String, tarjeta: String, cvv: String, context: Context): Boolean {
+    if (entrada.isEmpty() || salida.isEmpty() || personas.isEmpty()) {
+        Toast.makeText(context, "Rellena todos los campos", Toast.LENGTH_SHORT).show()
+        return false
+    }
+    try {
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        sdf.isLenient = false
+        val d1 = sdf.parse(entrada)
+        val d2 = sdf.parse(salida)
+        if (d1 == null || d2 == null || d2.before(d1)) {
+            Toast.makeText(context, "La fecha de salida debe ser posterior a la de entrada", Toast.LENGTH_SHORT).show()
+            return false
+        }
+    } catch (e: Exception) {
+        return false
+    }
+    if (tarjeta.length < 16 || cvv.length < 3) {
+        Toast.makeText(context, "Datos de tarjeta incompletos", Toast.LENGTH_SHORT).show()
+        return false
+    }
+    return true
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PagoScreen(
     navController: NavController,
@@ -27,7 +72,7 @@ fun PagoScreen(
     precioNoche: Double
 ) {
     val context = LocalContext.current
-    val sessionManager = HotelSessionManager(context)
+    val sessionManager = remember { HotelSessionManager(context) }
     val clienteId = remember { sessionManager.getUserId() }
 
     val viewModel: ReservaViewModel = viewModel()
@@ -42,11 +87,15 @@ fun PagoScreen(
     var fechaVencimiento by remember { mutableStateOf("") }
     var cvv by remember { mutableStateOf("") }
 
-    // Usamos derivedStateOf para que el precio se calcule automáticamente al cambiar las fechas
-    val precioTotal by remember(fechaEntrada, fechaSalida, precioNoche) {
-        derivedStateOf {
-            calcularPrecioTotal(fechaEntrada, fechaSalida, precioNoche)
-        }
+    // Estados para los DatePickers
+    var showEntradaPicker by remember { mutableStateOf(false) }
+    var showSalidaPicker by remember { mutableStateOf(false) }
+    val entradaPickerState = rememberDatePickerState()
+    val salidaPickerState = rememberDatePickerState()
+
+    // Cálculo del precio total reactivo
+    val precioTotal = remember(fechaEntrada, fechaSalida, precioNoche) {
+        calcularPrecioTotal(fechaEntrada, fechaSalida, precioNoche)
     }
 
     LaunchedEffect(reservaExitosa) {
@@ -58,163 +107,185 @@ fun PagoScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        Text("Finalizar Reserva", style = MaterialTheme.typography.headlineMedium)
-        Spacer(Modifier.height(16.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Finalizar Reserva",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(Modifier.height(16.dp))
 
-        Card(modifier = Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(16.dp)) {
-                Text("Datos de la estancia", style = MaterialTheme.typography.titleMedium)
-                Spacer(Modifier.height(8.dp))
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+            ) {
+                Column(Modifier.padding(16.dp)) {
+                    Text("Datos de la estancia", style = MaterialTheme.typography.titleMedium)
+                    Spacer(Modifier.height(8.dp))
 
-                OutlinedTextField(
-                    value = fechaEntrada,
-                    onValueChange = { fechaEntrada = it },
-                    label = { Text("Fecha Entrada (YYYY-MM-DD)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Ej: 2023-10-10") }
-                )
-                OutlinedTextField(
-                    value = fechaSalida,
-                    onValueChange = { fechaSalida = it },
-                    label = { Text("Fecha Salida (YYYY-MM-DD)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Ej: 2023-10-12") }
-                )
-                OutlinedTextField(
-                    value = personas,
-                    onValueChange = { personas = it },
-                    label = { Text("Número de personas") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        Card(modifier = Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(16.dp)) {
-                Text("Método de Pago", style = MaterialTheme.typography.titleMedium)
-                Spacer(Modifier.height(8.dp))
-
-                OutlinedTextField(
-                    value = nombreTarjeta,
-                    onValueChange = { nombreTarjeta = it },
-                    label = { Text("Nombre en la tarjeta") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                OutlinedTextField(
-                    value = numeroTarjeta,
-                    onValueChange = { if (it.length <= 16) numeroTarjeta = it },
-                    label = { Text("Número de tarjeta") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Row(Modifier.fillMaxWidth()) {
                     OutlinedTextField(
-                        value = fechaVencimiento,
-                        onValueChange = { fechaVencimiento = it },
-                        label = { Text("MM/YY") },
-                        modifier = Modifier.weight(1f)
+                        value = fechaEntrada,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Fecha Entrada") },
+                        trailingIcon = {
+                            IconButton(onClick = { showEntradaPicker = true }) {
+                                Icon(Icons.Default.CalendarToday, contentDescription = "Elegir fecha")
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
                     )
-                    Spacer(Modifier.width(8.dp))
+
+                    Spacer(Modifier.height(8.dp))
+
                     OutlinedTextField(
-                        value = cvv,
-                        onValueChange = { if (it.length <= 3) cvv = it },
-                        label = { Text("CVV") },
-                        modifier = Modifier.weight(1f)
+                        value = fechaSalida,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Fecha Salida") },
+                        trailingIcon = {
+                            IconButton(onClick = { showSalidaPicker = true }) {
+                                Icon(Icons.Default.CalendarToday, contentDescription = "Elegir fecha")
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+
+                    OutlinedTextField(
+                        value = personas,
+                        onValueChange = { personas = it },
+                        label = { Text("Número de personas") },
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
-        }
 
-        Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(16.dp))
 
-        if (precioTotal > 0) {
-            Text(
-                text = "Total a pagar: ${String.format(Locale.US, "%.2f", precioTotal)} €",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+            ) {
+                Column(Modifier.padding(16.dp)) {
+                    Text("Método de Pago", style = MaterialTheme.typography.titleMedium)
+                    Spacer(Modifier.height(8.dp))
 
-        Spacer(Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                if (validarCampos(fechaEntrada, fechaSalida, personas, numeroTarjeta, cvv, context)) {
-                    clienteId?.let { id ->
-                        viewModel.crearReserva(
-                            clienteId = id,
-                            habitacionId = habitacionId,
-                            fechaEntrada = fechaEntrada,
-                            fechaSalida = fechaSalida,
-                            personas = personas.toIntOrNull() ?: 1,
-                            precioTotal = precioTotal
+                    OutlinedTextField(
+                        value = nombreTarjeta,
+                        onValueChange = { nombreTarjeta = it },
+                        label = { Text("Nombre en la tarjeta") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    OutlinedTextField(
+                        value = numeroTarjeta,
+                        onValueChange = { if (it.length <= 16) numeroTarjeta = it },
+                        label = { Text("Número de tarjeta") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Row(Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = fechaVencimiento,
+                            onValueChange = { fechaVencimiento = it },
+                            label = { Text("MM/YY") },
+                            modifier = Modifier.weight(1f)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        OutlinedTextField(
+                            value = cvv,
+                            onValueChange = { if (it.length <= 3) cvv = it },
+                            label = { Text("CVV") },
+                            modifier = Modifier.weight(1f)
                         )
                     }
                 }
+            }
+
+            Spacer(Modifier.height(24.dp))
+
+            if (precioTotal > 0) {
+                Text(
+                    text = "Total a pagar: ${String.format(Locale.US, "%.2f", precioTotal)} €",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    if (validarCampos(fechaEntrada, fechaSalida, personas, numeroTarjeta, cvv, context)) {
+                        clienteId?.let { id ->
+                            viewModel.crearReserva(
+                                clienteId = id,
+                                habitacionId = habitacionId,
+                                fechaEntrada = fechaEntrada,
+                                fechaSalida = fechaSalida,
+                                personas = personas.toIntOrNull() ?: 1,
+                                precioTotal = precioTotal
+                            )
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = precioTotal > 0
+            ) {
+                Text("Pagar y Reservar")
+            }
+        }
+    }
+
+    if (showEntradaPicker) {
+        DatePickerDialog(
+            onDismissRequest = { showEntradaPicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    val millis = entradaPickerState.selectedDateMillis
+                    if (millis != null) {
+                        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                        fechaEntrada = sdf.format(Date(millis))
+                    }
+                    showEntradaPicker = false
+                }) { Text("Aceptar") }
             },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = precioTotal > 0
+            dismissButton = {
+                TextButton(onClick = { showEntradaPicker = false }) { Text("Cancelar") }
+            }
         ) {
-            Text("Pagar y Reservar")
+            DatePicker(state = entradaPickerState)
         }
     }
-}
 
-private fun calcularPrecioTotal(entrada: String, salida: String, precioNoche: Double): Double {
-    if (entrada.length < 10 || salida.length < 10) return 0.0
-    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    sdf.isLenient = false
-    return try {
-        val date1 = sdf.parse(entrada)
-        val date2 = sdf.parse(salida)
-        if (date1 != null && date2 != null) {
-            val diffInMillies = date2.time - date1.time
-            if (diffInMillies < 0) return 0.0
-
-            // Calculamos días naturales (si entra el 10 y sale el 11, son 2 días)
-            val noches = (diffInMillies / (1000 * 60 * 60 * 24)).toInt()
-            val dias = noches + 1
-
-            dias * precioNoche
-        } else {
-            0.0
+    if (showSalidaPicker) {
+        DatePickerDialog(
+            onDismissRequest = { showSalidaPicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    val millis = salidaPickerState.selectedDateMillis
+                    if (millis != null) {
+                        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                        fechaSalida = sdf.format(Date(millis))
+                    }
+                    showSalidaPicker = false
+                }) { Text("Aceptar") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showSalidaPicker = false }) { Text("Cancelar") }
+            }
+        ) {
+            DatePicker(state = salidaPickerState)
         }
-    } catch (e: Exception) {
-        0.0
     }
-}
-
-private fun validarCampos(entrada: String, salida: String, personas: String, tarjeta: String, cvv: String, context: Context): Boolean {
-    if (entrada.isEmpty() || salida.isEmpty() || personas.isEmpty()) {
-        Toast.makeText(context, "Rellena todos los campos", Toast.LENGTH_SHORT).show()
-        return false
-    }
-
-    try {
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        sdf.isLenient = false
-        val d1 = sdf.parse(entrada)
-        val d2 = sdf.parse(salida)
-        if (d1 == null || d2 == null || d2.before(d1)) {
-            Toast.makeText(context, "La fecha de salida debe ser posterior a la de entrada", Toast.LENGTH_SHORT).show()
-            return false
-        }
-    } catch (e: Exception) {
-        Toast.makeText(context, "Formato de fecha incorrecto (YYYY-MM-DD)", Toast.LENGTH_SHORT).show()
-        return false
-    }
-
-    if (tarjeta.length < 16 || cvv.length < 3) {
-        Toast.makeText(context, "Datos de tarjeta incompletos", Toast.LENGTH_SHORT).show()
-        return false
-    }
-    return true
 }

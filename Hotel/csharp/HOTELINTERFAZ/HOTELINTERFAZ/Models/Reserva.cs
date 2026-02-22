@@ -32,6 +32,10 @@ namespace HOTELINTERFAZ.Models
         [JsonPropertyName("cliente")]
         public ClienteReducido Cliente { get; set; } // Solo los datos mínimos (id, dni, nombre)
 
+
+        [JsonPropertyName("habitacion")]
+        public HabitacionReducida Habitacion { get; set; }
+
         public override string ToString() => $"Cliente: {Cliente}";
     }
 }
