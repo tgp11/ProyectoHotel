@@ -3,10 +3,36 @@ package com.example.aplicacion_hotel.utils
 import android.content.Context
 import com.example.aplicacion_hotel.Model.Cliente
 import com.google.gson.Gson
+import kotlin.collections.remove
+import kotlin.text.contains
 
 class SessionManager(context: Context) {
 
     private val prefs = context.getSharedPreferences("hotel_session", Context.MODE_PRIVATE)
+    private val gson = Gson()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+class HotelSessionManager(context: Context) {
+
+    private val prefs = context.getSharedPreferences("hotel_session", Context.MODE_PRIVATE)
+
     private val gson = Gson()
 
     fun saveToken(token: String) {
@@ -37,9 +63,7 @@ class SessionManager(context: Context) {
         prefs.edit().clear().apply()
     }
 
-
     private val KEY_CARRITO = "carrito_habitaciones_ids"
-
     fun getCarritoIds(): Set<String> {
         return prefs.getStringSet(KEY_CARRITO, emptySet()) ?: emptySet()
     }
@@ -58,5 +82,4 @@ class SessionManager(context: Context) {
     fun clearCarrito() {
         prefs.edit().remove(KEY_CARRITO).apply()
     }
-
 }
