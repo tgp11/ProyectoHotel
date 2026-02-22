@@ -14,15 +14,26 @@ class ResenaViewModel : ViewModel() {
     private val _resenaEnviada = mutableStateOf<Boolean?>(null)
     val resenaEnviada: State<Boolean?> = _resenaEnviada
 
-    fun enviarResena(clienteId: String, comentario: String, puntuacion: Int) {
+    private val _errorMessage = mutableStateOf<String?>(null)
+    val errorMessage: State<String?> = _errorMessage
+
+    fun enviarResena(clienteId: String, reservaId: String, habitacionId: String, comentario: String, puntuacion: Int) {
         viewModelScope.launch {
-            val request = CrearResenaRequest(clienteId, comentario, puntuacion)
+            _errorMessage.value = null
+            val request = CrearResenaRequest(clienteId, reservaId, habitacionId, comentario, puntuacion)
             val exito = repository.crearResena(request)
-            _resenaEnviada.value = exito
+
+            if (exito) {
+                _resenaEnviada.value = true
+            } else {
+                _resenaEnviada.value = false
+                _errorMessage.value = "Error al enviar la reseña"
+            }
         }
     }
 
     fun resetEstado() {
         _resenaEnviada.value = null
+        _errorMessage.value = null
     }
 }

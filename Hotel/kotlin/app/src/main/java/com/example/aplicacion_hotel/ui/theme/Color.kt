@@ -2,10 +2,11 @@ package com.example.aplicacion_hotel.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Colores basados en la imagen proporcionada
+val HotelRed = Color(0xFF7B1818)      // Granate/Rojo oscuro de la cabecera y menú
+val HotelDarkGrey = Color(0xFF333333) // Gris oscuro del fondo principal
+val HotelGold = Color(0xFFE6C267)     // Dorado/Amarillo de los botones (ej: "Nuevo", "Cerrar sesión")
+val HotelLightGrey = Color(0xFF444444) // Gris un poco más claro para tarjetas o inputs
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val White = Color(0xFFFFFFFF)
+val Black = Color(0xFF000000)

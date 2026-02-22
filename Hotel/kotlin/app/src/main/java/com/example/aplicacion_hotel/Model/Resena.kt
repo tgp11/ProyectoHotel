@@ -6,6 +6,8 @@ import kotlinx.serialization.Serializable
 data class Resena(
     val _id: String? = null,
     val clienteId: String,
+    val reservaId: String,
+    val habitacionId: String,
     val comentario: String,
     val puntuacion: Int,
     val fecha: String? = null
@@ -14,6 +16,8 @@ data class Resena(
 @Serializable
 data class CrearResenaRequest(
     val clienteId: String,
+    val reservaId: String,
+    val habitacionId: String,
     val comentario: String,
     val puntuacion: Int
 )

@@ -5,10 +5,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.aplicacion_hotel.utils.HotelSessionManager
 
 class RegisterViewModelFactory(
-    private val sessionManager: HotelSessionManager
+    private val hotelSessionManager: HotelSessionManager
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return RegisterViewModel(sessionManager) as T
+        return RegisterViewModel(hotelSessionManager) as T
     }
 }

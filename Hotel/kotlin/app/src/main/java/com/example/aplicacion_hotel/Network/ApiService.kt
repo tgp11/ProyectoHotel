@@ -4,19 +4,14 @@ import com.example.aplicacion_hotel.Model.Cliente
 import com.example.aplicacion_hotel.Model.Habitacion
 import com.example.aplicacion_hotel.Model.LoginRequest
 import com.example.aplicacion_hotel.Model.LoginResponse
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Path
 import com.example.aplicacion_hotel.Model.CrearReservaRequest
 import com.example.aplicacion_hotel.Model.Reserva
+import com.example.aplicacion_hotel.Model.Resena
+import com.example.aplicacion_hotel.Model.CrearResenaRequest
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
-import retrofit2.http.Multipart
-import retrofit2.http.Part
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface ApiService {
 
@@ -38,13 +33,11 @@ interface ApiService {
         @Body cliente: Cliente
     ): Cliente
 
-
     @POST("reservas")
     suspend fun crearReserva(
         @Body reserva: CrearReservaRequest
     ): Response<Unit>
 
-    // Obtener todas las reservas (para filtrar disponibilidad localmente)
     @GET("reservas")
     suspend fun obtenerTodasLasReservas(): Response<List<Reserva>>
 
@@ -62,7 +55,6 @@ interface ApiService {
     @PUT("cliente/{id}")
     suspend fun actualizarCliente(
         @Path("id") id: String,
-
         @Part("nombre") nombre: RequestBody,
         @Part("dni") dni: RequestBody,
         @Part("email") email: RequestBody,
@@ -70,8 +62,15 @@ interface ApiService {
         @Part("sexo") sexo: RequestBody,
         @Part("ciudad") ciudad: RequestBody,
         @Part("vip") vip: RequestBody,
-
-        // upload.single('foto') => fieldName "foto"
         @Part foto: MultipartBody.Part? = null
     ): Cliente
+
+    // --- ENDPOINTS PARA RESEÑAS ---
+    @GET("resenas")
+    suspend fun obtenerResenas(): List<Resena>
+
+    @POST("resenas")
+    suspend fun crearResena(
+        @Body resena: CrearResenaRequest
+    ): Response<Resena>
 }

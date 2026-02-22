@@ -1,8 +1,8 @@
 package com.example.aplicacion_hotel.ViewModel
 
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,24 +12,27 @@ import com.example.aplicacion_hotel.Repository.AuthRepository
 import com.example.aplicacion_hotel.Repository.ClienteRepository
 import com.example.aplicacion_hotel.Repository.ReservaRepository
 import com.example.aplicacion_hotel.utils.HotelSessionManager
+import com.example.aplicacion_hotel.utils.httpErrorMessage
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
 
 class RegisterViewModel(
-    private val sessionManager: HotelSessionManager
+    private val hotelSessionManager: HotelSessionManager
 ) : ViewModel() {
 
     var isLoading by mutableStateOf(false)
         private set
-
-    private val clienteRepository = ClienteRepository()
-    private val authRepository = AuthRepository()
-    private val reservaRepository = ReservaRepository()
 
     var registerSuccess by mutableStateOf(false)
         private set
 
     var errorMessage by mutableStateOf<String?>(null)
         private set
+
+    private val clienteRepository = ClienteRepository()
+    private val authRepository = AuthRepository()
+    private val reservaRepository = ReservaRepository()
 
     private val _reservas = mutableStateOf<List<Reserva>>(emptyList())
     val reservas: State<List<Reserva>> = _reservas
@@ -44,11 +47,12 @@ class RegisterViewModel(
         ciudad: String
     ) {
         viewModelScope.launch {
-            try {
-                isLoading = true
-                errorMessage = null
+            isLoading = true
+            errorMessage = null
+            registerSuccess = false
 
-                // 1️⃣ Crear cliente
+            try {
+                // 1) Crear cliente
                 val nuevoCliente = Cliente(
                     nombre = nombre,
                     dni = dni,
@@ -62,28 +66,29 @@ class RegisterViewModel(
 
                 clienteRepository.crearCliente(nuevoCliente)
 
-                // 2️⃣ Login automático
+                // 2) Login automático
                 val loginResponse = authRepository.login(email, password)
 
                 if (loginResponse.usuario.tipoUsuario != "Cliente") {
-                    errorMessage = "Error al iniciar sesión automática"
+                    errorMessage = "Solo los clientes pueden iniciar sesión"
                     return@launch
                 }
 
-                // 3️⃣ Guardar token
-                sessionManager.saveToken(loginResponse.token)
+                // 3) Guardar token
+                hotelSessionManager.saveToken(loginResponse.token)
 
-                // 4️⃣ Obtener cliente completo
-                val clienteCompleto = clienteRepository.getClienteById(
-                    loginResponse.usuario.id
-                )
-
-                sessionManager.saveCliente(clienteCompleto)
+                // 4) Obtener cliente completo y guardarlo
+                val clienteCompleto = clienteRepository.getClienteById(loginResponse.usuario.id)
+                hotelSessionManager.saveCliente(clienteCompleto)
 
                 registerSuccess = true
 
+            } catch (e: HttpException) {
+                errorMessage = httpErrorMessage(e)
+            } catch (e: IOException) {
+                errorMessage = "Error de red. Revisa tu conexión."
             } catch (e: Exception) {
-                errorMessage = e.message
+                errorMessage = "Error inesperado: ${e.message ?: e.toString()}"
             } finally {
                 isLoading = false
             }
@@ -94,16 +99,16 @@ class RegisterViewModel(
         viewModelScope.launch {
             try {
                 errorMessage = null
-                // 1. Usar el nombre de variable correcto (reservaRepository)
-                val todasLasReservas = reservaRepository.obtenerReservasUsuario(clienteIdLoggeado)
+                val todas = reservaRepository.obtenerReservasUsuario(clienteIdLoggeado)
 
-                // 2. Filtramos en el cliente (Android) para mostrar solo las del usuario
-                _reservas.value = todasLasReservas?.filter { reserva ->
-                    reserva.clienteId == clienteIdLoggeado
-                } ?: emptyList()
+                _reservas.value = todas?.filter { it.clienteId == clienteIdLoggeado } ?: emptyList()
 
+            } catch (e: HttpException) {
+                errorMessage = httpErrorMessage(e)
+            } catch (e: IOException) {
+                errorMessage = "Error de red al cargar reservas."
             } catch (e: Exception) {
-                errorMessage = "Error al cargar las reservas: ${e.message}"
+                errorMessage = "Error al cargar reservas: ${e.message ?: e.toString()}"
             }
         }
     }

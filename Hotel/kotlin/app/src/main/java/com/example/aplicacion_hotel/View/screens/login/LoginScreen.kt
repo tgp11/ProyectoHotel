@@ -2,17 +2,20 @@ package com.example.aplicacion_hotel.View.screens.login
 
 import AuthViewModel
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,6 +43,7 @@ fun LoginScreen(navController: NavController) {
     val viewModel: AuthViewModel = viewModel(
         factory = AuthViewModelFactory(sessionManager)
     )
+    
     LaunchedEffect(viewModel.loginSuccess) {
         if (viewModel.loginSuccess) {
             navController.navigate(Routes.Home.route) {
@@ -48,63 +52,80 @@ fun LoginScreen(navController: NavController) {
         }
     }
 
-
-    Column(
+    Surface(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-
+        color = MaterialTheme.colorScheme.background
     ) {
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") }
-        )
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Contraseña") }
-        )
-        Row {
-            Button(
-                onClick = {
-                    viewModel.login(email, password)
-                },
-                enabled = !viewModel.isLoading
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(32.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = "Bienvenido",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            
+            Spacer(modifier = Modifier.height(32.dp))
+
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Contraseña") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+            
+            Spacer(modifier = Modifier.height(24.dp))
+
+            if (viewModel.errorMessage != null) {
+                Text(
+                    text = viewModel.errorMessage!!,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                if (viewModel.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        strokeWidth = 2.dp
-                    )
-                } else {
-                    Text("Iniciar sesión")
+                Button(
+                    onClick = { viewModel.login(email, password) },
+                    enabled = !viewModel.isLoading,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    if (viewModel.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    } else {
+                        Text("Iniciar sesión")
+                    }
                 }
-                if (viewModel.errorMessage != null) {
-                    Text(
-                        text = viewModel.errorMessage!!,
-                        color = androidx.compose.ui.graphics.Color.Red
-                    )
+                
+                Button(
+                    onClick = { navController.navigate(Routes.Register.route) },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Crear cuenta")
                 }
             }
-            Button(onClick = {
-                navController.navigate(Routes.Register.route)
-            }) {
-                Text("Crear cuenta")
-            }
         }
-
-        /*Button(onClick = {
-            navController.navigate(Routes.Home.route)
-        }) {
-            Text("Iniciar sesión")
-        }
-
-        Button(onClick = {
-            navController.navigate(Routes.Register.route)
-        }) {
-            Text("Crear cuenta")
-        }*/
     }
-
 }
