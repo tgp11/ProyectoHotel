@@ -1,4 +1,6 @@
 const Habitacion = require('./habitacion.models');
+const fs = require("fs");
+const path = require("path");
 
 const pickAllowed = (obj, allowed) => {
   const out = {};
@@ -10,7 +12,6 @@ const pickAllowed = (obj, allowed) => {
 
 const handleMongoErrors = (error, res, fallbackMessage) => {
   // Validación de MongoDB a nivel de colección ($jsonSchema) -> code 121
-  // Tus apuntes indican código 121 para DocumentValidationFailure. :contentReference[oaicite:10]{index=10}
   if (error && (error.code === 121 || error.codeName === 'DocumentValidationFailure')) {
     return res.status(400).json({
       message: 'Error de validación (MongoDB): el documento no cumple el esquema',
@@ -34,13 +35,64 @@ const handleMongoErrors = (error, res, fallbackMessage) => {
   return res.status(500).json({ message: fallbackMessage, error: error?.message });
 };
 
+const esRutaLocalUploads = (v) => typeof v === "string" && v.startsWith("/uploads/");
+
+const tryParseArray = (value) => {
+  if (value == null) return [];
+  if (Array.isArray(value)) return value;
+
+  // A veces form-data manda strings; si viene JSON en string lo parseamos
+  if (typeof value === "string") {
+    const t = value.trim();
+    if (!t) return [];
+    try {
+      const parsed = JSON.parse(t);
+      return Array.isArray(parsed) ? parsed : [parsed];
+    } catch {
+      // Si no es JSON, puede venir separado por comas
+      if (t.includes(",")) return t.split(",").map(x => x.trim()).filter(Boolean);
+      return [t];
+    }
+  }
+  return [value];
+};
+
+const getUploadedPaths = (req) => {
+  // Con upload.fields: req.files = { imagen: [..], imagenes: [..] }
+  const out = [];
+
+  if (req.files && req.files.imagen && req.files.imagen[0]) {
+    out.push(`/uploads/${req.files.imagen[0].filename}`);
+  }
+  if (req.files && Array.isArray(req.files.imagenes)) {
+    out.push(...req.files.imagenes.map(f => `/uploads/${f.filename}`));
+  }
+
+  // Por si en algún punto usas upload.single / upload.array
+  if (!out.length && req.file) out.push(`/uploads/${req.file.filename}`);
+  if (!out.length && Array.isArray(req.files)) out.push(...req.files.map(f => `/uploads/${f.filename}`));
+
+  return out;
+};
+
+const borrarUploadsLocales = (imagenes) => {
+  const arr = Array.isArray(imagenes) ? imagenes : (imagenes ? [imagenes] : []);
+  for (const img of arr) {
+    if (!esRutaLocalUploads(img)) continue;
+    // "/uploads/xxx.jpg" -> "./uploads/xxx.jpg"
+    const ruta = path.join(".", img);
+    if (fs.existsSync(ruta)) fs.unlinkSync(ruta);
+  }
+};
+
 exports.crearHabitacion = async (req, res) => {
   try {
     const allowedFields = [
       'numero',
       'tipo',
       'descripcion',
-      'imagen',
+      'imagen',      // opcional (URL externa o portada)
+      'imagenes',    // carrusel (URLs externas)
       'precionoche',
       'rate',
       'max_ocupantes',
@@ -51,10 +103,21 @@ exports.crearHabitacion = async (req, res) => {
 
     const datos = pickAllowed(req.body, allowedFields);
 
+    // URLs externas (carrusel)
+    const urlsExternas = tryParseArray(datos.imagenes).map(String).filter(Boolean);
+
+    // Archivos subidos (local)
+    const rutasLocales = getUploadedPaths(req);
+
+    // Construimos carrusel final
+    const carrusel = [...rutasLocales, ...urlsExternas];
+
     const nuevaHabitacion = new Habitacion({
       ...datos,
       descripcion: datos.descripcion ?? '',
-      imagen: datos.imagen ?? '',
+      // imagen principal (compatibilidad): si no viene, usa la primera del carrusel
+      imagen: (datos.imagen && String(datos.imagen)) ? String(datos.imagen) : (carrusel[0] ?? ''),
+      imagenes: carrusel,
       rate: datos.rate ?? 0,
       disponible: datos.disponible ?? true,
       oferta: datos.oferta ?? false,
@@ -64,6 +127,8 @@ exports.crearHabitacion = async (req, res) => {
     const habitacionGuardada = await nuevaHabitacion.save();
     return res.status(201).json(habitacionGuardada);
   } catch (error) {
+    // Si falla y subieron archivos, los borramos para no dejar basura
+    try { borrarUploadsLocales(getUploadedPaths(req)); } catch {}
     console.error(error);
     return handleMongoErrors(error, res, 'Error creando la habitación');
   }
@@ -99,27 +164,74 @@ exports.actualizarHabitacion = async (req, res) => {
       'numero',
       'tipo',
       'descripcion',
-      'imagen',
+      'imagen',       // portada opcional
+      'imagenes',     // urls externas (carrusel)
       'precionoche',
       'rate',
       'max_ocupantes',
       'disponible',
       'oferta',
-      'servicios'
+      'servicios',
+      'replace'       // opcional por body
     ];
 
     const datos = pickAllowed(req.body, allowedFields);
 
-    // runValidators asegura que Mongoose también valide en updates (min/max/enum/etc.)
-    const habitacion = await Habitacion.findByIdAndUpdate(id, datos, {
-      new: true,
-      runValidators: true,
-      context: 'query'
-    });
+    const habitacion = await Habitacion.findById(id);
+    if (!habitacion) {
+      // Si subieron archivos y no existe, borramos lo subido
+      try { borrarUploadsLocales(getUploadedPaths(req)); } catch {}
+      return res.status(404).json({ message: 'Habitación no encontrada' });
+    }
 
-    if (!habitacion) return res.status(404).json({ message: 'Habitación no encontrada' });
-    return res.json(habitacion);
+    // Nuevas URLs externas
+    const urlsExternas = tryParseArray(datos.imagenes).map(String).filter(Boolean);
+
+    // Nuevas rutas locales (uploads)
+    const rutasLocales = getUploadedPaths(req);
+
+    const nuevas = [...rutasLocales, ...urlsExternas];
+
+    // replace se puede mandar por query (?replace=true) o body (replace="true")
+    const replace =
+      req.query.replace === "true" ||
+      datos.replace === true ||
+      datos.replace === "true";
+
+    if (nuevas.length) {
+      if (replace) {
+        // Borramos las imágenes locales antiguas antes de reemplazar
+        borrarUploadsLocales(habitacion.imagenes);
+        habitacion.imagenes = nuevas;
+      } else {
+        habitacion.imagenes = [...habitacion.imagenes, ...nuevas];
+      }
+
+      // Si no te han pasado "imagen" explícitamente, ajusta portada a la primera del carrusel
+      if (!datos.imagen) {
+        habitacion.imagen = habitacion.imagenes[0] ?? habitacion.imagen ?? '';
+      }
+    }
+
+    // Campos normales (si vienen)
+    if (datos.numero !== undefined) habitacion.numero = datos.numero;
+    if (datos.tipo !== undefined) habitacion.tipo = datos.tipo;
+    if (datos.descripcion !== undefined) habitacion.descripcion = datos.descripcion;
+    if (datos.imagen !== undefined) habitacion.imagen = String(datos.imagen);
+    if (datos.precionoche !== undefined) habitacion.precionoche = datos.precionoche;
+    if (datos.rate !== undefined) habitacion.rate = datos.rate;
+    if (datos.max_ocupantes !== undefined) habitacion.max_ocupantes = datos.max_ocupantes;
+    if (datos.disponible !== undefined) habitacion.disponible = datos.disponible;
+    if (datos.oferta !== undefined) habitacion.oferta = datos.oferta;
+    if (datos.servicios !== undefined) habitacion.servicios = datos.servicios;
+
+    // Guarda validando
+    const guardada = await habitacion.save();
+    return res.json(guardada);
+
   } catch (error) {
+    // Si falla y subieron archivos, los borramos
+    try { borrarUploadsLocales(getUploadedPaths(req)); } catch {}
     console.error(error);
     return handleMongoErrors(error, res, 'Error actualizando la habitación');
   }
@@ -128,9 +240,17 @@ exports.actualizarHabitacion = async (req, res) => {
 exports.eliminarHabitacion = async (req, res) => {
   try {
     const { id } = req.params;
-    const habitacion = await Habitacion.findByIdAndDelete(id);
+
+    const habitacion = await Habitacion.findById(id);
     if (!habitacion) return res.status(404).json({ message: 'Habitación no encontrada' });
+
+    // Borrar imágenes locales del disco
+    borrarUploadsLocales(habitacion.imagenes);
+    if (habitacion.imagen) borrarUploadsLocales(habitacion.imagen);
+
+    await Habitacion.findByIdAndDelete(id);
     return res.json({ message: 'Habitación eliminada' });
+
   } catch (error) {
     console.error(error);
     return handleMongoErrors(error, res, 'Error eliminando la habitación');

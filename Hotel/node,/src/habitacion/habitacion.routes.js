@@ -1,20 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('./habitacion.controller');
+const upload = require("../Middleware/upload.middleware");
 
-// Crear habitación
-router.post('/', controller.crearHabitacion);
+// Crear habitación: subir varias imágenes (campo: "imagenes")
+router.post('/', upload.array('imagenes', 10), controller.crearHabitacion);
 
-// Obtener todas las habitaciones
 router.get('/', controller.obtenerHabitaciones);
-
-// Obtener una habitación por id
 router.get('/:id', controller.obtenerHabitacion);
 
-// Actualizar habitación
-router.put('/:id', controller.actualizarHabitacion);
+// Actualizar habitación: subir varias imágenes (campo: "imagenes")
+router.put('/:id', upload.array('imagenes', 10), controller.actualizarHabitacion);
 
-// Eliminar habitación
 router.delete('/:id', controller.eliminarHabitacion);
 
 module.exports = router;

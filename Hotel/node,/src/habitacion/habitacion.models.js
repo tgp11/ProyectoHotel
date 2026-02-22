@@ -33,9 +33,9 @@ const habitacionSchema = new mongoose.Schema({
   },
 
   // URL o ruta de la imagen principal (opcional)
-  imagen: {
-    type: String,
-    default: ''
+  imagenes: {
+    type: [String],
+    default: []
   },
 
   // Precio por noche (obligatorio, >= 0)
