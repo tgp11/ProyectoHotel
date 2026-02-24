@@ -29,4 +29,4 @@ const resenaSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
-module.exports = mongoose.model('Resena', resenaSchema, 'Reseña');
+module.exports = mongoose.model('Resena', resenaSchema, 'Resena');

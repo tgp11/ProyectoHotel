@@ -28,14 +28,8 @@ namespace HOTELINTERFAZ.Ventanas
                 MessageBox.Show("Ingresa un DNI.");
                 return;
             }
-
-            // 1️⃣ Obtener todas las reservas del VM
             var todasReservas = _vm.Reservas.ToList();
-
-            // 2️⃣ Obtener las canceladas
             var canceladas = todasReservas.Where(r => r.Cancelacion).ToList();
-
-            // 3️⃣ Crear la diferencia: activas = todas - canceladas
             var activas = todasReservas
                 .Where(r => !canceladas.Any(c => c.Id == r.Id))
                 .Where(r => r.Cliente != null && r.Cliente.Dni == dni)
@@ -68,7 +62,7 @@ namespace HOTELINTERFAZ.Ventanas
                 if (exito)
                 {
                     MessageBox.Show("Reserva cancelada correctamente.");
-                    _reservasFiltradas.Remove(reserva); // Actualiza DataGrid
+                    _reservasFiltradas.Remove(reserva); 
                 }
                 else
                 {
@@ -78,3 +72,4 @@ namespace HOTELINTERFAZ.Ventanas
         }
     }
 }
+

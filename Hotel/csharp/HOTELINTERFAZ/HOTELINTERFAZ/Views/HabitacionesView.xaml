@@ -6,90 +6,104 @@
         xmlns:local="clr-namespace:HOTELINTERFAZ.Views"
         mc:Ignorable="d"
         Height="700" Width="1150">
-	<UserControl.Resources>
-		<ResourceDictionary>
-			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="/Styles.xaml"/>
-			</ResourceDictionary.MergedDictionaries>
-		</ResourceDictionary>
-	</UserControl.Resources>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
 
-	<Grid Background="{StaticResource BgMain}">
-		<Grid Margin="22">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="*"/>
-			</Grid.RowDefinitions>
+    <Grid Background="{StaticResource BgMain}">
+        <Grid Margin="22">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-			<!-- Título -->
-			<TextBlock Text="Gestión de habitaciones"
+            <TextBlock Text="Gestión de habitaciones"
                        Foreground="White"
                        FontSize="28"
                        FontWeight="Bold"
                        Margin="0,0,0,16"/>
-			<!-- Barra acciones -->
-			<Border Grid.Row="1"
+
+            <Border Grid.Row="1"
                     Background="{StaticResource BgPanel}"
                     CornerRadius="10"
                     Padding="14"
                     Margin="0,0,0,16">
-				<DockPanel LastChildFill="False">
-					<StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-						<Button Content="Nueva" Style="{StaticResource AccentButton}" Click="Nueva_Click"/>
-						<Button Content="Editar" Style="{StaticResource DarkButton}" Click="Editar_Click"/>
-						<Button Content="Eliminar" Style="{StaticResource DarkButton}" Click="Eliminar_Click"/>
-					</StackPanel>
+                <DockPanel LastChildFill="False">
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                        <Button Content="Nueva" Style="{StaticResource AccentButton}" Click="Nueva_Click"/>
+                        <Button Content="Editar" Style="{StaticResource DarkButton}" Click="Editar_Click"/>
+                        <Button Content="Eliminar" Style="{StaticResource DarkButton}" Click="Eliminar_Click"/>
+                    </StackPanel>
 
-					<StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-						<TextBox x:Name="TxtBuscar"
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                        <TextBox x:Name="TxtBuscar"
                                  Width="280"
                                  Margin="0,0,10,0"
                                  VerticalContentAlignment="Center"
                                  Style="{StaticResource DarkTextBox}"/>
-						<Button Content="Buscar" Style="{StaticResource AccentButton}" Click="Buscar_Click"/>
-					</StackPanel>
-				</DockPanel>
-			</Border>
-			<!-- Tabla -->
+                        <Button Content="Buscar" Style="{StaticResource AccentButton}" Click="Buscar_Click"/>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
             <DataGrid x:Name="DgHabitaciones"
                 Grid.Row="2"
 				Style="{StaticResource DarkDataGrid}"
 				AutoGenerateColumns="False"
 				CanUserAddRows="False"
-				IsReadOnly="False"
+				IsReadOnly="True"
 				SelectionMode="Single"
-				SelectionUnit="FullRow"
-				RowEditEnding="DgHabitaciones_RowEditEnding">
+				SelectionUnit="FullRow">
 
-				<DataGrid.Columns>
-					<!-- Nº -->
-					<DataGridTextColumn Header="Nº"
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Nº"
                             Binding="{Binding Numero, UpdateSourceTrigger=PropertyChanged}"
                             Width="80"/>
 
-					<!-- Tipo -->
-					<DataGridTextColumn Header="Tipo"
+                    <DataGridTextColumn Header="Tipo"
                             Binding="{Binding Tipo, UpdateSourceTrigger=PropertyChanged}"
                             Width="160"/>
 
-					<!-- Capacidad (MaxOcupantes) -->
-					<DataGridTextColumn Header="Capacidad"
+                    <DataGridTextColumn Header="Descripción"
+							Binding="{Binding Descripcion}"
+							Width="260"/>
+
+                    <DataGridTextColumn Header="Capacidad"
                             Binding="{Binding MaxOcupantes, UpdateSourceTrigger=PropertyChanged}"
                             Width="140"/>
 
-					<!-- Precio/Noche -->
-					<DataGridTextColumn Header="Precio/Noche"
+                    <DataGridTextColumn Header="Precio/Noche"
                             Binding="{Binding PrecioNoche, UpdateSourceTrigger=PropertyChanged}"
                             Width="160"/>
 
-					<!-- Estado (Disponible) -->
-					<DataGridCheckBoxColumn Header="Estado"
+                    <DataGridTextColumn Header="Servicios"
+							Binding="{Binding ServiciosTexto}"
+							Width="240"/>
+
+                    <DataGridTemplateColumn Header="Imagen" Width="140">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border CornerRadius="6" ClipToBounds="True">
+                                    <Image Source="{Binding Imagen}"
+										   Height="70"
+										   Width="120"
+										   Stretch="UniformToFill"/>
+                                </Border>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridCheckBoxColumn Header="Estado"
                                 Binding="{Binding Disponible, UpdateSourceTrigger=PropertyChanged}"
                                 Width="120"/>
-				</DataGrid.Columns>
-			</DataGrid>
+                </DataGrid.Columns>
+            </DataGrid>
 
-		</Grid>
-	</Grid>
+        </Grid>
+    </Grid>
 </UserControl>

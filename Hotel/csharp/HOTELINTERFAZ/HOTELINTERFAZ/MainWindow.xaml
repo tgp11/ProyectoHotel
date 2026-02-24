@@ -8,19 +8,14 @@
         Title="MainWindow" Height="720" Width="1280" WindowState="Maximized">
 
     <Grid>
-        <!-- DEFINICIÓN GENERAL -->
         <Grid.RowDefinitions>
             <RowDefinition Height="80"/>
-            <!-- Header -->
             <RowDefinition Height="*"/>
-            <!-- Contenido -->
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="220"/>
-            <!-- Menú -->
             <ColumnDefinition Width="*"/>
-            <!-- Vistas -->
         </Grid.ColumnDefinitions>
 
         <!-- ================= HEADER ================= -->
@@ -46,7 +41,6 @@
                        VerticalAlignment="Center"
                        HorizontalAlignment="Center"/>
 
-            <!-- Usuario + Logout -->
             <StackPanel Grid.Column="2"
                         Orientation="Horizontal"
                         VerticalAlignment="Center"
@@ -70,7 +64,6 @@
             </StackPanel>
         </Grid>
 
-        <!-- ================= MENÚ LATERAL ================= -->
         <StackPanel Grid.Row="1" Grid.Column="0" Background="#8B1E1E">
             <TextBlock Text="MENÚ" Foreground="White" FontSize="18" FontWeight="Bold" Margin="20,20,0,10"/>
 
@@ -107,7 +100,6 @@
             
         </StackPanel>
 
-        <!-- ================= CONTENIDO PRINCIPAL ================= -->
         <Grid Grid.Row="1" Grid.Column="1" Background="#3A3A3A">
             <ContentControl x:Name="contentControl"/>
         </Grid>

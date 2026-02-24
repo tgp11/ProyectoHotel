@@ -19,60 +19,63 @@
 
     <Grid Background="{StaticResource BgMain}">
         <Grid Margin="22">
-
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- TÍTULO -->
             <TextBlock Text="Gestión de reservas"
                        Foreground="White"
                        FontSize="28"
                        FontWeight="Bold"
                        Margin="0,0,0,16"/>
 
-            <!-- PANEL ACCIONES -->
             <Border Grid.Row="1"
                     Background="{StaticResource BgPanel}"
                     CornerRadius="10"
                     Padding="14"
                     Margin="0,0,0,16">
-
                 <DockPanel LastChildFill="False">
-
-                    <!-- IZQUIERDA -->
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
                         <Button Content="Nueva"
                                 Style="{StaticResource AccentButton}"
                                 Click="NuevaReserva_Click"/>
-
                         <Button Content="Cancelar"
                                 Style="{StaticResource DarkButton}"
                                 Click="Cancelar_Click"/>
-
                         <Button Content="Eliminar"
                                 Style="{StaticResource DarkButton}"
                                 Click="Eliminar_Click"/>
                     </StackPanel>
 
-                    <!-- DERECHA -->
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+
+                        <TextBox x:Name="TxtBuscar"
+                                 Width="220"
+                                 Margin="0,0,10,0"
+                                 VerticalContentAlignment="Center"
+                                 Style="{StaticResource DarkTextBox}"
+                                 TextChanged="TxtBuscar_TextChanged"/>
+
+                        <Button Content="Buscar"
+                                Style="{StaticResource AccentButton}"
+                                Click="Buscar_Click"/>
+                        
                         <CheckBox Content="Mostrar solo activas"
                                   Foreground="White"
                                   Margin="16,0,0,0"
                                   VerticalAlignment="Center"
-                                  IsChecked="{Binding FiltrarCanceladas, Mode=TwoWay}"/>
+                                  IsChecked="{Binding MostrarSoloActivas, Mode=TwoWay}"/>
                     </StackPanel>
-
                 </DockPanel>
             </Border>
 
-            <!-- TABLA -->
             <DataGrid Grid.Row="2"
+                      
+                      
                       Style="{StaticResource DarkDataGrid}"
-                      ItemsSource="{Binding Reservas}"
+                      ItemsSource="{Binding ReservasView}"
                       SelectedItem="{Binding ReservaSeleccionada, Mode=TwoWay}"
                       AutoGenerateColumns="False"
                       CanUserAddRows="False"
@@ -81,47 +84,17 @@
                       SelectionUnit="FullRow">
 
                 <DataGrid.Columns>
-
-                    <DataGridTextColumn Header="ID"
-                                        Binding="{Binding Id}"
-                                        Width="160"/>
-
-                    <DataGridTextColumn Header="DNI"
-                                        Binding="{Binding Cliente.Dni}"
-                                        Width="140"/>
-
-                    <DataGridTextColumn Header="Cliente"
-                                        Binding="{Binding Cliente.Nombre}"
-                                        Width="180"/>
-
-                    <DataGridTextColumn Header="Habitación"
-                                        Binding="{Binding HabitacionId}"
-                                        Width="160"/>
-
-                    <DataGridTextColumn Header="Entrada"
-                                        Binding="{Binding FechaEntrada, StringFormat=dd/MM/yyyy}"
-                                        Width="110"/>
-
-                    <DataGridTextColumn Header="Salida"
-                                        Binding="{Binding FechaSalida, StringFormat=dd/MM/yyyy}"
-                                        Width="110"/>
-
-                    <DataGridTextColumn Header="Personas"
-                                        Binding="{Binding Personas}"
-                                        Width="90"/>
-
-                    <DataGridTextColumn Header="Total"
-                                        Binding="{Binding PrecioTotal}"
-                                        Width="100"/>
-
-                    <DataGridCheckBoxColumn Header="Cancelada"
-                                            Binding="{Binding Cancelacion}"
-                                            Width="110"/>
-
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="160"/>
+                    <DataGridTextColumn Header="DNI" Binding="{Binding Cliente.Dni}" Width="140"/>
+                    <DataGridTextColumn Header="Cliente" Binding="{Binding Cliente.Nombre}" Width="180"/>
+                    <DataGridTextColumn Header="Habitación" Binding="{Binding Habitacion.Numero}" Width="160"/>
+                    <DataGridTextColumn Header="Entrada" Binding="{Binding FechaEntrada, StringFormat=dd/MM/yyyy}" Width="110"/>
+                    <DataGridTextColumn Header="Salida" Binding="{Binding FechaSalida, StringFormat=dd/MM/yyyy}" Width="110"/>
+                    <DataGridTextColumn Header="Personas" Binding="{Binding Personas}" Width="90"/>
+                    <DataGridTextColumn Header="Total" Binding="{Binding PrecioTotal}" Width="100"/>
+                    <DataGridCheckBoxColumn Header="Cancelada" Binding="{Binding Cancelacion}" Width="110"/>
                 </DataGrid.Columns>
-
             </DataGrid>
-
         </Grid>
     </Grid>
 </UserControl>

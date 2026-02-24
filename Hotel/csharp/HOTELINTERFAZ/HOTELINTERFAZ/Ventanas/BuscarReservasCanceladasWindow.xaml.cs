@@ -49,8 +49,6 @@ namespace HOTELINTERFAZ.Ventanas
                 if (confirm == MessageBoxResult.Yes)
                 {
                     await _vm.EliminarReservaAsync(id: reserva.Id);
-
-                    // ✅ ACTUALIZA ESTE DATAGRID
                     _reservasFiltradas.Remove(reserva);
                 }
             }

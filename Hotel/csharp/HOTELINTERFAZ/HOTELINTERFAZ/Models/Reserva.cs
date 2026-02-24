@@ -24,13 +24,13 @@ namespace HOTELINTERFAZ.Models
         public int Personas { get; set; }
 
         [JsonPropertyName("precioTotal")]
-        public double PrecioTotal { get; set; }  // Ahora decimal
+        public double PrecioTotal { get; set; }  
 
         [JsonPropertyName("cancelacion")]
         public bool Cancelacion { get; set; }
 
         [JsonPropertyName("cliente")]
-        public ClienteReducido Cliente { get; set; } // Solo los datos mínimos (id, dni, nombre)
+        public ClienteReducido Cliente { get; set; } 
 
 
         [JsonPropertyName("habitacion")]

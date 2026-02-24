@@ -16,8 +16,6 @@ namespace HOTELINTERFAZ.ViewModels
         public ObservableCollection<Habitacion> Habitaciones { get; } = new();
 
         private readonly HttpClient _client;
-
-        // Importante: ignorar nulls para NO mandar "_id": null en el POST
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
@@ -53,7 +51,6 @@ namespace HOTELINTERFAZ.ViewModels
 
         public async Task<Habitacion?> CrearHabitacionAsync(Habitacion h)
         {
-            // Por seguridad: en CREATE no mandes Id
             h.Id = null;
 
             var resp = await _client.PostAsJsonAsync("habitaciones", h, JsonOptions);
@@ -62,8 +59,6 @@ namespace HOTELINTERFAZ.ViewModels
                 var err = await resp.Content.ReadAsStringAsync();
                 throw new Exception($"POST /habitaciones falló: {(int)resp.StatusCode} - {err}");
             }
-
-            // Si tu API devuelve la habitación creada (con _id), la leemos:
             try
             {
                 var creada = await resp.Content.ReadFromJsonAsync<Habitacion>(JsonOptions);
@@ -71,7 +66,6 @@ namespace HOTELINTERFAZ.ViewModels
             }
             catch
             {
-                // Si tu API NO devuelve el objeto creado, devolvemos null (pero el POST fue OK)
                 return null;
             }
         }

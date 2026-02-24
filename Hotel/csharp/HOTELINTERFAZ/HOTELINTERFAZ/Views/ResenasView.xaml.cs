@@ -27,14 +27,12 @@ namespace HOTELINTERFAZ.Views
         {
             if (DataContext is ResenasViewModel vm)
             {
-                // 1. Validar selección
                 if (vm.ResenaSeleccionada == null)
                 {
                     MessageBox.Show("Por favor, seleccione una reseña para eliminar.");
                     return;
                 }
 
-                // 2. Confirmar acción
                 var confirm = MessageBox.Show(
                     "¿Estás seguro de que deseas eliminar esta reseña de forma permanente?",
                     "Confirmar Eliminación",
@@ -43,7 +41,6 @@ namespace HOTELINTERFAZ.Views
 
                 if (confirm == MessageBoxResult.Yes)
                 {
-                    // 3. Ejecutar eliminación
                     bool exito = await vm.EliminarResenaAsync(vm.ResenaSeleccionada.Id);
 
                     if (exito)

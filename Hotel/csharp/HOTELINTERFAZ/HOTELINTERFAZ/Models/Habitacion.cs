@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -42,6 +42,30 @@ namespace HOTELINTERFAZ.Models
 
         [JsonPropertyName("servicios")]
         public ObservableCollection<string> Servicios { get; set; } = new();
+        
+        [JsonIgnore]
+        public string ServiciosTexto
+        {
+            get => Servicios == null || Servicios.Count == 0
+                ? ""
+                : string.Join(", ", Servicios);
+            set
+            {
+                Servicios ??= new ObservableCollection<string>();
+                Servicios.Clear();
+
+                if (string.IsNullOrWhiteSpace(value))
+                    return;
+
+                var tokens = value
+                    .Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s => s.Trim())
+                    .Where(s => !string.IsNullOrWhiteSpace(s));
+
+                foreach (var t in tokens)
+                    Servicios.Add(t);
+            }
+        }
 
     }
 }

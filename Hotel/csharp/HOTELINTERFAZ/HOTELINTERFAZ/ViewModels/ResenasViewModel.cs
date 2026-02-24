@@ -16,8 +16,6 @@ namespace HOTELINTERFAZ.ViewModels
     {
         public ObservableCollection<Resena> Resenas { get; } = new();
         private readonly HttpClient _client = new() { BaseAddress = new Uri("http://localhost:3000/") };
-
-        // Propiedad para la selección
         private Resena _resenaSeleccionada;
         public Resena ResenaSeleccionada
         {
@@ -50,8 +48,6 @@ namespace HOTELINTERFAZ.ViewModels
                 MessageBox.Show("Error de API: " + ex.Message);
             }
         }
-
-        // Método de eliminación similar al de Reservas
         public async Task<bool> EliminarResenaAsync(string id)
         {
             try
@@ -59,7 +55,7 @@ namespace HOTELINTERFAZ.ViewModels
                 var response = await _client.DeleteAsync($"resenas/{id}");
                 if (response.IsSuccessStatusCode)
                 {
-                    await CargarResenas(); // Recargar lista
+                    await CargarResenas(); 
                     return true;
                 }
                 return false;

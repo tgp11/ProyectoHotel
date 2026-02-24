@@ -22,13 +22,11 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- Título -->
             <TextBlock Text="Gestión de Empleados"
                    Foreground="White"
                    FontSize="28"
                    FontWeight="Bold"
                    Margin="0,0,0,16"/>
-            <!-- Barra acciones -->
             <Border Grid.Row="1"
                 Background="{StaticResource BgPanel}"
                 CornerRadius="10"
@@ -56,7 +54,6 @@
                     </StackPanel>
                 </DockPanel>
             </Border>
-            <!-- Tabla -->
             <DataGrid x:Name="DgEmpleados"
                   Grid.Row="2"
                   Style="{StaticResource DarkDataGrid}"
@@ -71,32 +68,25 @@
 
                 <DataGrid.Columns>
 
-                    <!-- DNI -->
                     <DataGridTextColumn Header="DNI"
                         Binding="{Binding DNI, UpdateSourceTrigger=PropertyChanged}"
                         Width="150"/>
 
-                    <!-- Nombre -->
                     <DataGridTextColumn Header="Nombre"
                         Binding="{Binding Nombre, UpdateSourceTrigger=PropertyChanged}"
                         Width="170"/>
 
-                    <!-- Email -->
                     <DataGridTextColumn Header="Email"
                         Binding="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
                         Width="200"/>
 
-                    <!-- Fecha Nacimiento -->
                     <DataGridTextColumn Header="Fecha Nacimiento"
                         Binding="{Binding FechaNacimiento, StringFormat=dd/MM/yyyy, UpdateSourceTrigger=PropertyChanged}"
                         Width="160"/>
-
-                    <!-- Sexo -->
                     <DataGridTextColumn Header="Sexo"
                             Binding="{Binding Sexo, UpdateSourceTrigger=PropertyChanged}"
                             Width="70"/>
                      
-                    <!-- Administrador -->
                     <DataGridCheckBoxColumn Header="Administrador"
                         Binding="{Binding Administrador, UpdateSourceTrigger=PropertyChanged}"
                         Width="120"/>

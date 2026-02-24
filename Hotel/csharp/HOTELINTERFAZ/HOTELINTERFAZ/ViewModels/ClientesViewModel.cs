@@ -24,8 +24,6 @@ namespace HOTELINTERFAZ.ViewModels
         
         public string FotoUrlCompleta { get; set; }
 
-
-
         private readonly HttpClient _client;
         
         public string NombreNuevo { get; set; }
@@ -51,7 +49,6 @@ namespace HOTELINTERFAZ.ViewModels
             
             ClienteView = CollectionViewSource.GetDefaultView(ClientesNoReducido);
 
-            // Cargar clientes al iniciar por antonio
             _ = CargarClientesAsync();
         }
         
@@ -175,8 +172,6 @@ namespace HOTELINTERFAZ.ViewModels
                 form.Add(new StringContent(SexoNuevo), "sexo");
                 form.Add(new StringContent(vipNuevo.ToString().ToLower()), "vip");
                 form.Add(new StringContent(ciudadNuevo), "ciudad");
-
-                // FOTO
                 if (!string.IsNullOrEmpty(RutaImagenSeleccionada))
                 {
                     var bytes = File.ReadAllBytes(RutaImagenSeleccionada);

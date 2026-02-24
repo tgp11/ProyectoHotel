@@ -3,7 +3,6 @@ const path = require('path');
 const fs = require("fs");
 
 
-// Crea una carpeta uploads en caso de que no exista
 const uploadRuta = "uploads/"; 
 
 if (!fs.existsSync(uploadRuta)) {
@@ -12,18 +11,17 @@ if (!fs.existsSync(uploadRuta)) {
 
 const storage = multer.diskStorage({
 
-    destination: (req, file, cb) => { // Aquí se define la carpeta donde se guardarán los archivos
+    destination: (req, file, cb) => {
         cb(null, uploadRuta);
     },
 
-    filename:(req, file, cb) => { // Aquí se define el nombre del archivo, en este caso se le añade un timestamp para evitar repeticiones
+    filename:(req, file, cb) => {
         const nombreUnico = Date.now() + path.extname(file.originalname);
         cb(null, nombreUnico);
     }
 
 });
 
-// Aquí se define el filtro para aceptar solo ciertos formatos de imagen
 const fileFilter = (req, file, cb) => {
 
     const formatosPermitidos = /jpg|jpeg|png|webp/;

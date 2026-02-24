@@ -15,6 +15,7 @@ namespace HOTELINTERFAZ.Ventanas
         private readonly ClientesViewModel _clientesVM;
 
         public ObservableCollection<Habitacion> HabitacionesDisponibles { get; set; } = new();
+        public Habitacion HabitacionSeleccionada { get; set; }
 
         public NuevaReservaWindow(
             ReservasViewModel reservasVM,
@@ -98,8 +99,6 @@ namespace HOTELINTERFAZ.Ventanas
                 MessageBox.Show("Ingresa el DNI del cliente");
                 return;
             }
-
-            // Usar la colección ClientesNoReducido para buscar el cliente
             var clienteExistente = _clientesVM.ClientesNoReducido
                 .FirstOrDefault(c => c.DNI.Trim().Equals(dni.ToUpper(), StringComparison.OrdinalIgnoreCase));
 
@@ -115,8 +114,6 @@ namespace HOTELINTERFAZ.Ventanas
                 MessageBox.Show("La fecha de salida debe ser posterior a la de entrada");
                 return;
             }
-
-            // ✅ Convertimos a decimal directamente
             decimal precioTotal = Convert.ToDecimal(habitacion.PrecioNoche) * dias;
 
             var reserva = new Reserva

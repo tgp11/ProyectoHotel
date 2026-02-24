@@ -27,8 +27,6 @@ namespace HOTELINTERFAZ.ViewModels
         
         public string FotoUrlCompleta { get; set; }
 
-
-
         private readonly HttpClient _client;
         
         public string NombreNuevo { get; set; }

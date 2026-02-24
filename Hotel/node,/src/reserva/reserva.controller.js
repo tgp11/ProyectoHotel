@@ -58,7 +58,7 @@ exports.eliminarReserva = async (req, res) => {
       return res.status(404).json({ msg: 'Reserva no encontrada' });
     }
 
-    // 🔒 SOLO si está cancelada
+
     if (!reserva.cancelacion) {
       return res.status(400).json({
         msg: 'Solo se pueden eliminar reservas canceladas'
@@ -77,16 +77,12 @@ exports.eliminarReserva = async (req, res) => {
 exports.obtenerReservas = async (req, res) => {
   try {
 
-    // 1️⃣ Traer reservas
     const reservas = await Reserva.find().lean();
 
-    // 2️⃣ Traer clientes
     const clientes = await Usuario.find().lean();
 
-    // 3️⃣ Traer habitaciones
     const habitaciones = await Habitacion.find().lean();
 
-    // 4️⃣ Mapear resultado completo
     const resultado = reservas.map(reserva => {
 
       const cliente = clientes.find(
