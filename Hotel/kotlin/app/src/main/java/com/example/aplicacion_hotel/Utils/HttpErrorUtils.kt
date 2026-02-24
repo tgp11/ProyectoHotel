@@ -10,7 +10,6 @@ fun httpErrorMessage(e: HttpException): String {
         if (errorBody.isNullOrBlank()) {
             "Error HTTP ${e.code()}"
         } else {
-            // Tu API a veces devuelve { "message": "..." } o { "msg": "..." }
             val json = JSONObject(errorBody)
             when {
                 json.has("message") -> json.getString("message")

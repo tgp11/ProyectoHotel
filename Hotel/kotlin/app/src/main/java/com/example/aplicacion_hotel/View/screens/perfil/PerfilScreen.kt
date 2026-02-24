@@ -63,7 +63,7 @@ fun PerfilScreen(navController: NavHostController) {
         ) {
             Spacer(modifier = Modifier.height(24.dp))
 
-            // FOTO PERFIL CIRCULAR
+
             if (!cliente.foto.isNullOrEmpty()) {
                 AsyncImage(
                     model = "${RetrofitInstance.BASE_URL.dropLast(1)}${cliente.foto}",
@@ -102,8 +102,6 @@ fun PerfilScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // ITEMS DE PERFIL TIPO CARD OSCURA
-            // Usamos el componente local definido al final del archivo para evitar ambigüedades
             PerfilItemLocal("Email", cliente.email)
             PerfilItemLocal("DNI", cliente.dni)
             PerfilItemLocal(

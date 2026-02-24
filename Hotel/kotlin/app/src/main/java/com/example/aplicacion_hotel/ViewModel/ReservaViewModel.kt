@@ -72,7 +72,7 @@ class ReservaViewModel : ViewModel() {
             try {
                 val exito = repository.cancelarReserva(reservaId)
                 if (exito) {
-                    cargarReservas(clienteId) // Esto refresca la lista filtrada
+                    cargarReservas(clienteId) 
                 } else {
                     errorMessage = "Error del servidor al cancelar"
                 }

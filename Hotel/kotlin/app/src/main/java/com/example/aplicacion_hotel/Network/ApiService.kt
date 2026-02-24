@@ -65,7 +65,6 @@ interface ApiService {
         @Part foto: MultipartBody.Part? = null
     ): Cliente
 
-    // --- ENDPOINTS PARA RESEÑAS ---
     @GET("resenas")
     suspend fun obtenerResenas(): List<Resena>
 

@@ -44,15 +44,10 @@ class AuthViewModel(
                     return@launch
                 }
 
-                // Guardar token
                 sessionManager.saveToken(response.token)
-
-                // Obtener cliente completo usando ID
                 val clienteCompleto = clienteRepository.getClienteById(
                     response.usuario.id
                 )
-
-                // Guardar cliente completo
                 sessionManager.saveCliente(clienteCompleto)
 
                 loginSuccess = true

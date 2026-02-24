@@ -58,11 +58,8 @@ class HabitacionesViewModel(
             try {
                 _cargando.value = true
                 _error.value = null
-
-                // 1. Cargamos todas las habitaciones y todas las reservas
                 val rooms = repository.getHabitaciones()
                 
-                // Usamos el endpoint para traer todas las reservas
                 val resResponse = RetrofitInstance.api.obtenerTodasLasReservas()
                 val allRes = if (resResponse.isSuccessful) resResponse.body() ?: emptyList() else emptyList()
 
@@ -75,7 +72,6 @@ class HabitacionesViewModel(
                     return@launch
                 }
 
-                // 2. Filtrar habitaciones que NO tengan reservas que se solapen con el rango
                 _habitaciones.value = rooms.filter { hab ->
                     val reservasDeEstaHab = allRes.filter { it.habitacionId == hab._id && !it.cancelacion }
 
@@ -84,8 +80,6 @@ class HabitacionesViewModel(
                         val resEnd = sdf.parse(res.fechaSalida)
                         
                         if (resStart != null && resEnd != null) {
-                            // Una reserva se solapa si NO termina antes de que empecemos 
-                            // ni empieza después de que terminemos
                             !(end <= resStart || start >= resEnd)
                         } else false
                     }

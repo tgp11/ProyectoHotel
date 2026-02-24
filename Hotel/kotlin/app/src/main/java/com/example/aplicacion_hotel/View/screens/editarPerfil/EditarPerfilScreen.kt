@@ -44,12 +44,9 @@ fun EditarPerfilScreen(navController: NavController) {
         onResult = { uri: Uri? -> viewModel.setFoto(uri) }
     )
 
-    // Cargar datos iniciales del usuario
     LaunchedEffect(Unit) {
         viewModel.loadFromSession()
     }
-
-    // Volver atrás si la actualización fue exitosa
     LaunchedEffect(viewModel.success) {
         if (viewModel.success) {
             navController.popBackStack()
@@ -78,8 +75,6 @@ fun EditarPerfilScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.height(16.dp))
-
-            // Selector de Foto
             Box(modifier = Modifier.size(120.dp), contentAlignment = Alignment.Center) {
                 if (viewModel.fotoNuevaUri != null) {
                     Image(
@@ -97,8 +92,6 @@ fun EditarPerfilScreen(navController: NavController) {
             }
             
             Spacer(Modifier.height(24.dp))
-
-            // Campos de texto
             OutlinedTextField(value = viewModel.nombre, onValueChange = { viewModel.nombre = it }, label = { Text("Nombre") }, modifier = Modifier.fillMaxWidth())
             OutlinedTextField(value = viewModel.dni, onValueChange = { viewModel.dni = it }, label = { Text("DNI") }, modifier = Modifier.fillMaxWidth())
             OutlinedTextField(value = viewModel.email, onValueChange = { viewModel.email = it }, label = { Text("Email") }, modifier = Modifier.fillMaxWidth())
@@ -106,7 +99,6 @@ fun EditarPerfilScreen(navController: NavController) {
 
             Spacer(Modifier.height(16.dp))
             
-            // Switch VIP
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text("Es VIP", style = MaterialTheme.typography.bodyLarge)
                 Spacer(Modifier.weight(1f))
@@ -115,7 +107,6 @@ fun EditarPerfilScreen(navController: NavController) {
 
             Spacer(Modifier.height(32.dp))
             
-            // Botones de acción
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 OutlinedButton(
                     onClick = { navController.popBackStack() },

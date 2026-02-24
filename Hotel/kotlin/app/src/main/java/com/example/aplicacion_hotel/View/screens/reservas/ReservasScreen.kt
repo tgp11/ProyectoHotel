@@ -40,8 +40,6 @@ fun ReservasScreen() {
     LaunchedEffect(clienteId) {
         clienteId?.let { id -> viewModel.cargarReservas(id) }
     }
-
-    // --- Feedback al enviar reseña ---
     LaunchedEffect(resenaEnviada) {
         if (resenaEnviada == true) {
             Toast.makeText(context, "¡Reseña enviada con éxito!", Toast.LENGTH_SHORT).show()
@@ -53,8 +51,6 @@ fun ReservasScreen() {
             resenaViewModel.resetEstado()
         }
     }
-
-    // --- Diálogo para poner la reseña ---
     if (reservaParaReseña != null) {
         ReseñaDialog(
             onDismiss = { reservaParaReseña = null },
@@ -72,8 +68,6 @@ fun ReservasScreen() {
             }
         )
     }
-
-    // Diálogo para cancelar
     if (reservaIdParaCancelar != null) {
         AlertDialog(
             onDismissRequest = { reservaIdParaCancelar = null },

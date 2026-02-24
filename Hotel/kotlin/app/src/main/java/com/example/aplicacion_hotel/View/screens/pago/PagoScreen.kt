@@ -20,7 +20,6 @@ import com.example.aplicacion_hotel.utils.HotelSessionManager
 import java.text.SimpleDateFormat
 import java.util.*
 
-// Funciones de utilidad movidas arriba para evitar errores de referencia
 fun calcularPrecioTotal(entrada: String, salida: String, precioNoche: Double): Double {
     if (entrada.isEmpty() || salida.isEmpty()) return 0.0
     val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -29,11 +28,12 @@ fun calcularPrecioTotal(entrada: String, salida: String, precioNoche: Double): D
         val date1 = sdf.parse(entrada)
         val date2 = sdf.parse(salida)
         if (date1 != null && date2 != null) {
+            if (date2.time <= date1.time) return 0.0
+
             val diffInMillies = date2.time - date1.time
-            if (diffInMillies < 0) return 0.0
             val noches = (diffInMillies / (1000 * 60 * 60 * 24)).toInt()
-            val dias = (noches + 1).coerceAtLeast(1)
-            dias * precioNoche
+
+            noches * precioNoche
         } else 0.0
     } catch (e: Exception) {
         0.0
@@ -41,7 +41,7 @@ fun calcularPrecioTotal(entrada: String, salida: String, precioNoche: Double): D
 }
 
 fun validarCampos(entrada: String, salida: String, personas: String, tarjeta: String, cvv: String, context: Context): Boolean {
-    if (entrada.isEmpty() || salida.isEmpty() || personas.isEmpty()) {
+    if (entrada.isEmpty() || salida.isEmpty() || personas.isEmpty() || tarjeta.isEmpty() || cvv.isEmpty()) {
         Toast.makeText(context, "Rellena todos los campos", Toast.LENGTH_SHORT).show()
         return false
     }
@@ -50,7 +50,22 @@ fun validarCampos(entrada: String, salida: String, personas: String, tarjeta: St
         sdf.isLenient = false
         val d1 = sdf.parse(entrada)
         val d2 = sdf.parse(salida)
-        if (d1 == null || d2 == null || d2.before(d1)) {
+
+        val today = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.time
+
+        if (d1 == null || d2 == null) return false
+
+        if (d1.before(today)) {
+            Toast.makeText(context, "No puedes reservar una fecha pasada", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        if (d2.time <= d1.time) {
             Toast.makeText(context, "La fecha de salida debe ser posterior a la de entrada", Toast.LENGTH_SHORT).show()
             return false
         }
@@ -87,13 +102,11 @@ fun PagoScreen(
     var fechaVencimiento by remember { mutableStateOf("") }
     var cvv by remember { mutableStateOf("") }
 
-    // Estados para los DatePickers
     var showEntradaPicker by remember { mutableStateOf(false) }
     var showSalidaPicker by remember { mutableStateOf(false) }
     val entradaPickerState = rememberDatePickerState()
     val salidaPickerState = rememberDatePickerState()
 
-    // Cálculo del precio total reactivo
     val precioTotal = remember(fechaEntrada, fechaSalida, precioNoche) {
         calcularPrecioTotal(fechaEntrada, fechaSalida, precioNoche)
     }
@@ -216,9 +229,15 @@ fun PagoScreen(
 
             if (precioTotal > 0) {
                 Text(
-                    text = "Total a pagar: ${String.format(Locale.US, "%.2f", precioTotal)} €",
+                    text = "Total a pagar: " + String.format(Locale.US, "%.2f", precioTotal) + " €",
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.primary
+                )
+            } else if (fechaEntrada.isNotEmpty() && fechaSalida.isNotEmpty()) {
+                Text(
+                    text = "Rango de fechas inválido",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
 
@@ -276,7 +295,12 @@ fun PagoScreen(
                     val millis = salidaPickerState.selectedDateMillis
                     if (millis != null) {
                         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                        fechaSalida = sdf.format(Date(millis))
+                        val selectedDate = sdf.format(Date(millis))
+                        if (selectedDate == fechaEntrada) {
+                            Toast.makeText(context, "La salida no puede ser el mismo día", Toast.LENGTH_SHORT).show()
+                        } else {
+                            fechaSalida = selectedDate
+                        }
                     }
                     showSalidaPicker = false
                 }) { Text("Aceptar") }

@@ -48,8 +48,6 @@ fun AppNavigation() {
         composable(Routes.InfoHotel.route) {
             InfoHotelScreen()
         }
-
-        // --- RUTA CORREGIDA: Definimos los argumentos correctamente ---
         composable(
             route = Routes.Pago.route,
             arguments = listOf(
@@ -60,11 +58,8 @@ fun AppNavigation() {
             val id = backStackEntry.arguments?.getString("habitacionId") ?: ""
             val precio = backStackEntry.arguments?.getFloat("precioNoche")?.toDouble() ?: 0.0
 
-            // Llamamos a la nueva pantalla de Pago
             PagoScreen(navController, id, precio)
         }
-
-        //IVAN
         composable(Routes.Vip.route) {
             VipScreen(navController)
         }

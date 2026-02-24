@@ -33,15 +33,11 @@ fun HotelTopBar(
         title = { Text("Hotel App") },
 
         actions = {
-
-            // Botón info hotel
             IconButton(onClick = {
                 navController.navigate(Routes.InfoHotel.route)
             }) {
                 Icon(Icons.Default.Info, contentDescription = "Info")
             }
-
-            // Botón menú perfil
             IconButton(onClick = {
                 expanded = true
             }) {

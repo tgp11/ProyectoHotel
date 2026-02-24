@@ -30,20 +30,17 @@ class EditarPerfilViewModel(
 
     var errorMessage by mutableStateOf<String?>(null)
         private set
-
-    // Estado formulario
     var nombre by mutableStateOf("")
     var dni by mutableStateOf("")
     var email by mutableStateOf("")
-    var password by mutableStateOf("") // opcional (tu backend lo permite)
-    var fechaNacimiento by mutableStateOf("") // dd/MM/yyyy
-    var sexo by mutableStateOf("")            // M/F/X
+    var password by mutableStateOf("") 
+    var fechaNacimiento by mutableStateOf("") 
+    var sexo by mutableStateOf("")            
     var ciudad by mutableStateOf("")
     var vip by mutableStateOf(false)
 
-    // Para UI
     var fotoNuevaUri by mutableStateOf<Uri?>(null)
-    var fotoActualPath by mutableStateOf<String?>(null) // "/uploads/..."
+    var fotoActualPath by mutableStateOf<String?>(null) 
     var clienteId by mutableStateOf<String?>(null)
 
     fun loadFromSession() {
@@ -60,11 +57,8 @@ class EditarPerfilViewModel(
         fotoActualPath = c.foto
     }
     private fun normalizeToDdMmYyyy(input: String): String {
-        // si ya viene dd/MM/yyyy, lo devolvemos tal cual
         val ddmmyyyy = Regex("""\d{2}/\d{2}/\d{4}""")
         if (ddmmyyyy.matches(input)) return input
-
-        // si viene ISO, intentamos convertir
         return try {
             val isoFormats = listOf(
                 "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
@@ -80,7 +74,7 @@ class EditarPerfilViewModel(
             val date = parser.parse(input)
             java.text.SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(date!!)
         } catch (_: Exception) {
-            "" // si no se puede parsear, lo dejamos vacío para que el usuario elija
+            "" 
         }
     }
 
@@ -115,7 +109,6 @@ class EditarPerfilViewModel(
                     foto = partFoto
                 )
 
-                // Guardar en sesión el cliente actualizado
                 sessionManager.saveCliente(actualizado)
                 success = true
 

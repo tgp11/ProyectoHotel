@@ -45,7 +45,6 @@ class VipViewModel(
             isLoading = true
             errorMessage = null
             try {
-                // Reutilizamos actualizarCliente (multipart), sin foto (foto = null)
                 val actualizado = repo.actualizarCliente(
                     id = cliente._id ?: return@launch,
                     nombre = cliente.nombre.trim().toRequestBody("text/plain".toMediaType()),
@@ -96,7 +95,7 @@ class VipViewModel(
             if (date != null) {
                 java.text.SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(date)
             } else {
-                "" // para que falle “bonito” si está mal
+                "" 
             }
         } catch (_: Exception) {
             ""

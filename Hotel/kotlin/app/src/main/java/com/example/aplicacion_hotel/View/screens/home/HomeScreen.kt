@@ -40,7 +40,6 @@ fun HomeScreen(navController: NavController) {
         ) {
 
             composable(Routes.Habitaciones.route) {
-                // Pasamos el navController principal para poder navegar al Pago
                 HabitacionesScreen(navController)
             }
 

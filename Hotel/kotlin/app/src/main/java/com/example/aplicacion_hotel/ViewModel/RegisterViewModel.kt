@@ -52,7 +52,6 @@ class RegisterViewModel(
             registerSuccess = false
 
             try {
-                // 1) Crear cliente
                 val nuevoCliente = Cliente(
                     nombre = nombre,
                     dni = dni,
@@ -65,19 +64,13 @@ class RegisterViewModel(
                 )
 
                 clienteRepository.crearCliente(nuevoCliente)
-
-                // 2) Login automático
                 val loginResponse = authRepository.login(email, password)
 
                 if (loginResponse.usuario.tipoUsuario != "Cliente") {
                     errorMessage = "Solo los clientes pueden iniciar sesión"
                     return@launch
                 }
-
-                // 3) Guardar token
                 hotelSessionManager.saveToken(loginResponse.token)
-
-                // 4) Obtener cliente completo y guardarlo
                 val clienteCompleto = clienteRepository.getClienteById(loginResponse.usuario.id)
                 hotelSessionManager.saveCliente(clienteCompleto)
 
